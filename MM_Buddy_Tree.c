@@ -6,7 +6,8 @@ typedef struct node
 	struct node * right;
 	struct node * father;	
 	point value;			//Valor del puntero al que apunta
-	char occupied;			//Indica si sus hijos estan ocupados
+	char occupied_left;		//Indica si su hijo izquierdo esta ocupado
+	char occupied_right;	//Indica si su hijo derecho esta ocupado
 	char data;				//Indica que guarda la informacion
 	int size;				//Indica el tamano libre que representa
 }node;
@@ -18,19 +19,35 @@ node * newTree(int size){
 	return tree;
 }
 */
+
+
 point mallokRec(int size, node * n){
-	if (size > n -> size) {
+	if (size > n -> size) {						//Si no entra en el nodo regresa
 		return 0;
 	}
-	if (size <= (n -> size / 2)) {
-		point p = mallokRec(size, n -> left);
-		return (p != 0? p : mallokRec(size, n -> right));
+	if (size <= (n -> size / 2)) {				//Reviso si entro al siguiente nivel
+		point p;
+		if (n -> left -> data == 0) {			//////////////////////////////////////////
+			p = mallokRec(size, n -> left);		/**/
+			if (p != 0) {						/**/
+				n -> occupied_left = 1;			/**/
+				return p;						/**/
+			}									/*Me fijo a que hijo entrar*/
+		}										/*si es que alguno de los 2 esta ocupado*/
+		if (n -> right -> data == 0) {			/*Si lo aloje indico que hijo esta ocupado*/
+			p = mallokRec(size, n -> right);	/**/
+			if (p != 0) {						/**/
+				n -> occupied_right = 1;		/**/
+				return p;						/**/
+			}									/**/
+		}										//////////////////////////////////////////
+		return 0;
 	}
-	if (! n -> occupied)
-	{
-		n -> occupied = 1;
+	if (! (n -> occupied_left || n -> occupied_right))		//Si uno de sus hijos esta ocupado 
+	{														//no lo puedo guardar ahi
+		//n -> occupied_left = 1;
+		//n -> occupied_right = 1;
 		n -> data = 1;
-		n -> father -> occupied = 1;
 		return n -> value;  
 	}
 	return 0;
@@ -51,7 +68,7 @@ void friRec(point p, node * n){
 	if (p == n -> value) {
 		if (n -> data)			//si es el puntero me fijo de liberar todo el tamano del mismo
 		{
-			n -> occupied = 0;
+			n -> occupied_left = 0;
 			n -> data = 0;
 			return;
 		}
