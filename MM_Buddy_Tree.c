@@ -57,23 +57,37 @@ point mallok(int size){
 	return mallokRec(size, &tree[0]);
 }
 
-void friRec(point p, node * n){
-	if (p < n -> value) {			//ningun puntero del arbol es mas chico que el de la raiz
-		return;
-	}
+int friRec(point p, node * n){
+    int son_changed;
+    if (p < n -> value || (n->occupied_left == 0 && n->occupied_right == 0 && n->data == 0)) {
+        return 0;
+    }
 
-	if (p >= (n-> value + n -> size / 2)){
-		friRec(p, n -> right);
-	}
-	if (p == n -> value) {
-		if (n -> data)			//si es el puntero me fijo de liberar todo el tamano del mismo
-		{
-			n -> occupied_left = 0;
-			n -> data = 0;
-			return;
-		}
-	}
-	friRec(p, n -> left);
+    if (p >= (n -> value + n -> size / 2)) {
+        son_changed = friRec(p, n->right);
+        if (son_changed) 
+                n->occupied_right = 0;
+                if (n->occupied_left == 0) 
+                    return 1;
+    } else if (p == n->value) {
+        if (n->data == 1) {
+            n->data = 0;
+            return 1;
+        } else {
+            son_changed = friRec(p, n->left);
+            if (son_changed) 
+                n->occupied_left = 0;
+                if (n->occupied_right == 0) 
+                    return 1;
+        }
+    } else {
+        son_changed = friRec(p, n->left);
+        if (son_changed) 
+            n->occupied_left = 0;
+            if (n->occupied_right == 0) 
+                return 1;
+    }
+    return 0;
 }
 
 void fri(point p){
