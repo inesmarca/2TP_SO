@@ -18,8 +18,8 @@ typedef struct node
 node tree_nodes[sizeof(node) * SIZE];
 char memory[MAX_MEMORY];
 
-
-
+node * InitializeTree();
+node * newTreeRec(int sizetree,int size,int index,node * father,int right_or_left);
 
 node * InitializeTree(){
 	static int index=0;
@@ -33,29 +33,29 @@ node * newTreeRec(int sizetree,int size,int index,node * father,int right_or_lef
     }
     else
     {
-        node Node=tree_nodes[index++];
-        Node.left=newTreeRec(sizetree/2,size/2,index,&Node,LEFT);
-        Node.right=newTreeRec(sizetree/2,size/2,index,&Node,RIGHT);
-        Node.father=father;
+        node * Node=&tree_nodes[index++];
+        Node->left=newTreeRec(sizetree/2,size/2,index,Node,LEFT);
+        Node->right=newTreeRec(sizetree/2,size/2,index,Node,RIGHT);
+        Node->father=father;
         switch (right_or_left)
         {
         case LEFT:
-            Node.value=father->value;
+            Node->value=father->value;
             break;
 
         case RIGHT:
-            Node.value=(father->value)+size;
+            Node->value=(father->value)+size;
             break;
         case ROOT:
-            Node.value=memory;
+            Node->value=memory;
             break;
         }
 
-        Node.occupied_left=0;
-        Node.occupied_right=0;
-        Node.data=0;
-        Node.data=size;
-        return &Node;
+        Node->occupied_left=0;
+        Node->occupied_right=0;
+        Node->data=0;
+        Node->data=size;
+        return Node;
     }
     
 }
