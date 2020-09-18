@@ -22,7 +22,7 @@ node * newTree(int size){
 
 
 point mallokRec(int size, node * n){
-	if (size > n -> size) {						//Si no entra en el nodo regresa
+	if (size > n -> size || n -> data == 0) {	//Si no entra en el nodo regresa
 		return 0;
 	}
 	if (size <= (n -> size / 2)) {				//Reviso si entro al siguiente nivel
