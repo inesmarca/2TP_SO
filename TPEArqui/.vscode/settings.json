@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.tcc": "c",
+        "exception": "c",
+        "optional": "c",
+        "memory": "c",
+        "istream": "c",
+        "new": "c",
+        "ostream": "c"
+    }
+}
