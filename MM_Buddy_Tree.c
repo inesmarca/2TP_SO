@@ -1,4 +1,8 @@
 #include "MM_Buddy_Tree.h"
+#define LEFT 2
+#define RIGHT 1
+#define ROOT -1
+#include <stdio.h>
 		
 typedef struct node
 {
@@ -10,9 +14,8 @@ typedef struct node
 	char occupied_right;	//Indica si su hijo derecho esta ocupado
 	char data;				//Indica que guarda la informacion
 	int size;				//Indica el tamano libre que representa
-}node;
+} node;
 
-node tree[sizeof(node) * SIZE];
 /*
 node * newTree(int size){
 	node tree[sizeof(struct node) * size];
@@ -20,9 +23,45 @@ node * newTree(int size){
 }
 */
 
+node tree[sizeof(node) * SIZE];
+char memory[MAX_MEMORY];
+static int index = 0;
 
-point mallokRec(int size, node * n){
-	if (size > n -> size || n -> data == 0) {	//Si no entra en el nodo regresa
+static node * InitializeTree();
+static node * newTreeRec(int size, node * father, int right_or_left);
+
+static node * InitializeTree(){
+    return  newTreeRec(MAX_MEMORY, NULL, ROOT);
+}
+
+static node * newTreeRec(int size, node * father, int right_or_left){
+    //int right_or_left , 0 for left, 1 for right
+    if (size == 0 ) {
+        return NULL;
+	}
+	node * Node = &tree[index++];
+	Node->father = father;
+	Node->occupied_left = 0;
+	Node->occupied_right = 0;
+	Node->data = 0;
+	Node->size = size;
+
+	if (right_or_left == ROOT)
+		Node->value = memory;
+	else {
+		Node->value = father->value;
+		if (right_or_left == RIGHT)
+			Node->value += size;
+	}
+	Node->left = newTreeRec(size/2, Node, LEFT);
+	index++;
+	Node->right = newTreeRec(size/2, Node, RIGHT);
+	
+	return Node;
+}
+
+static point mallokRec(int size, node * n){
+	if (size > n -> size || (n -> data == 0 && size > n->size)) {	//Si no entra en el nodo regresa
 		return 0;
 	}
 	if (size <= (n -> size / 2)) {				//Reviso si entro al siguiente nivel
@@ -54,10 +93,10 @@ point mallokRec(int size, node * n){
 }
 
 point mallok(int size){
-	return mallokRec(size, &tree[0]);
+	return mallokRec(size, tree);
 }
 
-int friRec(point p, node * n){
+static int friRec(point p, node * n){
     int son_changed;
     if (p < n -> value || (n->occupied_left == 0 && n->occupied_right == 0 && n->data == 0)) {
         return 0;
@@ -94,7 +133,16 @@ void fri(point p){
 	friRec(p, &tree[0]);
 }
 
-
-
-
-
+void printNode(node * Node) {
+	putchar('\n');
+	printf("Node: %p\n", Node->value);
+	printf("Left: %p\n", Node->left->value);
+	printf("Right: %p\n", Node->right->value);
+	if (Node->father != NULL) 
+		printf("Father: %p\n", Node->father->value);
+	printf("Occupied Left: %d\n", Node->occupied_left);
+	printf("Occupied Right: %d\n", Node->occupied_right);
+	printf("Data: %d\n", Node->data);
+	printf("Size: %d\n", Node->size);
+	putchar('\n');
+}

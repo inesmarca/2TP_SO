@@ -1,5 +1,5 @@
 /************************************************************/
-#define SIZE 15		//Cantidad de nodos que posee el Arbol (2^Levels -1)
+#define SIZE 1000		//Cantidad de nodos que posee el Arbol (2^Levels -1)
 #define MAX_MEMORY 1024 //tamaño total de la memoria
 #define NULL 0          //cuz you cant use stdio.h
 /*************************************************************/
