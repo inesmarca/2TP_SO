@@ -28,15 +28,15 @@ char memory[MAX_MEMORY];
 static int index = 0;
 
 static node * InitializeTree();
-static node * newTreeRec(int size, node * father, int right_or_left);
+static node * newTreeRec(int size, node * father, int right_or_left, int cant_levels);
 
 static node * InitializeTree(){
-    return  newTreeRec(MAX_MEMORY, NULL, ROOT);
+    return  newTreeRec(MAX_MEMORY, NULL, ROOT, MAX_CANT_LEVELS);
 }
 
-static node * newTreeRec(int size, node * father, int right_or_left){
+static node * newTreeRec(int size, node * father, int right_or_left, int cant_levels){
     //int right_or_left , 0 for left, 1 for right
-    if (size == 0 ) {
+    if (cant_levels == 0) {
         return NULL;
 	}
 	node * Node = &tree[index++];
@@ -53,9 +53,9 @@ static node * newTreeRec(int size, node * father, int right_or_left){
 		if (right_or_left == RIGHT)
 			Node->value += size;
 	}
-	Node->left = newTreeRec(size/2, Node, LEFT);
+	Node->left = newTreeRec(size/2, Node, LEFT, cant_levels - 1);
 	index++;
-	Node->right = newTreeRec(size/2, Node, RIGHT);
+	Node->right = newTreeRec(size/2, Node, RIGHT, cant_levels - 1);
 	
 	return Node;
 }
@@ -65,6 +65,11 @@ static point mallokRec(int size, node * n){
 		return 0;
 	}
 	if (size <= (n -> size / 2)) {				//Reviso si entro al siguiente nivel
+		if (n->left == NULL || n->right == NULL) {
+			n -> data = 1;
+			return n -> value; 
+		}
+		
 		point p;
 		if (n -> left -> data == 0) {			//////////////////////////////////////////
 			p = mallokRec(size, n -> left);		/**/
@@ -82,7 +87,7 @@ static point mallokRec(int size, node * n){
 		}										//////////////////////////////////////////
 		return 0;
 	}
-	if (! (n -> occupied_left || n -> occupied_right))		//Si uno de sus hijos esta ocupado 
+	if (!(n -> occupied_left || n -> occupied_right) || n->left == NULL)		//Si uno de sus hijos esta ocupado 
 	{														//no lo puedo guardar ahi
 		//n -> occupied_left = 1;
 		//n -> occupied_right = 1;
@@ -98,7 +103,7 @@ point mallok(int size){
 
 static int friRec(point p, node * n){
     int son_changed;
-    if (p < n -> value || (n->occupied_left == 0 && n->occupied_right == 0 && n->data == 0)) {
+    if (n == NULL || p < n -> value || (n->occupied_left == 0 && n->occupied_right == 0 && n->data == 0)) {
         return 0;
     }
 
@@ -136,10 +141,19 @@ void fri(point p){
 void printNode(node * Node) {
 	putchar('\n');
 	printf("Node: %p\n", Node->value);
-	printf("Left: %p\n", Node->left->value);
-	printf("Right: %p\n", Node->right->value);
+
+	if (Node->left != NULL)
+		printf("Left: %p\n", Node->left->value);
+	else printf("Left: %p\n", Node->left);
+
+	if (Node->right != NULL)
+		printf("Right: %p\n", Node->right->value);
+	else printf("Right: %p\n", Node->right);
+
 	if (Node->father != NULL) 
 		printf("Father: %p\n", Node->father->value);
+	else printf("Left: %p\n", Node->father);
+
 	printf("Occupied Left: %d\n", Node->occupied_left);
 	printf("Occupied Right: %d\n", Node->occupied_right);
 	printf("Data: %d\n", Node->data);
