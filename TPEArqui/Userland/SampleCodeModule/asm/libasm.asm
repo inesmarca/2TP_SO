@@ -10,6 +10,8 @@ GLOBAL getRegisters
 GLOBAL clear
 GLOBAL setCursor
 GLOBAL getTime
+GLOBAL malloc
+GLOBAL free
 
 section .text
 
@@ -27,26 +29,14 @@ writeScreen:
 
 ; int readPixel(int * hexa, int x, int y)
 readPixel:
-    push rbx
     mov rax, 2
     int 80h
-    mov rax, rbx
-    pop rbx
     ret
 
 ; void writePixel(int x, int y, int color)
 writePixel:
     mov rax, 3
     int 80h
-    ret
-
-; int getExitFlag()
-getExitFlag:
-    push rbx
-    mov rax, 4
-    int 80h
-    mov rax, rbx
-    pop rbx
     ret
 
 ; void changeScreen(int screen)
@@ -57,11 +47,8 @@ sysChangeScreen:
 
 ;int getTemperature()
 getTemperature:
-    push rbx
     mov rax,6
     int 80h
-    mov rax,rbx
-    pop rbx
     ret
 	
 ; void getRegisters(uint64_t * buff) 
@@ -85,5 +72,15 @@ setCursor:
 ; void getTime(int * buff);
 getTime:
     mov rax, 9
+    int 80h
+    ret
+
+malloc:
+    mov rax, 10
+    int 80h
+    ret
+
+free:
+    mov rax, 11
     int 80h
     ret

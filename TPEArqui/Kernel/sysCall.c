@@ -4,6 +4,7 @@
 #include <temperature.h>
 #include <stdint.h>
 #include <registers.h>
+#include <MM_Buddy_Tree.h>
 
 extern int getRTC(int x);
 
@@ -134,7 +135,7 @@ void getTime(uint64_t reg1) {
     buff[2] = fix_format(getRTC(0));
 }
 
-void sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
+uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
     switch (sys) {
         case 0:
             readKey(reg1, reg2);
@@ -143,7 +144,7 @@ void sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
             writeString(reg1, reg2, reg3);
             break;
         case 2:
-            getPixelData(reg1, reg2);
+            return getPixelData(reg1, reg2);
             break;
         case 3: 
             printPixel(reg1, reg2, reg3);
@@ -155,7 +156,7 @@ void sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
             changeScreen(reg1);
             break;
         case 6:
-            getTemperature();
+            return getTemperature();
             break;
         case 7:
             getRegVec(reg1);
@@ -166,7 +167,14 @@ void sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
         case 9:
             getTime(reg1);
             break;
+        case 10:
+            return malloc(reg1);
+            break;
+        case 11:
+            free(reg1);
+            break;
         default:
             break;
     }
+    return 0;
 }

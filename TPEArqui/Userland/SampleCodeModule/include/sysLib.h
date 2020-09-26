@@ -23,4 +23,6 @@ extern void getRegisters(uint64_t * buff);
 
 extern void setCursor(int x, int y);
 
+extern void * malloc(int size);
+
 #endif

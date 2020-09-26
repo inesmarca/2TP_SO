@@ -71,7 +71,7 @@ SECTION .text
 %endmacro
 
 %macro pushReg 0
-	push rax
+	push rbx
 	push rcx
 	push rdx
 	push rbp
@@ -101,7 +101,7 @@ SECTION .text
 	pop rbp
 	pop rdx
 	pop rcx
-	pop rax
+	pop rbx
 %endmacro
 
 %macro irqHandlerMaster 1
@@ -123,11 +123,13 @@ SECTION .text
 	pushReg
 	mov rcx, rax
 	call sysHandler
+	push rax
 
 	; signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al
 
+	pop rax
 	popReg
 	iretq
 	
