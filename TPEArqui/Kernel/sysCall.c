@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <registers.h>
 #include <buddyMM.h>
+#include <scheduler.h>
 
 extern int getRTC(int x);
 
@@ -128,6 +129,24 @@ void getTime(int * buff) {
     buff[2] = fix_format(getRTC(0));
 }
 
+// Change State
+void changeState(int pid, int state) {
+    switch (state) {
+    case 0:
+        kill(pid);
+        break;
+    case 1: 
+        block(pid);
+        break;
+    case 2:
+        unblock(pid);
+        break;
+    default:
+        break;
+    }
+}
+
+
 uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
     switch (sys) {
         case 0:
@@ -165,6 +184,12 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
             break;
         case 11:
             free((point)reg1);
+            break;
+        case 12:
+            changeState((int)reg1, (int)reg2);
+            break;
+        case 13:
+            createProcess((void *)reg3, (int)reg1, (char **)reg2);
             break;
         default:
             break;

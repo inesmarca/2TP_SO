@@ -12,6 +12,7 @@ GLOBAL setCursor
 GLOBAL getTime
 GLOBAL malloc
 GLOBAL free
+GLOBAL create
 
 section .text
 
@@ -82,5 +83,10 @@ malloc:
 
 free:
     mov rax, 11
+    int 80h
+    ret
+
+create:
+    mov rax, 13
     int 80h
     ret

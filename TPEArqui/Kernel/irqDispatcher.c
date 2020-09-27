@@ -20,8 +20,7 @@ uint64_t * irqDispatcher(uint64_t irq, uint64_t * rsp) {
 
 uint64_t * int_20(uint64_t * rsp) {
 	timer_handler();
-	// return swap(rsp);
-	return rsp;
+	return swap(rsp);
 }
 
 void int_21(uint64_t * rsp) {

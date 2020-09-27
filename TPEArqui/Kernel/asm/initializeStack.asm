@@ -9,7 +9,7 @@ section .text
 ;	"RIP:   ", "CS:    ", "FLAGS: ", "RSP:   ", "SS"
 
 
-; uint64_t * initializeStack(uint64_t * rsp)
+; uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, int argc, char * argv[], int pid)
 initializeStack:
     mov rbx, rsp    ; guardo el rsp actual
 
@@ -27,7 +27,7 @@ initializeStack:
     push 4
     push rdx        ; puntero al main
     push rcx        ; puntero al argc
-    push 5
+    push r9         ; puntreo al pid del proceso
     push 6
     push 7
     push 8

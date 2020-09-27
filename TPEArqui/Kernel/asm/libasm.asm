@@ -1,6 +1,7 @@
 GLOBAL cpuVendor
 GLOBAL getRSP
 GLOBAL getRTC
+GLOBAL tickInterrupt
 
 section .text
 	
@@ -45,3 +46,7 @@ getRTC:
     mov rsp, rbp
     pop rbp
     ret
+
+tickInterrupt:
+	int 0x20
+	ret

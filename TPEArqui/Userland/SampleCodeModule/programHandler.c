@@ -53,6 +53,7 @@ void programHandler() {
     initShell();
     // imprime el cursor
     printBlock();
+
     while (!exitFlag) {
         readKeyBuff(buffer, WIDTH/8);
         for (int i = 0; buffer[i] != 0; i++) {
