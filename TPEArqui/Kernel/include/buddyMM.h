@@ -1,7 +1,7 @@
 /************************************************************/
-#define MAX_CANT_LEVELS 9		// Cantidad de niveles maximo
-#define SIZE 1023
-#define MAX_MEMORY 1024 //tamaño total de la memoria
+#define MAX_CANT_LEVELS 16		// Cantidad de niveles maximo
+#define SIZE 2047
+#define MAX_MEMORY 1024 * 10 //tamaño total de la memoria
 #define NULL 0          //cuz you cant use stdio.h
 /*************************************************************/
 

@@ -8,6 +8,8 @@
 
 static void zero_division();
 static void invalid_opcode();
+void _hlt();
+void _sti();
 
 // valores de retorno de la excepcion
 uint64_t * ipReturn;
@@ -18,7 +20,7 @@ static char * regs[] = {
 	"R10:   ", "R9:    ", "R8:    ", "RSI:   ", "RDI:   ", 
 	"RBP:   ", "RDX:   ", "RCX:   ", "RBX:   ", "RAX:   ", 
 	"RIP:   ", "CS:    ", "FLAGS: ", "RSP:   "
-	};
+};
 
 // imprime los registros y despliega un timer para el reinicio de la pantalla
 void printRegs(uint64_t * stackFrame) {

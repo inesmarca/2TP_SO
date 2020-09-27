@@ -34,17 +34,17 @@ struct infoStructure {
 	uint8_t reserved_position;
 	uint8_t direct_color_attributes;
 
-	uint32_t framebuffer;		// physical address of the linear frame buffer; write here to draw to the screen
+	uint32_t * framebuffer;		// physical address of the linear frame buffer; write here to draw to the screen
 	uint32_t off_screen_mem_off;
 	uint16_t off_screen_mem_size;	// size of memory in the framebuffer but not being displayed on the screen
 	uint8_t reserved1[206];
 } __attribute__ ((packed));
 
-struct infoStructure * screenInfo =(struct infoStructure *) 0x5C00;
+struct infoStructure * screenInfo = (struct infoStructure *) 0x5C00;
 
 // retorna el puntero de posicion correspondiente de la pantalla
 char * getDataPosition(int x, int y) {
-	return screenInfo->framebuffer + (x + WIDTH * y) * 3;
+	return (char *)(screenInfo->framebuffer) + (x + WIDTH * y) * 3;
 }
 
 // retorna si dicho pixel esta en negro

@@ -4,44 +4,40 @@
 #include <temperature.h>
 #include <stdint.h>
 #include <registers.h>
-#include <MM_Buddy_Tree.h>
+#include <buddyMM.h>
 
 extern int getRTC(int x);
 
 // Funcion de syscall que retorna el buffer de keys leidas
-void readKey(uint64_t buf, uint64_t cant) {
+void readKey(char * buf, int cant) {
     char * input = getBuffer();
     int i;
-    for (i = 0; input[i] != 0 && i < (int)cant; i++) {
-        ((char *)buf)[i] = input[i];
+    for (i = 0; input[i] != 0 && i < cant; i++) {
+        (buf)[i] = input[i];
     }
     deleteBuff();
 }
 
 // escribe en pantalla dicho string con los colores especificados en la pantalla activa
-void writeString(uint64_t string, uint64_t letter_color, uint64_t background_color) {
-    print((const char *)string, (unsigned int)letter_color, (unsigned int)background_color);
+void writeString(const char * string, unsigned int letter_color, unsigned int background_color) {
+    print(string, letter_color, background_color);
 }
 
 // retorna un numero hexadecimal del color de dicho pixel
-int getPixelData(uint64_t reg1, uint64_t reg2) {
+int getPixelData(int x, int y) {
     int screen = getCurrentScreen();
-    int x = (int)reg1;
-    int y = (int)reg2;
     if ((y >= 0 && y < SCREEN_HEIGHT) && x >= 0 && x < WIDTH) {
         int res;
         if (screen == 1) res = getPixelColor(x, y);
         else res = getPixelColor(x, y + SCREEN2_START_POS);
         return res;
     }
+    return 0;
 }
 
 // dibuja en pantalla dicho pixel con el color recivido en base a las coordenads relativas de la pantalla activa
-void printPixel(uint64_t reg1, uint64_t reg2, uint64_t reg3) {
+void printPixel(int x, int y, int color) {
     int screen = getCurrentScreen();
-    int x = (int)reg1;
-    int y = (int)reg2;
-    int color = (int)reg3;
     if ( y >= 0 && y < SCREEN_HEIGHT && x >= 0 && x < WIDTH) {
         if (screen == 1) writePixel(x, y, color);
         else writePixel(x, y + SCREEN2_START_POS, color);
@@ -55,10 +51,10 @@ int getTemperature(){
 
 
 // retorna el vector de registros que fueron gurdados al apretar CTRL S
-void getRegVec(uint64_t buff) {
+void getRegVec(uint64_t * buff) {
     uint64_t * memory = getVec();
     for (int i = 0; i != 19; i++) {
-        ((uint64_t *)buff)[i] = memory[i];
+        buff[i] = memory[i];
     }
 }
 
@@ -68,10 +64,8 @@ void sysClear() {
 }
 
 // cambia de posicion el cursor de escritura dependiendo de la pantalla activa
-void setCursor(uint64_t reg1, uint64_t reg2) {
+void setCursor(int x, int y) {
     int screen = getCurrentScreen();
-    int x = (int)reg1;
-    int y = (int)reg2;
     if ((y >= LETTER_HEIGHT && y < SCREEN_HEIGHT) && x >= 0 && x < WIDTH - LETTER_WIDTH) {
         if (screen == 1) {
             changeCursor(screen, x, y + SCREEN1_START_POS);
@@ -81,7 +75,7 @@ void setCursor(uint64_t reg1, uint64_t reg2) {
     }
 }
 
-// Print Time
+// Get Time
 int fix_format_hours(int time) {
     int aux = time/16;
     aux *= 10;
@@ -128,8 +122,7 @@ int intToString(int value, char * buffer) {
 	return digits;
 }
 
-void getTime(uint64_t reg1) {
-    int * buff = (int *)reg1;
+void getTime(int * buff) {
     buff[0] = fix_format_hours(getRTC(4));
     buff[1] = fix_format(getRTC(2));
     buff[2] = fix_format(getRTC(0));
@@ -138,40 +131,40 @@ void getTime(uint64_t reg1) {
 uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
     switch (sys) {
         case 0:
-            readKey(reg1, reg2);
+            readKey((char *)reg1, (int)reg2);
             break;
         case 1:
-            writeString(reg1, reg2, reg3);
+            writeString((const char *)reg1, (unsigned int)reg2, (unsigned int)reg3);
             break;
         case 2:
-            return getPixelData(reg1, reg2);
+            return getPixelData((int)reg1, (int)reg2);
             break;
         case 3: 
-            printPixel(reg1, reg2, reg3);
+            printPixel((int)reg1, (int)reg2, (int)reg3);
             break;
         case 4:
             sysClear();
             break;
         case 5:
-            changeScreen(reg1);
+            changeScreen((int)reg1);
             break;
         case 6:
             return getTemperature();
             break;
         case 7:
-            getRegVec(reg1);
+            getRegVec((uint64_t *)reg1);
             break;
         case 8:
-            setCursor(reg1, reg2);
+            setCursor((int)reg1, (int)reg2);
             break;
         case 9:
-            getTime(reg1);
+            getTime((int *)reg1);
             break;
         case 10:
-            return malloc(reg1);
+            return malloc((int)reg1);
             break;
         case 11:
-            free(reg1);
+            free((point)reg1);
             break;
         default:
             break;

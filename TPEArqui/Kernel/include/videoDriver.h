@@ -1,5 +1,6 @@
 #ifndef __VIDEO_DRIVER_H_
 #define __VIDEO_DRIVER_H_
+#include <stdint.h>
 
 #define WIDTH 1024
 #define HEIGHT 768

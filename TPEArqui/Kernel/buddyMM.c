@@ -1,4 +1,4 @@
-#include "MM_Buddy_Tree.h"
+#include <buddyMM.h>
 #define LEFT 2
 #define RIGHT 1
 #define ROOT -1
@@ -15,7 +15,8 @@ typedef struct node
 	int size;				//Indica el tamano libre que representa
 } node;
 
-node tree[sizeof(node) * SIZE] = {0};
+node tree[sizeof(node) * SIZE] = {{0}};
+//static point const MMemory = (point)0x600000;
 static char MMemory[MAX_MEMORY];
 static int index = 0;
 

@@ -105,17 +105,18 @@ SECTION .text
 %endmacro
 
 %macro irqHandlerMaster 1
-	pushState
+	pushReg
 
 	mov rdi, %1 ; pasaje de parametro
 	mov rsi, rsp ; pasaje del stack frame
 	call irqDispatcher
+	mov rsp, rax	; cambio el rsp al que me retorno el scheduler
 
 	; signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al
-	
-	popState
+
+	popReg
 	iretq
 %endmacro
 
