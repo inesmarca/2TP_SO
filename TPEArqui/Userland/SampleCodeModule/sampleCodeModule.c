@@ -2,16 +2,16 @@
 #include <programHandler.h>
 #include <sysLib.h>
 
-void test1(int argc, char ** argv) {
-	printf("Hello World %d", argc);
+void test1() {
+	printf("Hello World");
 }
 
-void test2(int argc, char ** argv) {
-	printf("Hello World %d", argc);
+void test2() {
+	printf("Hello World");
 }
 
 int main() {
-	create(test1, 2, 0);
+	create(programHandler, 0, 0);
 	while(1);
 	return 0;
 }

@@ -19,7 +19,7 @@ typedef struct structProcess {
     char priority;  // no lo vamos a implementar ahora
 } structProcess;
 
-extern uint64_t * initializeStack(uint64_t * rsp, void * func, int argc, char * argv[]);
+extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, int argc, char * argv[], int pid);
 void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
 void kill(int pid);
 int firstPosFree();
@@ -77,7 +77,7 @@ void createProcess(void * func, int argc, char * argv[]) {
     newProcess->mallocPos = (uint64_t *)malloc(STACK_SIZE);
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
 
-    newProcess->rsp = initializeStack(newProcess->rsp, newProcess->function, argc, argv); // retorna el rsp luego de hacer los push
+    newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, argc, argv, newProcess->pid); // retorna el rsp luego de hacer los push
 
     if (pos == dim_process)
         dim_process++;
