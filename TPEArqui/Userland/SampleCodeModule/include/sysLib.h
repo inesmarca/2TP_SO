@@ -25,4 +25,6 @@ extern void setCursor(int x, int y);
 
 extern void * malloc(int size);
 
+extern void create(void * func, int argc, char ** argv);
+
 #endif

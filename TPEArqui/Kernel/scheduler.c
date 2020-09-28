@@ -1,5 +1,7 @@
 #include <scheduler.h>
 #include <buddyMM.h>
+#include <consoleManager.h>
+#include <lib.h>
 
 #define MAX_PROCESS 4
 #define STACK_SIZE 4096 
@@ -26,13 +28,14 @@ extern void tickInterrupt();
 static structProcess list_process[MAX_PROCESS] = {{0}};
 static int index_next = 0;
 static int dim_process = 0;
-static int active_process_index = 0;
+static int active_process_index = -1;
 static int active_processes = 0;
 
 
 uint64_t * swap(uint64_t * rsp) {
-    if (dim_process == 0)
+    if (dim_process == 0) {
         return rsp;
+    }
 
     if (index_next == dim_process)
         index_next = 0;
@@ -55,7 +58,7 @@ uint64_t * swap(uint64_t * rsp) {
 
 void createProcess(void * func, int argc, char * argv[]) {
     int pos = dim_process;
-    if (active_processes != dim_process) {
+    if (active_processes != dim_process && dim_process != 0) {
         pos = firstPosFree();               // supongamos que nunca tira -1 POR AHORA
         
         if (pos < dim_process) {            // si toma el lugar de un proceso no activo tengo que vaciar el stack
@@ -76,6 +79,7 @@ void createProcess(void * func, int argc, char * argv[]) {
     
     if (pos == dim_process)
         dim_process++;
+    active_processes++;
 }
 
 void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
