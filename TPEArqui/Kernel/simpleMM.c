@@ -1,6 +1,8 @@
-#define PAGESIZE 10
-#define NUMBEROFPAGES 5
+#define PAGESIZE 1024 * 5
+#define NUMBEROFPAGES 100
 #define NULL 0
+
+#include <consoleManager.h>
 
 int pages_required_finder(int size);
 char * malloc_mio(int size);
@@ -43,6 +45,18 @@ char * malloc_mio(int size){
     {
         occupied[index+i]=1;
     }
+
+    char buff[50];
+    print(" Direccion del malloc simple: ", LETTER_COLOR, BACKGROUND_COLOR);
+    uintToBase(MMemory, buff, 16);
+    print(buff, LETTER_COLOR, BACKGROUND_COLOR);
+
+
+    print("  ", LETTER_COLOR, BACKGROUND_COLOR);
+    uintToBase(MMemory[index], buff, 16);
+    print(buff, LETTER_COLOR, BACKGROUND_COLOR);
+    print("  ", LETTER_COLOR, BACKGROUND_COLOR);
+
 
 
     return MMemory[index];

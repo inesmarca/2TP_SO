@@ -22,19 +22,19 @@ initializeStack:
     push rsi        ; puntero al wrapper
     push 1
     push 2
-    push r8         ; puntero a argv[]
-    push 3
+    push 3        
     push 4
-    push rdx        ; puntero al main
-    push rcx        ; puntero al argc
-    push r9         ; puntreo al pid del proceso
-    push 6
+    push 5
+    push rdx        ; puntero al argc
+    push rcx        ; puntero al argv[]
+    push 6         
     push 7
     push 8
     push 9
     push 10
     push 11
     push 12
+    push 13
 
     mov rax, rsp    ; retorno la posicion del rsp luego de hacer los push
     mov rsp, rbx    ; vuelvo al rsp anterior

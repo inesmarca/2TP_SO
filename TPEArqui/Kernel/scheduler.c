@@ -18,7 +18,7 @@ typedef struct structProcess {
     char priority;  // no lo vamos a implementar ahora
 } structProcess;
 
-extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, int argc, char * argv[], int pid);
+extern uint64_t * initializeStack(uint64_t * rsp, void * func, int argc, char * argv[]);
 void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
 void kill(int pid);
 int firstPosFree();
@@ -33,7 +33,12 @@ static int active_processes = 0;
 
 
 uint64_t * swap(uint64_t * rsp) {
+    char buff[50];
     if (dim_process == 0) {
+	    print("No hice nada", LETTER_COLOR, BACKGROUND_COLOR);
+        print(" ", LETTER_COLOR, BACKGROUND_COLOR);
+        uintToBase(active_processes, buff, 10);
+        print(buff, LETTER_COLOR, BACKGROUND_COLOR);
         return rsp;
     }
 
@@ -53,6 +58,20 @@ uint64_t * swap(uint64_t * rsp) {
 
     list_process[active_process_index].rsp = rsp;    // guardo el contexto del proceso actual
     active_process_index = index_next;
+
+	print("Intercambio ", LETTER_COLOR, BACKGROUND_COLOR);
+    uintToBase(active_process_index, buff, 10);
+    print(buff, LETTER_COLOR, BACKGROUND_COLOR);
+	print("  ", LETTER_COLOR, BACKGROUND_COLOR);
+    uintToBase(list_process[index_next].rsp[0], buff, 16);
+    print(buff, LETTER_COLOR, BACKGROUND_COLOR);
+
+    for (int i = 0; i < 20; i++) {
+        print("  ", LETTER_COLOR, BACKGROUND_COLOR);
+        uintToBase(list_process[index_next].rsp[i], buff, 16);
+        print(buff, LETTER_COLOR, BACKGROUND_COLOR);
+    }
+
     return list_process[index_next++].rsp;   // retorno el puntero del stack del proceso a switchear
 }
 
@@ -75,8 +94,12 @@ void createProcess(void * func, int argc, char * argv[]) {
     newProcess->mallocPos = (uint64_t *)malloc(STACK_SIZE);
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
 
-    newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, argc, argv, newProcess->pid); // retorna el rsp luego de hacer los push
+    newProcess->rsp = initializeStack(newProcess->rsp, newProcess->function, argc, argv); // retorna el rsp luego de hacer los push
     
+    char buff[50];
+    uintToBase(newProcess->rsp, buff, 16);
+    print(buff, LETTER_COLOR, BACKGROUND_COLOR);
+
     if (pos == dim_process)
         dim_process++;
     active_processes++;
