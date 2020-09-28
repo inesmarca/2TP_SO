@@ -16,8 +16,8 @@ typedef struct node
 } node;
 
 node tree[sizeof(node) * SIZE] = {{0}};
-//static point const MMemory = (point)0x700000;
-static char MMemory[MAX_MEMORY];
+static point const MMemory = (point)0x700000;
+//static char MMemory[MAX_MEMORY];
 static int index = 0;
 int initialized=0;
 

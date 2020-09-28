@@ -20,7 +20,6 @@ initializeStack:
     push 0x202
     push 0x8
     push rsi        ; puntero al wrapper
-    push 1
     push 2
     push 3        
     push 4

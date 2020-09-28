@@ -12,7 +12,6 @@ void test2(int argc, char ** argv) {
 
 int main() {
 	create(test1, 2, 0);
-	printf("No deberia verse");
 	while(1);
 	return 0;
 }

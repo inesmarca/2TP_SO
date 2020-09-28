@@ -21,7 +21,6 @@ uint64_t * irqDispatcher(uint64_t irq, uint64_t * rsp) {
 
 uint64_t * int_20(uint64_t * rsp) {
 	timer_handler();
-	print("Hola", LETTER_COLOR, BACKGROUND_COLOR);
 	return swap(rsp);
 }
 

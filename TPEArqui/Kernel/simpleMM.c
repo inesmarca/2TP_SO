@@ -46,19 +46,6 @@ char * malloc_mio(int size){
         occupied[index+i]=1;
     }
 
-    char buff[50];
-    print(" Direccion del malloc simple: ", LETTER_COLOR, BACKGROUND_COLOR);
-    uintToBase(MMemory, buff, 16);
-    print(buff, LETTER_COLOR, BACKGROUND_COLOR);
-
-
-    print("  ", LETTER_COLOR, BACKGROUND_COLOR);
-    uintToBase(MMemory[index], buff, 16);
-    print(buff, LETTER_COLOR, BACKGROUND_COLOR);
-    print("  ", LETTER_COLOR, BACKGROUND_COLOR);
-
-
-
     return MMemory[index];
 }
 
