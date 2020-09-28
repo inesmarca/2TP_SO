@@ -15,26 +15,25 @@ initializeStack:
 
     mov rsp, rdi    ; muevo el rsp al rsp del nuevo proceso
 
-    push 0x0
-    push rdi        ; puntero al rbp
-    push 0x202
-    push 0x8
-    push rsi        ; puntero al wrapper
-    push 1
-    push 2
-    push r8         ; puntero a argv[]
-    push 3
-    push 4
-    push rdx        ; puntero al main
-    push rcx        ; puntero al argc
-    push r9         ; puntreo al pid del proceso
-    push 6
-    push 7
-    push 8
-    push 9
-    push 10
-    push 11
-    push 12
+    push 0x0                                ;SS
+    push rdi        ; puntero al rbp        ;RSP
+    push 0x202                              ;FLAGS
+    push 0x8                                ;CS
+    push rsi        ; puntero al wrapper    ;RIP
+    push 2                                  ;RBX
+    push r9                                 ;RCX
+    push r8                                 ;RDX    
+    push 5                                  ;RBP
+    push rdx        ; puntero al argc       ;RDI
+    push rcx        ; puntero al argv[]     ;RSI
+    push 6                                  ;R8
+    push 7                                  ;R9
+    push 8                                  ;R10
+    push 9                                  ;R11
+    push 10                                 ;R12
+    push 11                                 ;R13
+    push 12                                 ;R14
+    push 13                                 ;R15
 
     mov rax, rsp    ; retorno la posicion del rsp luego de hacer los push
     mov rsp, rbx    ; vuelvo al rsp anterior

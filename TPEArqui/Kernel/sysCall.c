@@ -6,6 +6,7 @@
 #include <registers.h>
 #include <buddyMM.h>
 #include <scheduler.h>
+#include <simpleMM.h>
 
 extern int getRTC(int x);
 
@@ -189,7 +190,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
             changeState((int)reg1, (int)reg2);
             break;
         case 13:
-            createProcess((void *)reg3, (int)reg1, (char **)reg2);
+            createProcess((void *)reg1, (int)reg2, (char **)reg3);
             break;
         default:
             break;

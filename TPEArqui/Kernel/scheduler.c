@@ -1,6 +1,7 @@
 #include <scheduler.h>
 #include <buddyMM.h>
 #include <consoleManager.h>
+#include <simpleMM.h>
 #include <lib.h>
 
 #define MAX_PROCESS 4
@@ -53,6 +54,7 @@ uint64_t * swap(uint64_t * rsp) {
 
     list_process[active_process_index].rsp = rsp;    // guardo el contexto del proceso actual
     active_process_index = index_next;
+
     return list_process[index_next++].rsp;   // retorno el puntero del stack del proceso a switchear
 }
 
@@ -76,7 +78,7 @@ void createProcess(void * func, int argc, char * argv[]) {
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
 
     newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, argc, argv, newProcess->pid); // retorna el rsp luego de hacer los push
-    
+
     if (pos == dim_process)
         dim_process++;
     active_processes++;

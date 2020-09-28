@@ -19,6 +19,7 @@ node tree[sizeof(node) * SIZE] = {{0}};
 static point const MMemory = (point)0x700000;
 //static char MMemory[MAX_MEMORY];
 static int index = 0;
+int initialized=0;
 
 static node * InitializeTree();
 static node * newTreeRec(int size, node * father, int right_or_left, int cant_levels);
@@ -91,8 +92,10 @@ static point mallokRec(int size, node * n){
 }
 
 point malloc(int size){
-	if (tree == 0)
+	if (initialized == 0){
 		InitializeTree();
+		initialized++;
+	}
 	return mallokRec(size, tree);
 }
 

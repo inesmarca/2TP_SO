@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <scheduler.h>
+#include <consoleManager.h>
 
 static uint64_t * int_20(uint64_t * rsp);
 static void int_21();

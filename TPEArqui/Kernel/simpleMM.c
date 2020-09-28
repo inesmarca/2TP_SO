@@ -1,6 +1,8 @@
-#define PAGESIZE 10
-#define NUMBEROFPAGES 5
+#define PAGESIZE 1024 * 5
+#define NUMBEROFPAGES 100
 #define NULL 0
+
+#include <consoleManager.h>
 
 int pages_required_finder(int size);
 char * malloc_mio(int size);
@@ -43,7 +45,6 @@ char * malloc_mio(int size){
     {
         occupied[index+i]=1;
     }
-
 
     return MMemory[index];
 }
