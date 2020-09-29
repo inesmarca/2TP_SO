@@ -1,4 +1,5 @@
 #include <buddyMM.h>
+#include <MM.h>
 #define LEFT 2
 #define RIGHT 1
 #define ROOT -1
@@ -15,9 +16,8 @@ typedef struct node
 	int size;				//Indica el tamano libre que representa
 } node;
 
-node tree[sizeof(node) * SIZE] = {{0}};
-static point const MMemory = (point)0x700000;
-//static char MMemory[MAX_MEMORY];
+node tree[SIZE] = {{0}};
+static point const MMemory = (point)0x600000;
 static int index = 0;
 int initialized=0;
 
@@ -25,11 +25,10 @@ static node * InitializeTree();
 static node * newTreeRec(int size, node * father, int right_or_left, int cant_levels);
 
 static node * InitializeTree(){
-    return  newTreeRec(MAX_MEMORY, NULL, ROOT, MAX_CANT_LEVELS);
+    return  newTreeRec(MM_SIZE, NULL, ROOT, MAX_CANT_LEVELS);
 }
 
 static node * newTreeRec(int size, node * father, int right_or_left, int cant_levels){
-    //int right_or_left , 0 for left, 1 for right
     if (cant_levels == 0) {
         return NULL;
 	}
@@ -81,10 +80,7 @@ static point mallokRec(int size, node * n){
 		}										//////////////////////////////////////////
 		return 0;
 	}
-	if (!(n -> occupied_left || n -> occupied_right) || n->left == NULL)		//Si uno de sus hijos esta ocupado 
-	{														//no lo puedo guardar ahi
-		//n -> occupied_left = 1;
-		//n -> occupied_right = 1;
+	if (!(n -> occupied_left || n -> occupied_right) || n->left == NULL) {		//Si uno de sus hijos esta ocupado no lo puedo guardar ahi
 		n -> data = 1;
 		return n -> value;  
 	}
@@ -96,39 +92,44 @@ point malloc_buddy(int size){
 		InitializeTree();
 		initialized++;
 	}
+
 	return mallokRec(size, tree);
 }
 
 static int friRec(point p, node * n){
     int son_changed;
-    if (n == NULL || p < n -> value || (n->occupied_left == 0 && n->occupied_right == 0 && n->data == 0)) {
+	
+    if (n == NULL || p < n -> value || (n->occupied_left == 0 && n->occupied_right == 0 && n->data == 0))
         return 0;
-    }
 
     if (p >= (n -> value + n -> size / 2)) {
         son_changed = friRec(p, n->right);
-        if (son_changed) 
-                n->occupied_right = 0;
-                if (n->occupied_left == 0) 
-                    return 1;
+        if (son_changed) {
+            n->occupied_right = 0;
+            if (n->occupied_left == 0) 
+                return 1;
+		}
     } else if (p == n->value) {
         if (n->data == 1) {
             n->data = 0;
             return 1;
         } else {
             son_changed = friRec(p, n->left);
-            if (son_changed) 
+            if (son_changed) {
                 n->occupied_left = 0;
                 if (n->occupied_right == 0) 
                     return 1;
+			}
         }
     } else {
         son_changed = friRec(p, n->left);
-        if (son_changed) 
+        if (son_changed) {
             n->occupied_left = 0;
             if (n->occupied_right == 0) 
                 return 1;
+		}
     }
+
     return 0;
 }
 

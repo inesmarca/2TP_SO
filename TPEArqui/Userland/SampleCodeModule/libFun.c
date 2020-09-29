@@ -16,7 +16,7 @@ void triggerException0() {
 void printTime(){
     int buff[3];
     getTime(buff);
-    printf("%d:%d:%d/n", buff[0], buff[1], buff[2]);
+    printf("%d:%d:%d\n", buff[0], buff[1], buff[2]);
 }
 
 

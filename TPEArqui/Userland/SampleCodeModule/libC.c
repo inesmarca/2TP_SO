@@ -81,7 +81,7 @@ char getChar() {
 	return res;
 }
 
-void printf(const char * format,...){
+void printf(const char * format,...) {
 	//tiene que tener el formato correcto para funcionar bien. si hay % faltantes o sobrantes no va afuncionar.
 	//tiene soporte para %c %d %s
 	//wont print more all if the resulting string is greater than 1024 characters
@@ -177,7 +177,7 @@ void printf(const char * format,...){
 	writeScreen(output, letter_color, background_color);
 }
 
-int scanf(const char *format, ...){
+int scanf(const char *format, ...) {
     //tiene que tener el formato correcto para funcionar bien. si hay % faltantes o sobrantes no va afuncionar.
 	//tiene soporte para %c %d %s
 	//lee como maximo MAX_READABLE_CHARACTERS (1024 characters)
@@ -283,7 +283,7 @@ int scanf(const char *format, ...){
     return number_of_vars;
 }
 
-int sscanf(const char *str,const char *format, ...){
+int sscanf(const char *str,const char *format, ...) {
     //tiene que tener el formato correcto para funcionar bien. si hay % faltantes o sobrantes no va afuncionar.
 	//tiene soporte para %c %d %s
 	if (*str == 0) {
@@ -367,8 +367,7 @@ int sscanf(const char *str,const char *format, ...){
     return number_of_vars;
 }
 
-int intToString(int value, char * buffer)
-{
+int intToString(int value, char * buffer) {
 	char *p = buffer;
 	char *p1, *p2;
 	int digits = 0;
@@ -462,8 +461,7 @@ long stringtoLong_libc (char * string){
 	}
 	return answer;
 }
-int longToString_libc(long value, char * buffer)
-{
+int longToString_libc(long value, char * buffer) {
 	char *p = buffer;
 	char *p1, *p2;
 	int digits = 0;
@@ -499,8 +497,7 @@ int longToString_libc(long value, char * buffer)
 	
 
 
-uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
-{
+uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base) {
 	char *p = buffer;
 	char *p1, *p2;
 	uint32_t digits = 0;

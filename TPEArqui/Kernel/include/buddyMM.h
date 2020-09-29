@@ -1,8 +1,7 @@
 /************************************************************/
-#define MAX_CANT_LEVELS 10		// Cantidad de niveles maximo
-#define SIZE 2047
-#define MAX_MEMORY 1024 * 8     //tamaño total de la memoria
-#define NULL 0                  //cuz you cant use stdio.h
+#define MAX_CANT_LEVELS 15		// Cantidad de niveles maximo
+#define pwrtwo(x) (1 << (x))
+#define SIZE pwrtwo(MAX_CANT_LEVELS + 1) - 1
 /*************************************************************/
 
 /************************************************************************/
