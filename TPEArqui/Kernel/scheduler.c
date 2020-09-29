@@ -3,21 +3,23 @@
 #include <consoleManager.h>
 #include <simpleMM.h>
 #include <lib.h>
+#include <sysCall.h>
 
-#define MAX_PROCESS 4
+#define MAX_PROCESS 20
 #define STACK_SIZE 4096 
 #define BLOCKED 2
 #define KILLED 0
 #define ACTIVE 1
 
-typedef struct structProcess {
+typedef struct pcb {
 	uint64_t * rsp;
     void * function;
     int state;
     uint64_t * mallocPos;
     int pid;        // no lo vamos a implementar ahora
     char priority;  // no lo vamos a implementar ahora
-} structProcess;
+    const char * name;
+} pcb;
 
 extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, int argc, char * argv[], int pid);
 void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
@@ -26,7 +28,7 @@ int firstPosFree();
 void _hlt();
 extern void tickInterrupt();
 
-static structProcess list_process[MAX_PROCESS] = {{0}};
+static pcb list_process[MAX_PROCESS] = {{0}};
 static int index_next = 0;
 static int dim_process = 0;
 static int active_process_index = -1;
@@ -42,7 +44,7 @@ uint64_t * swap(uint64_t * rsp) {
         index_next = 0;
     
     int cant = 0;
-    while(list_process[index_next].state == KILLED && cant < MAX_PROCESS) {
+    while(list_process[index_next].state != ACTIVE && cant < MAX_PROCESS) {
         index_next++;
         cant++;
         if (index_next == dim_process)
@@ -58,7 +60,7 @@ uint64_t * swap(uint64_t * rsp) {
     return list_process[index_next++].rsp;   // retorno el puntero del stack del proceso a switchear
 }
 
-void createProcess(void * func, int argc, char * argv[]) {
+void createProcess(const char * name, void * func, int argc, char * argv[]) {
     int pos = dim_process;
     if (active_processes != dim_process && dim_process != 0) {
         pos = firstPosFree();               // supongamos que nunca tira -1 POR AHORA
@@ -68,11 +70,12 @@ void createProcess(void * func, int argc, char * argv[]) {
         }
     }
 
-    structProcess * newProcess = &list_process[pos];
+    pcb * newProcess = &list_process[pos];
 
     newProcess->pid = pos;                  // esto vamos a tener que cambiarlo                  
     newProcess->function = func;
     newProcess->state = ACTIVE;
+    newProcess->name = name;
 
     newProcess->mallocPos = (uint64_t *)malloc(STACK_SIZE);
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
@@ -122,4 +125,8 @@ void block(int pid) {
 void unblock(int pid) {
     if (pid < dim_process && pid >= 0 && list_process[pid].state != KILLED)
         list_process[pid].state = ACTIVE;
+}
+
+int getpid() {
+    return active_process_index;
 }

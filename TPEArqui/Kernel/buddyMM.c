@@ -91,7 +91,7 @@ static point mallokRec(int size, node * n){
 	return 0;
 }
 
-point malloc(int size){
+point malloc_buddy(int size){
 	if (initialized == 0){
 		InitializeTree();
 		initialized++;
@@ -132,6 +132,6 @@ static int friRec(point p, node * n){
     return 0;
 }
 
-void free(point p){
+void free_buddy(point p){
 	friRec(p, tree);
 }

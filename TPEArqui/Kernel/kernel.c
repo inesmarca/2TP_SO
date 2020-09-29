@@ -6,6 +6,7 @@
 #include <consoleManager.h>
 #include <idtLoader.h>
 #include <exception.h>
+#include <scheduler.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -13,6 +14,9 @@ extern uint8_t data;
 extern uint8_t bss;
 extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
+
+void _sti();
+void _hlt();
 
 static const uint64_t PageSize = 0x1000;
 
@@ -61,5 +65,9 @@ int main() {
 	setAddresses((uint64_t *)sampleCodeModuleAddress, getRSP());
 	
 	((EntryPoint)sampleCodeModuleAddress)();
+
+	// no estoy segura de que esto este bien pero esta funcionando
+	_sti();
+	_hlt();
 	return 0;
 }

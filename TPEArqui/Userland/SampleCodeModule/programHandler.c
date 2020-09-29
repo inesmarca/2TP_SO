@@ -30,7 +30,9 @@ char * getUser() {
 
 void initialize() {
     setCursor(0, SCREEN_HEIGHT - LETTER_HEIGHT);
-    printf("Enter your username: ");
+    char * string = (char *)malloc(40);
+    strcpy(string, "Enter your username: ");
+    printf(string);
     scanf("%s", user);
 }
 

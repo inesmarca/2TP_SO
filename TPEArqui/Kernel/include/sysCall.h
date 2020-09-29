@@ -18,4 +18,8 @@ void sysClear();
 
 void setCursor(int x, int y);
 
+void * malloc(int size);
+
+void free(void * dir);
+
 #endif

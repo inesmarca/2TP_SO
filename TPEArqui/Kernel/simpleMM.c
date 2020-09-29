@@ -5,13 +5,20 @@
 #include <consoleManager.h>
 
 int pages_required_finder(int size);
-char * malloc_mio(int size);
+char * malloc(int size);
 int index_finder(int pages_required);
-void free_mio(char * puntero);
+void free(char * puntero);
 
-static char MMemory[NUMBEROFPAGES][PAGESIZE];
+//static char MMemory[NUMBEROFPAGES][PAGESIZE];
+
+static void * MMemory = (void *)0x700000;
+
 int occupied[NUMBEROFPAGES] = {0};
 int size_of_allocation [NUMBEROFPAGES]={0};
+
+void * getPos(int index) {
+    return MMemory + index*PAGESIZE;
+}
 
 int pages_required_finder(int size){
 
@@ -24,7 +31,7 @@ int pages_required_finder(int size){
 
 }
 
-char * malloc_mio(int size){
+char * malloc_simple(int size){
     if (size<=0)                    //validar entradas
     {
         return NULL; 
@@ -46,7 +53,7 @@ char * malloc_mio(int size){
         occupied[index+i]=1;
     }
 
-    return MMemory[index];
+    return getPos(index);
 }
 
 int index_finder(int pages_required){
@@ -75,7 +82,7 @@ int index_finder(int pages_required){
 
 }
 
-void free_mio(char * puntero){
+void free_simple(char * puntero){
     //confio de que no me estan mandando basura 
     int aux = puntero- (char *)MMemory;                    //FUERTES DUDAS CON ESTO
     aux /= PAGESIZE;

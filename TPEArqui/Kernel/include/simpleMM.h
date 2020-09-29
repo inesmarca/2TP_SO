@@ -1,3 +1,3 @@
-void * malloc_mio(int size);
+void * malloc_simple(int size);
 
-void free_mio(char * puntero);
+void free_simple(char * puntero);

@@ -13,6 +13,9 @@ GLOBAL getTime
 GLOBAL malloc
 GLOBAL free
 GLOBAL create
+GLOBAL kill
+GLOBAL hlt
+GLOBAL getpid
 
 section .text
 
@@ -86,7 +89,17 @@ free:
     int 80h
     ret
 
+kill:
+    mov rax, 12
+    int 80h
+    ret
+
 create:
     mov rax, 13
+    int 80h
+    ret
+
+getpid:
+    mov rax, 14
     int 80h
     ret

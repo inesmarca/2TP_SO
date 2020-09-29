@@ -9,6 +9,7 @@
 #include <simpleMM.h>
 
 extern int getRTC(int x);
+void _hlt();
 
 // Funcion de syscall que retorna el buffer de keys leidas
 void readKey(char * buf, int cant) {
@@ -133,22 +134,32 @@ void getTime(int * buff) {
 // Change State
 void changeState(int pid, int state) {
     switch (state) {
-    case 0:
-        kill(pid);
-        break;
-    case 1: 
-        block(pid);
-        break;
-    case 2:
-        unblock(pid);
-        break;
-    default:
-        break;
+        case 0:
+            print("Kill", LETTER_COLOR, BACKGROUND_COLOR);
+            kill(pid);
+            break;
+        case 1: 
+            print("Block", LETTER_COLOR, BACKGROUND_COLOR);
+            block(pid);
+            break;
+        case 2:
+            print("Unblock", LETTER_COLOR, BACKGROUND_COLOR);
+            unblock(pid);
+            break;
+        default:
+            break;
     }
 }
 
+void * malloc(int size) {
+    return malloc_simple(size);
+}
 
-uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
+void free(void * dir) {
+    free_simple(dir);
+}
+
+uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4,  int sys) {
     switch (sys) {
         case 0:
             readKey((char *)reg1, (int)reg2);
@@ -190,7 +201,10 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, int sys) {
             changeState((int)reg1, (int)reg2);
             break;
         case 13:
-            createProcess((void *)reg1, (int)reg2, (char **)reg3);
+            createProcess((char *)reg1, (void *)reg2, (int)reg3, (char **)reg4);
+            break;
+        case 14:
+            return getpid();
             break;
         default:
             break;
