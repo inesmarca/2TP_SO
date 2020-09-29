@@ -42,14 +42,11 @@ char * strcpy(char * destination, const char * source){
 	
 }
 
-void * memset(void * destiation, int32_t c, uint64_t length) {
-	uint8_t chr = (uint8_t)c;
-	char * dst = (char*)destiation;
-
-	while(length--)
-		dst[length] = chr;
-
-	return destiation;
+void * memset(void *s, int c, int n) {
+    unsigned char* p=s;
+    while(n--)
+        *p++ = (unsigned char)c;
+    return s;
 }
 
 int strcmp(char * s1, char * s2) {
@@ -492,10 +489,6 @@ int longToString_libc(long value, char * buffer) {
 	buffer[digits+1]=0;
 	return digits;
 }
-
-
-	
-
 
 uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base) {
 	char *p = buffer;

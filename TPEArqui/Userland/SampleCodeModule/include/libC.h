@@ -10,6 +10,8 @@
 
 char * strcpy(char * destination,const char * source);
 
+void * memset(void *s, int c, int n);
+
 int strcmp(char * s1, char * s2);
 
 int scanf(const char * format, ...);

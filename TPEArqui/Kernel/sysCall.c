@@ -132,23 +132,23 @@ void getTime(int * buff) {
 }
 
 // Change State
-void changeState(int pid, int state) {
+int changeState(int pid, int state) {
+    int res;
     switch (state) {
         case 0:
-            print("Kill", LETTER_COLOR, BACKGROUND_COLOR);
-            kill(pid);
+            res = kill(pid);
             break;
         case 1: 
-            print("Block", LETTER_COLOR, BACKGROUND_COLOR);
-            block(pid);
+            res = block(pid);
             break;
         case 2:
-            print("Unblock", LETTER_COLOR, BACKGROUND_COLOR);
-            unblock(pid);
+            res = unblock(pid);
             break;
         default:
+            res = -1;
             break;
     }
+    return res;
 }
 
 void * malloc(int size) {
@@ -198,10 +198,10 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             free((point)reg1);
             break;
         case 12:
-            changeState((int)reg1, (int)reg2);
+            return changeState((int)reg1, (int)reg2);
             break;
         case 13:
-            createProcess((char *)reg1, (void *)reg2, (int)reg3, (char **)reg4);
+            return createProcess((char *)reg1, (void *)reg2, (int)reg3, (char **)reg4);
             break;
         case 14:
             return getpid();

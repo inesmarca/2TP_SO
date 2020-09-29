@@ -25,9 +25,11 @@ extern void setCursor(int x, int y);
 
 extern void * malloc(int size);
 
-extern void create(const char * name, void * func, int argc, char ** argv);
+extern void free(void * dir);
 
-extern void kill(int pid, int state);
+extern int create(const char * name, void * func, int argc, char ** argv);
+
+extern int kill(int pid, int state);
 
 extern int getpid();
 

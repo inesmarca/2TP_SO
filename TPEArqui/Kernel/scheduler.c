@@ -23,7 +23,6 @@ typedef struct pcb {
 
 extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, int argc, char * argv[], int pid);
 void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
-void kill(int pid);
 int firstPosFree();
 void _hlt();
 extern void tickInterrupt();
@@ -60,8 +59,13 @@ uint64_t * swap(uint64_t * rsp) {
     return list_process[index_next++].rsp;   // retorno el puntero del stack del proceso a switchear
 }
 
-void createProcess(const char * name, void * func, int argc, char * argv[]) {
+int createProcess(const char * name, void * func, int argc, char * argv[]) {
     int pos = dim_process;
+
+    if (active_processes == MAX_PROCESS) {
+        return -1;
+    }
+
     if (active_processes != dim_process && dim_process != 0) {
         pos = firstPosFree();               // supongamos que nunca tira -1 POR AHORA
         
@@ -85,6 +89,7 @@ void createProcess(const char * name, void * func, int argc, char * argv[]) {
     if (pos == dim_process)
         dim_process++;
     active_processes++;
+    return newProcess->pid;
 }
 
 void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
@@ -106,25 +111,33 @@ int firstPosFree() {
     return i;
 }
 
-void kill(int pid) {
+int kill(int pid) {
     if (pid < dim_process && pid >= 0) {
         list_process[pid].state = KILLED;
+        active_processes--;
         if (pid == active_process_index) 
             tickInterrupt();
+        return 0;
     }
+    return -1;
 }
 
-void block(int pid) {
+int block(int pid) {
     if (pid < dim_process && pid >= 0 && list_process[pid].state != KILLED) {
         list_process[pid].state = BLOCKED;
         if (pid == active_process_index) 
             tickInterrupt();
+        return 0;
     }
+    return -1;
 }
 
-void unblock(int pid) {
-    if (pid < dim_process && pid >= 0 && list_process[pid].state != KILLED)
+int unblock(int pid) {
+    if (pid < dim_process && pid >= 0 && list_process[pid].state != KILLED) {
         list_process[pid].state = ACTIVE;
+        return 0;
+    }
+    return -1;
 }
 
 int getpid() {

@@ -4,13 +4,13 @@
 int pages_required_finder(int size);
 int index_finder(int pages_required);
 
-static void * MMemory = (void *)0x700000;
+static void * MMemory = (void *)INITIAL_DIR;
 
 int occupied[NUMBEROFPAGES] = {0};
 int size_of_allocation [NUMBEROFPAGES]={0};
 
-void * getPos(int index) {
-    return MMemory + index*PAGESIZE;
+char * getPos(int index) {
+    return (char *)MMemory + index*PAGESIZE;
 }
 
 int pages_required_finder(int size){

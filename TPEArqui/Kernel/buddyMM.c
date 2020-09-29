@@ -1,5 +1,6 @@
 #include <buddyMM.h>
 #include <MM.h>
+#include <consoleManager.h>
 #define LEFT 2
 #define RIGHT 1
 #define ROOT -1
@@ -17,7 +18,7 @@ typedef struct node
 } node;
 
 node tree[SIZE] = {{0}};
-static point const MMemory = (point)0x600000;
+static void * const MMemory = (void *)INITIAL_DIR;
 static int index = 0;
 int initialized=0;
 
@@ -80,7 +81,10 @@ static point mallokRec(int size, node * n){
 		}										//////////////////////////////////////////
 		return 0;
 	}
-	if (!(n -> occupied_left || n -> occupied_right) || n->left == NULL) {		//Si uno de sus hijos esta ocupado no lo puedo guardar ahi
+	if (!(n -> occupied_left || n -> occupied_right) || n->left == NULL)		//Si uno de sus hijos esta ocupado 
+	{														//no lo puedo guardar ahi
+		//n -> occupied_left = 1;
+		//n -> occupied_right = 1;
 		n -> data = 1;
 		return n -> value;  
 	}
@@ -92,7 +96,7 @@ point malloc_buddy(int size){
 		InitializeTree();
 		initialized++;
 	}
-
+	
 	return mallokRec(size, tree);
 }
 
