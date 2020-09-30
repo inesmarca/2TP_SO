@@ -152,11 +152,11 @@ int changeState(int pid, int state) {
 }
 
 void * malloc(int size) {
-    return malloc_buddy(size);
+    return malloc_simple(size);
 }
 
 void free(void * dir) {
-    free_buddy(dir);
+    free_simple(dir);
 }
 
 uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4,  int sys) {

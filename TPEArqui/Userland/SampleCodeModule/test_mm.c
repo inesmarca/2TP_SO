@@ -49,5 +49,7 @@ void test_mm(){
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
         free(mm_rqs[i].address);  // TODO: Port this call as required
+    
+    printf("loop Done \n");
   } 
 }
