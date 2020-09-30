@@ -18,7 +18,7 @@ typedef struct node
 } node;
 
 node tree[SIZE] = {{0}};
-static void * const MMemory = (void *)INITIAL_DIR;
+static void * MMemory = (void *)INITIAL_DIR;
 static int index = 0;
 int initialized=0;
 
@@ -55,7 +55,7 @@ static node * newTreeRec(int size, node * father, int right_or_left, int cant_le
 }
 
 static point mallokRec(int size, node * n){
-	if (size > n -> size || (n -> data == 0 && size > n->size)) {	//Si no entra en el nodo regresa
+	if (size > n -> size || n->data==1) {	//Si no entra en el nodo regresa
 		return 0;
 	}
 	if (size <= (n -> size / 2)) {				//Reviso si entro al siguiente nivel
