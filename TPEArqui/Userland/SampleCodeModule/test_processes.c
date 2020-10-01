@@ -31,8 +31,8 @@ void test_processes(){
   uint8_t rq;
   uint8_t alive = 0;
   uint8_t action;
-
   while (1){
+    printf("Running\n"); 
 
     // Create MAX_PROCESSES processes
     for(rq = 0; rq < MAX_PROCESSES; rq++){
@@ -87,6 +87,7 @@ void test_processes(){
           p_rqs[rq].state = RUNNING; 
         }
     } 
+    printf("Finished\n");
   }
 }
 

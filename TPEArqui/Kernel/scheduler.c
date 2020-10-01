@@ -4,9 +4,10 @@
 #include <simpleMM.h>
 #include <lib.h>
 #include <sysCall.h>
+#include <MM.h>
 
 #define MAX_PROCESS 20
-#define STACK_SIZE 4096 
+#define STACK_SIZE PAGESIZE 
 #define BLOCKED 2
 #define KILLED 0
 #define ACTIVE 1
@@ -28,6 +29,7 @@ void _hlt();
 extern void tickInterrupt();
 
 static pcb list_process[MAX_PROCESS] = {{0}};
+uint64_t processMemory[MAX_PROCESS][STACK_SIZE];
 static int index_next = 0;
 static int dim_process = 0;
 static int active_process_index = -1;
@@ -61,17 +63,16 @@ uint64_t * swap(uint64_t * rsp) {
 
 int createProcess(const char * name, void * func, int argc, char * argv[]) {
     int pos = dim_process;
-
     if (active_processes == MAX_PROCESS) {
         return -1;
     }
 
     if (active_processes != dim_process && dim_process != 0) {
         pos = firstPosFree();               // supongamos que nunca tira -1 POR AHORA
-        
+        /*
         if (pos < dim_process) {            // si toma el lugar de un proceso no activo tengo que vaciar el stack
             free(list_process[pos].mallocPos);
-        }
+        }*/
     }
 
     pcb * newProcess = &list_process[pos];
@@ -81,7 +82,7 @@ int createProcess(const char * name, void * func, int argc, char * argv[]) {
     newProcess->state = ACTIVE;
     newProcess->name = name;
 
-    newProcess->mallocPos = (uint64_t *)malloc(STACK_SIZE);
+    newProcess->mallocPos = processMemory[pos];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
 
     newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, argc, argv, newProcess->pid); // retorna el rsp luego de hacer los push
