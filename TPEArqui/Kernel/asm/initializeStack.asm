@@ -20,6 +20,7 @@ initializeStack:
     push 0x202                              ;FLAGS
     push 0x8                                ;CS
     push rsi        ; puntero al wrapper    ;RIP
+    push 1
     push 2                                  ;RBX
     push r9                                 ;RCX
     push r8                                 ;RDX    

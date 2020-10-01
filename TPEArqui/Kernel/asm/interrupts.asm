@@ -105,7 +105,7 @@ SECTION .text
 %endmacro
 
 %macro irqHandlerMaster 1
-	pushReg
+	pushState
 
 	mov rdi, %1 ; pasaje de parametro
 	mov rsi, rsp ; pasaje del stack frame
@@ -116,7 +116,7 @@ SECTION .text
 	mov al, 20h
 	out 20h, al
 
-	popReg
+	popState
 	iretq
 %endmacro
 

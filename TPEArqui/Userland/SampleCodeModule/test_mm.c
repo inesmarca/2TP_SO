@@ -1,7 +1,7 @@
 #include <test_util.h>
 
-#define MAX_BLOCKS 128
-#define MAX_MEMORY 1024 * 1024 * 10 * 0.8 //Should be around 80% of memory managed by the MM
+#define MAX_BLOCKS 300
+#define MAX_MEMORY 1024 * 1024 * 128 * 0.8 //Should be around 80% of memory managed by the MM
 
 typedef struct MM_rq{
   void *address;
@@ -31,9 +31,6 @@ void test_mm(){
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL) {
         memset(mm_rqs[i].address, i, mm_rqs[i].size); // TODO: Port this call as required
-        char buff[50];
-        uintToBase(mm_rqs[i].address, buff, 16);
-        printf("%s %d\n", buff, mm_rqs[i].size);
       }
 
     // Check
@@ -49,7 +46,5 @@ void test_mm(){
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
         free(mm_rqs[i].address);  // TODO: Port this call as required
-    
-    printf("loop Done \n");
   } 
 }
