@@ -132,34 +132,43 @@ void getTime(int * buff) {
 }
 
 // Change State
-void changeState(int pid, int state) {
+int changeState(int pid, int state) {
+    int res;
     switch (state) {
         case 0:
-            print("Kill", LETTER_COLOR, BACKGROUND_COLOR);
-            kill(pid);
+            res = kill(pid);
             break;
         case 1: 
-            print("Block", LETTER_COLOR, BACKGROUND_COLOR);
-            block(pid);
+            res = block(pid);
             break;
         case 2:
-            print("Unblock", LETTER_COLOR, BACKGROUND_COLOR);
-            unblock(pid);
+            res = unblock(pid);
             break;
         default:
+            res = -1;
             break;
     }
+    return res;
 }
 
 void * malloc(int size) {
-    return malloc_buddy(size);
+    #ifdef MM_BUDDY
+        return malloc_buddy(size);
+    #else  
+        return malloc_simple(size);
+    #endif
 }
 
 void free(void * dir) {
-    free_buddy(dir);
+    #ifdef MM_BUDDY
+        free_buddy(dir);
+    #else  
+        free_simple(dir);
+    #endif
 }
 
 uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4,  int sys) {
+    uint64_t res;
     switch (sys) {
         case 0:
             readKey((char *)reg1, (int)reg2);
@@ -168,7 +177,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             writeString((const char *)reg1, (unsigned int)reg2, (unsigned int)reg3);
             break;
         case 2:
-            return getPixelData((int)reg1, (int)reg2);
+            res = getPixelData((int)reg1, (int)reg2);
             break;
         case 3: 
             printPixel((int)reg1, (int)reg2, (int)reg3);
@@ -180,7 +189,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             changeScreen((int)reg1);
             break;
         case 6:
-            return getTemperature();
+            res = getTemperature();
             break;
         case 7:
             getRegVec((uint64_t *)reg1);
@@ -192,22 +201,22 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             getTime((int *)reg1);
             break;
         case 10:
-            return malloc((int)reg1);
+            res = malloc((int)reg1);
             break;
         case 11:
             free((point)reg1);
             break;
         case 12:
-            changeState((int)reg1, (int)reg2);
+            res = changeState((int)reg1, (int)reg2);
             break;
         case 13:
-            createProcess((char *)reg1, (void *)reg2, (int)reg3, (char **)reg4);
+            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (char **)reg4);
             break;
         case 14:
-            return getpid();
+            res = getpid();
             break;
         default:
             break;
     }
-    return 0;
+    return res;
 }

@@ -4,9 +4,10 @@
 #include <simpleMM.h>
 #include <lib.h>
 #include <sysCall.h>
+#include <MM.h>
 
 #define MAX_PROCESS 20
-#define STACK_SIZE 4096 
+#define STACK_SIZE PAGESIZE 
 #define BLOCKED 2
 #define KILLED 0
 #define ACTIVE 1
@@ -16,19 +17,19 @@ typedef struct pcb {
     void * function;
     int state;
     uint64_t * mallocPos;
-    int pid;        // no lo vamos a implementar ahora
+    int pid;
     char priority;  // no lo vamos a implementar ahora
     const char * name;
 } pcb;
 
 extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, int argc, char * argv[], int pid);
 void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
-void kill(int pid);
 int firstPosFree();
 void _hlt();
 extern void tickInterrupt();
 
 static pcb list_process[MAX_PROCESS] = {{0}};
+uint64_t processMemory[MAX_PROCESS][STACK_SIZE];
 static int index_next = 0;
 static int dim_process = 0;
 static int active_process_index = -1;
@@ -60,15 +61,14 @@ uint64_t * swap(uint64_t * rsp) {
     return list_process[index_next++].rsp;   // retorno el puntero del stack del proceso a switchear
 }
 
-void createProcess(const char * name, void * func, int argc, char * argv[]) {
+int createProcess(const char * name, void * func, int argc, char * argv[]) {
     int pos = dim_process;
-    if (active_processes != dim_process && dim_process != 0) {
-        pos = firstPosFree();               // supongamos que nunca tira -1 POR AHORA
-        
-        if (pos < dim_process) {            // si toma el lugar de un proceso no activo tengo que vaciar el stack
-            free(list_process[pos].mallocPos);
-        }
+    if (active_processes == MAX_PROCESS) {
+        return -1;
     }
+
+    if (active_processes != dim_process && dim_process != 0)
+        pos = firstPosFree();               // supongamos que nunca tira -1 POR AHORA
 
     pcb * newProcess = &list_process[pos];
 
@@ -76,15 +76,14 @@ void createProcess(const char * name, void * func, int argc, char * argv[]) {
     newProcess->function = func;
     newProcess->state = ACTIVE;
     newProcess->name = name;
-
-    newProcess->mallocPos = (uint64_t *)malloc(STACK_SIZE);
+    newProcess->mallocPos = processMemory[pos];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
-
     newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, argc, argv, newProcess->pid); // retorna el rsp luego de hacer los push
 
     if (pos == dim_process)
         dim_process++;
     active_processes++;
+    return newProcess->pid;
 }
 
 void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
@@ -106,25 +105,33 @@ int firstPosFree() {
     return i;
 }
 
-void kill(int pid) {
+int kill(int pid) {
     if (pid < dim_process && pid >= 0) {
         list_process[pid].state = KILLED;
+        active_processes--;
         if (pid == active_process_index) 
             tickInterrupt();
+        return 0;
     }
+    return -1;
 }
 
-void block(int pid) {
+int block(int pid) {
     if (pid < dim_process && pid >= 0 && list_process[pid].state != KILLED) {
         list_process[pid].state = BLOCKED;
         if (pid == active_process_index) 
             tickInterrupt();
+        return 0;
     }
+    return -1;
 }
 
-void unblock(int pid) {
-    if (pid < dim_process && pid >= 0 && list_process[pid].state != KILLED)
+int unblock(int pid) {
+    if (pid < dim_process && pid >= 0 && list_process[pid].state != KILLED) {
         list_process[pid].state = ACTIVE;
+        return 0;
+    }
+    return -1;
 }
 
 int getpid() {

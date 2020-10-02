@@ -1,21 +1,21 @@
 #include <MM.h>
-#define NUMBEROFPAGES MM_SIZE / PAGESIZE
+#define NUMBEROFPAGES ( MM_SIZE ) / ( PAGESIZE )
 
 int pages_required_finder(int size);
 int index_finder(int pages_required);
 
-static void * MMemory = (void *)0x700000;
+static void * MMemory = (void *)INITIAL_DIR;
 
 int occupied[NUMBEROFPAGES] = {0};
 int size_of_allocation [NUMBEROFPAGES]={0};
 
-void * getPos(int index) {
-    return MMemory + index*PAGESIZE;
+char * getPos(int index) {
+    return (char *)MMemory + index*(PAGESIZE);
 }
 
 int pages_required_finder(int size){
-    int pages_required=size/PAGESIZE; 
-    if (pages_required%PAGESIZE!=0)
+    int pages_required=size/(PAGESIZE); 
+    if (size%(PAGESIZE)!=0)
         pages_required++;
 
     return pages_required;
@@ -40,10 +40,10 @@ char * malloc_simple(int size){
 }
 
 int index_finder(int pages_required){
-    for (int i = 0; i < NUMBEROFPAGES && i+pages_required<=NUMBEROFPAGES; i++) {
+    for (int i = 0; i < (NUMBEROFPAGES) && i+pages_required<=(NUMBEROFPAGES); i++) {
         if (occupied[i]==0) {
             char valid_found=1;
-            for (int j = 1; i+j<NUMBEROFPAGES  && valid_found && pages_required>1; j++) {
+            for (int j = 1; i+j<(NUMBEROFPAGES)  && valid_found && pages_required>1 && j+1<pages_required; j++) {
                 if (occupied[i+j]!=0) 
                     valid_found=0;
             }
@@ -59,7 +59,7 @@ int index_finder(int pages_required){
 void free_simple(char * puntero){
     //confio de que no me estan mandando basura 
     int aux = puntero- (char *)MMemory;                    //FUERTES DUDAS CON ESTO
-    aux /= PAGESIZE;
+    aux /= (PAGESIZE);
     int pages_required=pages_required_finder(size_of_allocation[aux]);
     size_of_allocation[aux]=0;
 
