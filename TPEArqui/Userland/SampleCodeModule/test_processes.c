@@ -31,9 +31,8 @@ void test_processes(){
   uint8_t rq;
   uint8_t alive = 0;
   uint8_t action;
-  while (1){
-    printf("Running\n"); 
 
+  while (1){
     // Create MAX_PROCESSES processes
     for(rq = 0; rq < MAX_PROCESSES; rq++){
       p_rqs[rq].pid = create("endless_loop", endless_loop, 0, 0);  // TODO: Port this call as required
@@ -41,7 +40,7 @@ void test_processes(){
       if (p_rqs[rq].pid == -1){                           // TODO: Port this as required
         printf("Error creating process\n");               // TODO: Port this as required
         return;
-      }else{
+      } else {
         p_rqs[rq].state = RUNNING;
         alive++;
       }
@@ -86,8 +85,7 @@ void test_processes(){
           }
           p_rqs[rq].state = RUNNING; 
         }
-    } 
-    printf("Finished\n");
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 #include <test_util.h>
 
-#define MAX_BLOCKS 300
+#define MAX_BLOCKS 500
 #define MAX_MEMORY 1024 * 1024 * 128 * 0.8 //Should be around 80% of memory managed by the MM
 
 typedef struct MM_rq{
@@ -23,9 +23,6 @@ void test_mm(){
       mm_rqs[rq].address = malloc(mm_rqs[rq].size); // TODO: Port this call as required
 //TODO: check if NULL
       total += mm_rqs[rq].size;
-      char buff[50];
-      uintToBase(mm_rqs[rq].address, buff, 16);
-      printf("%s\n", buff);
       rq++;
     }
 
@@ -40,16 +37,12 @@ void test_mm(){
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
         if(!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)) {
-          char buff[50];
-          uintToBase(mm_rqs[i].address, buff, 16);
-          printf("ERROR! %s\n", buff); // TODO: Port this call as required
+          printf("ERROR!\n"); // TODO: Port this call as required
         }
 
     // Free
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
         free(mm_rqs[i].address);  // TODO: Port this call as required
-    
-    printf("loop Done \n");
   } 
 }

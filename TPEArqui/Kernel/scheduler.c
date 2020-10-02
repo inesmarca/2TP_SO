@@ -17,7 +17,7 @@ typedef struct pcb {
     void * function;
     int state;
     uint64_t * mallocPos;
-    int pid;        // no lo vamos a implementar ahora
+    int pid;
     char priority;  // no lo vamos a implementar ahora
     const char * name;
 } pcb;
@@ -67,13 +67,8 @@ int createProcess(const char * name, void * func, int argc, char * argv[]) {
         return -1;
     }
 
-    if (active_processes != dim_process && dim_process != 0) {
+    if (active_processes != dim_process && dim_process != 0)
         pos = firstPosFree();               // supongamos que nunca tira -1 POR AHORA
-        /*
-        if (pos < dim_process) {            // si toma el lugar de un proceso no activo tengo que vaciar el stack
-            free(list_process[pos].mallocPos);
-        }*/
-    }
 
     pcb * newProcess = &list_process[pos];
 
@@ -81,10 +76,8 @@ int createProcess(const char * name, void * func, int argc, char * argv[]) {
     newProcess->function = func;
     newProcess->state = ACTIVE;
     newProcess->name = name;
-
     newProcess->mallocPos = processMemory[pos];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
-
     newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, argc, argv, newProcess->pid); // retorna el rsp luego de hacer los push
 
     if (pos == dim_process)

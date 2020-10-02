@@ -25,7 +25,7 @@ $(MODULE): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM)
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 $(LOADEROBJECT):
-	$(GCC) $(GCCFLAGS) $(LOADERSRC) -c -o $(LOADEROBJECT)
+	$(GCC) $(GCCFLAGS) $(LOADERSRC) -c -o $(LOADEROBJECT) 
 
 clean:
 	rm -rf asm/*.o *.o *.elf
