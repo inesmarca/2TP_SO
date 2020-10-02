@@ -1,4 +1,5 @@
 #include <test_util.h>
+#include <libC.h>
 
 #define MAX_BLOCKS 500
 #define MAX_MEMORY 1024 * 1024 * 128 * 0.8 //Should be around 80% of memory managed by the MM
@@ -44,5 +45,8 @@ void test_mm(){
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
         free(mm_rqs[i].address);  // TODO: Port this call as required
+      
+
+      printf("...\n");
   } 
 }

@@ -1,3 +1,4 @@
+#include <libC.h>
 #include <test_util.h>
 
 //TO BE INCLUDED
@@ -86,6 +87,7 @@ void test_processes(){
           p_rqs[rq].state = RUNNING; 
         }
     }
+  printf("...\n"); 
   }
 }
 
