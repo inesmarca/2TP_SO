@@ -39,7 +39,7 @@ static int pid_list[MAX_PROCESS] = {0};
 static int number_of_proceses[PRIORITY_LEVELS] = {0};
 static int number_of_proceses_snapshot[PRIORITY_LEVELS] = {0};
 
-static int active_process_pid = 0;  // esto en realidad tiene que ser -1
+static int active_process_pid = -1;  // esto en realidad tiene que ser -1
 static int curr_priority = PRIORITY_LEVELS - 1;
 static int curr_index = 0;
 static int next_priority = PRIORITY_LEVELS - 1;
@@ -49,7 +49,7 @@ static int scheduler_initialized = 0;
 static int cant_active_processes = 0;
 
 
-int reset_processes(){ //reacomoda la lista de active y waiting
+void reset_processes(){ //reacomoda la lista de active y waiting
     for (int i = 0; i < PRIORITY_LEVELS; i++) {   
         int k = 0;
         for (int j = 0; j < MAX_PROCESS; j++) {
@@ -70,20 +70,6 @@ int reset_processes(){ //reacomoda la lista de active y waiting
         waiting_index[i] = 0;
         number_of_proceses_snapshot[i] = number_of_proceses[i];
     }
-    
-    int found = 0;
-    for (int i = 0; i < PRIORITY_LEVELS && !found; i++) {   //reacomodar el current
-        for (int j = 0; j < number_of_proceses[i] && !found; j++) {
-            if (active_processes[i][j]->pid == active_process_pid) {
-                curr_priority = i;
-                curr_index = j;
-                found = 1;
-            }
-        }
-    }
-
-    // si found == 0 something has gone terribly wrong
-    return found == 0 ? -1 : 0;
 }
 
 int getpid() {
@@ -151,8 +137,6 @@ uint64_t * swap(uint64_t * rsp) {
         waiting_processes[curr_priority][waiting_index[curr_priority]] = active_processes[curr_priority][curr_index]; //lo paso al waiting list
         waiting_index[curr_priority]++;
         active_processes[curr_priority][curr_index] = NULL;//lo pongo en null
-
-        active_processes[curr_priority][curr_index]->rsp;
     }
     
     
@@ -165,10 +149,7 @@ uint64_t * swap(uint64_t * rsp) {
             next_index = 0;
             if (curr_priority == PRIORITY_LEVELS - 1) {
                 next_priority = 0;
-                if (reset_processes() == -1) {
-                    print("Esta fallando el reset process ", LETTER_COLOR, BACKGROUND_COLOR);
-                    return rsp;
-                }
+                reset_processes();
             } else {
                 next_priority++;
             }
@@ -194,10 +175,6 @@ uint64_t * swap(uint64_t * rsp) {
         curr_priority = next_priority;
         cant++;
     }
-
-    curr_priority = next_priority;
-    curr_index = next_priority;
-
     active_process_pid = active_processes[next_priority][next_index]->pid;
 
     return active_processes[next_priority][next_index]->rsp;   // retorno el puntero del stack del proceso a switchear
