@@ -18,7 +18,7 @@ uint32_t my_unblock(uint32_t pid){
   return kill(pid, 2);
 }
 
-#define MAX_PROCESSES 10 //Should be around 80% of the the processes handled by the kernel
+#define MAX_PROCESSES 15 //Should be around 80% of the the processes handled by the kernel
 
 enum State {ERROR, RUNNING, BLOCKED, KILLED};
 
@@ -42,6 +42,7 @@ void test_processes(){
         printf("Error creating process\n");               // TODO: Port this as required
         return;
       } else {
+        printf("%d ", p_rqs[rq].pid);
         p_rqs[rq].state = RUNNING;
         alive++;
       }

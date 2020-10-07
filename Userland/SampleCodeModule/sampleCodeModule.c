@@ -14,18 +14,13 @@ int main() {
 		break;
 	case '2':
 		printf("Testeo de Procesos \nCierre QEMU para finalizar\n");
-		create("test_processes", test_processes, 0, 0);
+		if (create("test_processes", test_processes, 0, 0) == -1)
+			printf("Esta fallando la creacion");
 		break;
 	default:
 		printf("Por favor, ingrese '1' o '2' \n");
 		break;
 	}
-	while (1)
-	{
-		/* code */
-	}
-	
-
 	
 	//create("test_processes", test_processes, 0, 0);
 	//create("programHandler", programHandler, 0, 0);
