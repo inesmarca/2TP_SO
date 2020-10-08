@@ -4,136 +4,254 @@
 #include <simpleMM.h>
 #include <lib.h>
 #include <sysCall.h>
-#include <MM.h>
 
-#define MAX_PROCESS 20
-#define STACK_SIZE PAGESIZE 
 #define BLOCKED 2
 #define KILLED 0
 #define ACTIVE 1
+#define NULL 0
 
 typedef struct pcb {
 	uint64_t * rsp;
     void * function;
     int state;
     uint64_t * mallocPos;
-    int pid;
-    char priority;  // no lo vamos a implementar ahora
+    int pid;       
+    char priority;  
     const char * name;
+    int quantum;
 } pcb;
 
+// DEFINICION DE FUNCIONES
 extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, int argc, char * argv[], int pid);
-void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
-int firstPosFree();
-void _hlt();
 extern void tickInterrupt();
+void _hlt();
+static void reset_processes();
+static void initializeScheduler();
+static int freeProcess();
+static int getNewPid();
+static void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
+static int createProcessPriority(const char * name,void * func, int argc, char * argv[],int priority);
 
-static pcb list_process[MAX_PROCESS] = {{0}};
-uint64_t processMemory[MAX_PROCESS][STACK_SIZE];
-static int index_next = 0;
-static int dim_process = 0;
-static int active_process_index = -1;
-static int active_processes = 0;
+// VARIABLES
+static uint64_t processMemory[MAX_PROCESS][STACK_SIZE] = {{0}};
+static pcb proceses[MAX_PROCESS] = {{0}};
+static pcb * active_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
+static pcb * waiting_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
+static int number_of_proceses[PRIORITY_LEVELS] = {0};
+static int number_of_proceses_snapshot[PRIORITY_LEVELS] = {0};
 
+static int active_process_pid = -1;  // esto en realidad tiene que ser -1
+static int curr_priority = PRIORITY_LEVELS - 1;
+static int curr_index = 0;
+static int next_priority = PRIORITY_LEVELS - 1;
+static int next_index = 0;
+static int waiting_index[PRIORITY_LEVELS] = {0};
+static int scheduler_initialized = 0;
+static int cant_active_processes = 0;
 
-uint64_t * swap(uint64_t * rsp) {
-    if (dim_process == 0) {
-        return rsp;
-    }
-
-    if (index_next == dim_process)
-        index_next = 0;
-    
-    int cant = 0;
-    while(list_process[index_next].state != ACTIVE && cant < MAX_PROCESS) {
-        index_next++;
-        cant++;
-        if (index_next == dim_process)
-            index_next = 0;
-    }
-
-    if (cant >= MAX_PROCESS)
-        _hlt();
-
-    list_process[active_process_index].rsp = rsp;    // guardo el contexto del proceso actual
-    active_process_index = index_next;
-
-    return list_process[index_next++].rsp;   // retorno el puntero del stack del proceso a switchear
+// getpid
+int getpid() {
+    return active_process_pid;
 }
 
-int createProcess(const char * name, void * func, int argc, char * argv[]) {
-    int pos = dim_process;
-    if (active_processes == MAX_PROCESS) {
+// swap
+uint64_t * swap(uint64_t * rsp) {
+    if (scheduler_initialized == 0) {
+        initializeScheduler();
+        scheduler_initialized++;
+    }
+
+    if (active_process_pid != -1 && active_processes[curr_priority][curr_index]->quantum != 0 && active_processes[curr_priority][curr_index]->state == ACTIVE) {
+        active_processes[curr_priority][curr_index]->quantum--;
+        return rsp;
+    }
+    
+    int aux_total = cant_active_processes;
+    if ( aux_total == 0) { //chequea caso no proceso(porbablemente se reemplaze por tirar a un proceso halt predefinido)
+        return rsp;
+    }
+    
+    if (active_process_pid != -1) { //ignora el caso de no proceso
+        active_processes[curr_priority][curr_index]->rsp = rsp;    // guardo el contexto del proceso actual
+        
+        waiting_processes[curr_priority][waiting_index[curr_priority]] = active_processes[curr_priority][curr_index]; //lo paso al waiting list
+        waiting_index[curr_priority]++;
+        active_processes[curr_priority][curr_index] = NULL;//lo pongo en null
+    }
+
+    int cant = 0;
+    int found = 0;
+    
+    while (!found) { //agregar contador para salir del while si no hay procesos
+        if (curr_index == number_of_proceses_snapshot[curr_priority]) {  //se si tiene que cambiar de prioridad y de hacer el reset o no
+            next_index = 0;
+            if (curr_priority == PRIORITY_LEVELS - 1) {
+                next_priority = 0;
+                reset_processes();
+            } else {
+                next_priority++;
+            }
+        } else {
+            next_index++;
+        }
+
+        if (number_of_proceses_snapshot[next_priority]>0&&active_processes[next_priority][next_index] != NULL) {
+            if (active_processes[next_priority][next_index]->state == ACTIVE) { //found the next active process
+                found = 1;
+            } else {   
+                if (active_processes[next_priority][next_index]->state != KILLED) {
+                    //lo paso al waiting list
+                    waiting_processes[next_priority][waiting_index[next_priority]] = active_processes[next_priority][next_index]; 
+                    waiting_index[next_priority]++;
+                    active_processes[next_priority][next_index] = NULL;
+                } else { //si esta killed, borro la referencia
+                    active_processes[next_priority][next_index] = NULL;
+                }
+            }
+        }
+        curr_index = next_index;
+        curr_priority = next_priority;
+        cant++;
+    }
+    active_process_pid = active_processes[next_priority][next_index]->pid;
+    active_processes[next_priority][next_index]->quantum = PRIORITY_LEVELS - active_processes[next_priority][next_index]->priority;
+
+    return active_processes[next_priority][next_index]->rsp;   // retorno el puntero del stack del proceso a switchear
+}
+
+// create
+int createProcess(const char * name, void * func, int priority, int argc, char * argv[]){
+    return createProcessPriority(name, func, argc, argv, priority);
+}
+
+static int createProcessPriority(const char * name, void * func, int argc, char * argv[], int priority) {
+    if (priority < 0 || priority >= PRIORITY_LEVELS) {
+        print("Esta fallando la prioridad ", LETTER_COLOR, BACKGROUND_COLOR);
         return -1;
     }
 
-    if (active_processes != dim_process && dim_process != 0)
-        pos = firstPosFree();               // supongamos que nunca tira -1 POR AHORA
+    pcb * newProcess = &proceses[freeProcess()];
 
-    pcb * newProcess = &list_process[pos];
+    if (newProcess == NULL) {
+        _hlt();
+    }
 
-    newProcess->pid = pos;                  // esto vamos a tener que cambiarlo                  
+    newProcess->pid = getNewPid();
+    if (newProcess->pid == -1) {
+        print("Esta fallando el getNewPid ", LETTER_COLOR, BACKGROUND_COLOR);
+        return -1;
+    }
+                               
     newProcess->function = func;
     newProcess->state = ACTIVE;
     newProcess->name = name;
-    newProcess->mallocPos = processMemory[pos];
+    newProcess->priority = priority;
+
+    newProcess->mallocPos = processMemory[newProcess->pid];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
+
     newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, argc, argv, newProcess->pid); // retorna el rsp luego de hacer los push
 
-    if (pos == dim_process)
-        dim_process++;
-    active_processes++;
+    waiting_processes[priority][waiting_index[priority]] = newProcess; //pongo el nuevo proceso en la lista de procesos para la proxima ejecucion
+    waiting_index[priority]++;
+
+    
+    number_of_proceses[priority]++;
+    cant_active_processes++;
+
     return newProcess->pid;
 }
 
-void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
+static void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
     
     (*func)(argc, argv);
     
     kill(pid);
 }
 
-int firstPosFree() {
-    int i = 0;
-
-    while (list_process[i].state != KILLED && i < MAX_PROCESS)
-        i++;
-
-    if (i == MAX_PROCESS)
-        return -1;
-    
-    return i;
-}
-
+// kill
 int kill(int pid) {
-    if (pid < dim_process && pid >= 0) {
-        list_process[pid].state = KILLED;
-        active_processes--;
-        if (pid == active_process_index) 
+    if (pid >= 0 && pid < MAX_PROCESS) {
+        proceses[pid].state = KILLED;
+        number_of_proceses[(int)proceses[pid].priority]--;
+        cant_active_processes--;
+        if (pid == active_process_pid) 
             tickInterrupt();
-        return 0;
-    }
-    return -1;
+        return 1;
+    } else return -1;
 }
 
+// block
 int block(int pid) {
-    if (pid < dim_process && pid >= 0 && list_process[pid].state != KILLED) {
-        list_process[pid].state = BLOCKED;
-        if (pid == active_process_index) 
+    if (pid >= 0 && pid < MAX_PROCESS && proceses[pid].state != KILLED) {
+        proceses[pid].state = BLOCKED;
+        if (pid == active_process_pid) 
             tickInterrupt();
-        return 0;
-    }
-    return -1;
+        return 1;
+    } else return -1;
 }
 
+// unblock
 int unblock(int pid) {
-    if (pid < dim_process && pid >= 0 && list_process[pid].state != KILLED) {
-        list_process[pid].state = ACTIVE;
-        return 0;
-    }
-    return -1;
+    if (pid >= 0 && pid < MAX_PROCESS && proceses[pid].state == BLOCKED) {
+        proceses[pid].state = ACTIVE;
+        return 1;
+    } else return -1;
 }
 
-int getpid() {
-    return active_process_index;
+// nice
+int nice(int pid, int priority) {
+    if (priority < 0 || priority >= PRIORITY_LEVELS)
+        return -1;
+
+    proceses[pid].priority = priority;
+    return 1;
+}
+
+
+/*          STATIC FUNCTIONS        */
+static void reset_processes(){ //reacomoda la lista de active y waiting
+    for (int i = 0; i < PRIORITY_LEVELS; i++) {   
+        int k = 0;
+        for (int j = 0; j < MAX_PROCESS; j++) {
+            if (waiting_processes[i][j] != NULL) {
+                active_processes[i][k] = waiting_processes[i][j]; //copio los procesos no nulos
+                waiting_processes[i][j] = NULL;
+                k++;
+            }
+        }
+        while (k < MAX_PROCESS) {
+            active_processes[i][k++] = 0; //limpio lo que quede poniendo 0
+        }
+        
+    }
+
+    for (int i = 0; i < PRIORITY_LEVELS; i++) { //reacomodar las cantidades de procesos
+        number_of_proceses[i] = waiting_index[i];
+        waiting_index[i] = 0;
+        number_of_proceses_snapshot[i] = number_of_proceses[i];
+    }
+}
+
+static void initializeScheduler() {
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        proceses[i].state = KILLED;
+    }
+}
+
+static int freeProcess() {
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        if (proceses[i].state == KILLED)
+            return i;
+    }
+    return NULL; //si no encontro ningun proceso disponible
+}
+
+static int getNewPid() {
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        if (proceses[i].state == KILLED)
+            return i;
+    }
+
+    return -1;
 }

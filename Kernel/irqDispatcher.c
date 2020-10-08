@@ -3,6 +3,7 @@
 #include <time.h>
 #include <scheduler.h>
 #include <consoleManager.h>
+#define NULL 0
 
 static uint64_t * int_20(uint64_t * rsp);
 static void int_21();
