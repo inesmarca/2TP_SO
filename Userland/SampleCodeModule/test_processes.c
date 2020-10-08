@@ -2,32 +2,33 @@
 #include <test_util.h>
 
 //TO BE INCLUDED
-void endless_loop(){
+static void endless_loop(){
   while(1);
 }
 
-uint32_t my_kill(uint32_t pid){
+static uint32_t my_kill(uint32_t pid){
   return kill(pid, 0);
 }
 
-uint32_t my_block(uint32_t pid){
+static uint32_t my_block(uint32_t pid){
   return kill(pid, 1);
 }
 
-uint32_t my_unblock(uint32_t pid){
+static uint32_t my_unblock(uint32_t pid){
   return kill(pid, 2);
 }
 
-#define MAX_PROCESSES 15 //Should be around 80% of the the processes handled by the kernel
+#define MAX_PROCESSES 10 //Should be around 80% of the the processes handled by the kernel
 
 enum State {ERROR, RUNNING, BLOCKED, KILLED};
 
 typedef struct P_rq{
   uint32_t pid;
   enum State state;
-}p_rq;
+} p_rq;
 
 void test_processes(){
+  printf("Testeo\n");
   p_rq p_rqs[MAX_PROCESSES];
   uint8_t rq;
   uint8_t alive = 0;
@@ -36,7 +37,7 @@ void test_processes(){
   while (1){
     // Create MAX_PROCESSES processes
     for(rq = 0; rq < MAX_PROCESSES; rq++){
-      p_rqs[rq].pid = create("endless_loop", endless_loop, 0, 0);  // TODO: Port this call as required
+      p_rqs[rq].pid = create("endless_loop", endless_loop, 0, 0, 0);  // TODO: Port this call as required
 
       if (p_rqs[rq].pid == -1){                           // TODO: Port this as required
         printf("Error creating process\n");               // TODO: Port this as required

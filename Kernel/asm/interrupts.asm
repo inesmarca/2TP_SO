@@ -122,7 +122,7 @@ SECTION .text
 
 %macro sysCallHandler 0
 	pushReg
-	mov r8, rax
+	mov r9, rax
 	call sysHandler
 	push rax
 

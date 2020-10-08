@@ -16,6 +16,7 @@ GLOBAL create
 GLOBAL kill
 GLOBAL hlt
 GLOBAL getpid
+GLOBAL nice
 
 section .text
 
@@ -101,5 +102,10 @@ create:
 
 getpid:
     mov rax, 14
+    int 80h
+    ret
+
+nice:
+    mov rax, 15
     int 80h
     ret

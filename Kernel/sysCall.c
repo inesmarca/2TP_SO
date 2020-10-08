@@ -151,6 +151,7 @@ int changeState(int pid, int state) {
     return res;
 }
 
+// Malloc
 void * malloc(int size) {
     #ifdef MM_BUDDY
         return malloc_buddy(size);
@@ -159,6 +160,7 @@ void * malloc(int size) {
     #endif
 }
 
+// Free
 void free(void * dir) {
     #ifdef MM_BUDDY
         free_buddy(dir);
@@ -167,7 +169,8 @@ void free(void * dir) {
     #endif
 }
 
-uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4,  int sys) {
+// Syscall Handler
+uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, int sys) {
     uint64_t res;
     switch (sys) {
         case 0:
@@ -210,10 +213,13 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             res = changeState((int)reg1, (int)reg2);
             break;
         case 13:
-            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (char **)reg4);
+            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int)reg4, (char **)reg5);
             break;
         case 14:
             res = getpid();
+            break;
+        case 15:
+            res = nice((int)reg1, (int)reg2);
             break;
         default:
             break;
