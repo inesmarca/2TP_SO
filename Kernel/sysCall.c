@@ -168,6 +168,22 @@ void free(void * dir) {
         free_simple(dir);
     #endif
 }
+//Total Mem Available
+int getTotalMem(){
+    #ifdef MM_BUDDY
+        return getTotalMem_Buddy();
+    #else  
+        return getTotalMem_Simple();
+    #endif
+}
+//Mem currently in Use
+int getUsedMem(){
+    #ifdef MM_BUDDY
+        return getUsedMem_Buddy();
+    #else  
+        return getUsedMem_Simple();
+    #endif
+}
 
 // Syscall Handler
 uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, int sys) {

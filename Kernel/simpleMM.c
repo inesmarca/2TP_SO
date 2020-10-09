@@ -1,19 +1,20 @@
+#include <simpleMM.h>
 #include <MM.h>
 #define NUMBEROFPAGES ( MM_SIZE ) / ( PAGESIZE )
 
-int pages_required_finder(int size);
-int index_finder(int pages_required);
+static int pages_required_finder(int size);
+static int index_finder(int pages_required);
 
 static void * MMemory = (void *)INITIAL_DIR;
 
-int occupied[NUMBEROFPAGES] = {0};
-int size_of_allocation [NUMBEROFPAGES]={0};
+static int occupied[NUMBEROFPAGES] = {0};
+static int size_of_allocation [NUMBEROFPAGES]={0};
 
-char * getPos(int index) {
+static char * getPos(int index) {
     return (char *)MMemory + index*(PAGESIZE);
 }
 
-int pages_required_finder(int size){
+static int pages_required_finder(int size){
     int pages_required=size/(PAGESIZE); 
     if (size%(PAGESIZE)!=0)
         pages_required++;
@@ -21,7 +22,7 @@ int pages_required_finder(int size){
     return pages_required;
 }
 
-char * malloc_simple(int size){
+void * malloc_simple(int size){
     if (size<=0)                    //validar entradas
         return NULL; 
 
@@ -39,7 +40,7 @@ char * malloc_simple(int size){
     return getPos(index);
 }
 
-int index_finder(int pages_required){
+static int index_finder(int pages_required){
     for (int i = 0; i < (NUMBEROFPAGES) && i+pages_required<=(NUMBEROFPAGES); i++) {
         if (occupied[i]==0) {
             char valid_found=1;
@@ -65,4 +66,17 @@ void free_simple(char * puntero){
 
     for (int i = 0; i <=pages_required; i++)
         occupied[aux+i]=0;
+}
+int getTotalMem_Simple(){
+    return MM_SIZE;
+}
+int getUsedMem_Simple(){
+    int counter=0;
+    for (int i = 0; i < (NUMBEROFPAGES); i++)
+    {
+        if(occupied[i]==1){
+            counter++;
+        }
+    }
+    return counter*(PAGESIZE);
 }
