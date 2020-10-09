@@ -1,6 +1,6 @@
 #include <semaphores.h>
-#include <lib.h>
-#include <sysCall.h>
+#include <libC.h>
+#include <sysLib.h>
 
 static semaphore * list[MAX_SIZE];
 static semaphore sems[MAX_SIZE];
@@ -52,7 +52,7 @@ static int sem_rem(semaphore * sem){
 }
 
 
-int sem_init(semaphore * sem, int pshare, int value){
+static int sem_init(semaphore * sem, int pshare, int value){
 	sem -> value = value;
 	sem -> pshare = pshare;
 	sem -> semid = sem_add(sem);
@@ -64,6 +64,8 @@ int sem_init(semaphore * sem, int pshare, int value){
 }
 
 int sem_post(semaphore * sem){
+
+    
 	return ++sem -> value; 
 }
 

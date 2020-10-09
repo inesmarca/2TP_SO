@@ -5,6 +5,8 @@
 #include <libC.h>
 
 int main() {
+	test_sync();
+	/*
 	printf("Ingrese 1 para MM, 2 para Scheduler, 3 para Prioridades");
 	char k = getChar();
 	switch (k)
@@ -29,5 +31,6 @@ int main() {
 	
 	//create("test_processes", test_processes, 0, 0);
 	//create("programHandler", programHandler, 0, 0);
+*/
 	return 0;
 }
