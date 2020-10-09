@@ -1,6 +1,6 @@
 #include <buddyMM.h>
 #include <MM.h>
-#include <consoleManager.h>
+
 #define LEFT 2
 #define RIGHT 1
 #define ROOT -1
@@ -17,10 +17,10 @@ typedef struct node
 	int size;				//Indica el tamano libre que representa
 } node;
 
-node tree[SIZE] = {{0}};
+static node tree[SIZE] = {{0}};
 static void * MMemory = (void *)INITIAL_DIR;
 static int index = 0;
-int initialized=0;
+static int initialized=0;
 
 static node * InitializeTree();
 static node * newTreeRec(int size, node * father, int right_or_left, int cant_levels);
@@ -139,4 +139,17 @@ static int friRec(point p, node * n){
 
 void free_buddy(point p){
 	friRec(p, tree);
+}
+int getTotalMem_Buddy(){
+    return MM_SIZE;
+}
+int getUsedMem_Buddy(){
+	int suma=0;
+	for (int i = 0; i < SIZE; i++)
+	{
+		if(tree[i].data==1){
+			suma+=tree[i].size;
+		}
+	}
+	return suma;
 }
