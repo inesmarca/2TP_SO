@@ -4,6 +4,7 @@
 
 typedef struct semaphore
 {
+    char * name;
     int value;
     int semid;
     int pshare;

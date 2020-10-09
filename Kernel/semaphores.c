@@ -1,6 +1,11 @@
 #include <semaphores.h>
-semaphore * list[MAX_SIZE];
-int size = 0;
+#include <lib.h>
+#include <sysCall.h>
+
+static semaphore * list[MAX_SIZE];
+static semaphore sems[MAX_SIZE];
+static char used[MAX_SIZE];        //Indica semaforos libres y ocupados
+static int size = 0;
 
 int sem_size(){
 	return size;
@@ -59,7 +64,7 @@ int sem_init(semaphore * sem, int pshare, int value){
 }
 
 int sem_post(semaphore * sem){
-	sem -> value++; 
+	return ++sem -> value; 
 }
 
 int sem_wait(semaphore * sem){
@@ -71,8 +76,47 @@ int sem_wait(semaphore * sem){
 	{
 			//LOCK
 	}
+    return sem -> value;
 }
 
 int sem_close(semaphore * sem){
 	return sem_rem(sem);
+}
+
+semaphore * getSem(){
+    for (int i = 0; i < MAX_SIZE; i++)
+    {
+        if (used[i] == 0)
+        {
+            return &sems[i];
+        }
+    }
+    return NULL;
+}
+
+
+semaphore * sem_open(char * semName, char createFlag, int value){   
+    semaphore * sem = getSem();
+    switch (createFlag) {
+    case 0:
+        if (sem == NULL) return NULL;
+        sem -> name = semName;    
+        if (sem_init(sem,1, value) == 0) {
+            return sem;
+        }
+        return NULL;
+        break;
+    case 1:
+        for (int i = 0; i < MAX_SIZE; i++) {
+            if (list[i] -> name == semName)
+            {
+                return list[i];
+            }                
+        }
+        return NULL;        
+        break;
+    default:
+        return NULL;
+        break;
+    }   
 }
