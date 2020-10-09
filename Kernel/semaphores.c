@@ -83,7 +83,7 @@ int sem_close(semaphore * sem){
 	return sem_rem(sem);
 }
 
-semaphore * getSem(){
+static semaphore * getSem(){
     for (int i = 0; i < MAX_SIZE; i++)
     {
         if (used[i] == 0)
@@ -96,9 +96,9 @@ semaphore * getSem(){
 
 
 semaphore * sem_open(char * semName, char createFlag, int value){   
-    semaphore * sem = getSem();
     switch (createFlag) {
-    case 0:
+    case 0:;
+        semaphore * sem = getSem();
         if (sem == NULL) return NULL;
         sem -> name = semName;    
         if (sem_init(sem,1, value) == 0) {

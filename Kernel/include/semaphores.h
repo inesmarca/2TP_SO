@@ -12,7 +12,7 @@ typedef struct semaphore
 
 int sem_size();
 
-int sem_init(semaphore * sem, int pshare, int value);
+semaphore * sem_open(char * semName, char createFlag, int value);   
 int sem_post(semaphore * sem);
 int sem_wait(semaphore * sem);
 int sem_close(semaphore * sem);
