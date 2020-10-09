@@ -7,7 +7,7 @@ typedef struct semaphore
     char * name;
     int value;
     int semid;
-    int pshare;
+    int pid;        //no esta implementado todavia
 }semaphore;
 
 int sem_size();

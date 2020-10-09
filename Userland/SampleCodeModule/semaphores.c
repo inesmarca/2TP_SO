@@ -52,10 +52,10 @@ static int sem_rem(semaphore * sem){
 }
 
 
-static int sem_init(semaphore * sem, int pshare, int value){
+static int sem_init(semaphore * sem, int value){
 	sem -> value = value;
-	sem -> pshare = pshare;
 	sem -> semid = sem_add(sem);
+    sem -> pid = getpid();
 	if (sem -> semid == -1)
 	{
 		return sem -> semid;
@@ -64,8 +64,12 @@ static int sem_init(semaphore * sem, int pshare, int value){
 }
 
 int sem_post(semaphore * sem){
-
-    
+    if (sem -> value == 0)
+    {
+        kill(sem -> pid, 2);
+        sem -> value++;
+        return sem -> value;
+    }
 	return ++sem -> value; 
 }
 
@@ -76,7 +80,7 @@ int sem_wait(semaphore * sem){
 	}
 	if (sem -> value == 0)
 	{
-			//LOCK
+		kill(sem -> pid, 1);
 	}
     return sem -> value;
 }
@@ -103,7 +107,7 @@ semaphore * sem_open(char * semName, char createFlag, int value){
         semaphore * sem = getSem();
         if (sem == NULL) return NULL;
         sem -> name = semName;    
-        if (sem_init(sem,1, value) == 0) {
+        if (sem_init(sem, value) == 0) {
             return sem;
         }
         return NULL;

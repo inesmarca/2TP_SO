@@ -2,10 +2,27 @@
 #include <libC.h>
 #include <semaphores.h>
 
-void inc(uint64_t sem, int64_t value, uint64_t N);
+//void inc(uint64_t sem, int64_t value, uint64_t N);
+int incMain(int argc, char ** argv);
+int decMain(int argc, char ** argv);
+int incMainNo(int argc, char ** argv);
+int decMainNo(int argc, char ** argv);
 
-uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un procesos que altera la shared mem
-  //return create(name, inc, sem, value, N);
+uint64_t my_create_process_inc(char * name, int sem, int value, int N){ //crea un procesos que altera la shared mem
+  if (sem)
+  {
+    return create(name, incMain, 0, 0, 0);
+  }
+  return create(name, incMainNo, 0, 0, 0);
+  
+}
+
+uint64_t my_create_process_dec(char * name, int sem, int value, int N){ //crea un procesos que altera la shared mem
+  if (sem)
+  {
+      return create(name, decMain, 0, 0, 0);
+  }
+  return create(name, decMainNo, 0, 0, 0);
 }
 
 semaphore * my_sem_open(char *sem_id, uint64_t initialValue){
@@ -24,21 +41,27 @@ uint64_t my_sem_close(semaphore * sem){
   return sem_close(sem);
 }
 
-#define TOTAL_PAIR_PROCESSES 2
+#define TOTAL_PAIR_PROCESSES 5
 #define SEM_ID "sem"
 
 int64_t global;  //shared memory
+void yield(){
+    for (int i = 0; i < 100; i++)
+    {
+    }
+    
+}
 
 void slowInc(int64_t *p, int64_t inc){
   int64_t aux = *p;
   aux += inc;
-  //yield();
+  yield();
   *p = aux;
 }
 
 void inc(uint64_t sem, int64_t value, uint64_t N){  
   uint64_t i;
-
+    
     semaphore * semap = my_sem_open(SEM_ID, 1);         //creo el sem
     if (sem && semap == NULL)
         printf("ERROR OPENING SEM\n");
@@ -63,8 +86,8 @@ void test_sync(){
   printf("CREATING PROCESSES...(WITH SEM)\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    my_create_process("inc", 1, 1, 1000000);        //arg1: flag que indica si usa sem, 
-    my_create_process("inc", 1, -1, 1000000);       //arg2: incremento que usa la func. inc
+    my_create_process_inc("incMain", 1, 1, 1000000);        //arg1: flag que indica si usa sem, 
+    my_create_process_dec("decMain", 1, -1, 1000000);       //arg2: incremento que usa la func. inc
   }                                                 //arg3: cantidad de veces que cuenta
 }
 
@@ -76,10 +99,30 @@ void test_no_sync(){
   printf("CREATING PROCESSES...(WITHOUT SEM)\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    my_create_process("inc", 0, 1, 1000000);
-    my_create_process("inc", 0, -1, 1000000);
+    my_create_process_inc("incMainNo", 0, 1, 1000000);
+    my_create_process_dec("decMainNo", 0, -1, 1000000);
   }
 }
+
+int incMain(int argc, char ** argv){
+    inc(1, 1, 100000);
+    return 0;
+}
+int decMain(int argc, char ** argv){
+    inc(1, -1, 100000);
+    return 0;
+}
+
+
+int incMainNo(int argc, char ** argv){
+    inc(0, 1, 100000);
+    return 0;
+}
+int decMainNo(int argc, char ** argv){
+    inc(0, -1, 100000);
+    return 0;
+}
+
 /*
 int main(){
   test_sync();
