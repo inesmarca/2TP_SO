@@ -1,5 +1,5 @@
 #define MAX_SEM_VALUE 65535 
-#define MAX_SIZE 10
+#define MAX_SIZE 100
 #define NULL 0 
 
 typedef struct semaphore

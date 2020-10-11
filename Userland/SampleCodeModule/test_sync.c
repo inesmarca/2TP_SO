@@ -41,12 +41,12 @@ uint64_t my_sem_close(semaphore * sem){
   return sem_close(sem);
 }
 
-#define TOTAL_PAIR_PROCESSES 5
+#define TOTAL_PAIR_PROCESSES 2
 #define SEM_ID "sem"
 
 int64_t global;  //shared memory
 void yield(){
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 1000; i++)
     {
     }
     
@@ -88,6 +88,8 @@ void test_sync(){
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
     my_create_process_inc("incMain", 1, 1, 1000000);        //arg1: flag que indica si usa sem, 
     my_create_process_dec("decMain", 1, -1, 1000000);       //arg2: incremento que usa la func. inc
+    printf("PROCESSES CREATED");
+ 
   }                                                 //arg3: cantidad de veces que cuenta
 }
 

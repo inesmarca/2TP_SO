@@ -74,13 +74,13 @@ int sem_post(semaphore * sem){
 }
 
 int sem_wait(semaphore * sem){
-	if (sem -> value > 0)
-	{
-		sem -> value--;
-	}
 	if (sem -> value == 0)
 	{
 		kill(sem -> pid, 1);
+	}
+	if (sem -> value > 0)
+	{
+		sem -> value--;
 	}
     return sem -> value;
 }
