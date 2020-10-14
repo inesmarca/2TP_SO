@@ -1,4 +1,6 @@
 #include <semaphores.h>
+#include <lib.h>
+#include <consoleManager.h>
 
 extern int _xchg(int * lock, int value);
 
@@ -37,26 +39,11 @@ static int sem_add(sem_t * sem){					//retorna 0 si no agrega, 1 si agrega
 	return size;
 }
 
-/*
-static int sem_rem(sem_t * sem){
-	for (int i = 0; i < MAX_SIZE; ++i)
-	{
-		if (list[i] -> semid == sem -> semid)
-		{
-			list[i] -> semid = -1;
-			size--;
-			return 0;	
-		}
-	}
-	return -1;
-}
-*/
-
 static int sem_init(sem_t * sem, int value){
 	sem -> value = value;
 	sem -> semid = sem_add(sem);
 	sem -> lock = 0;
-	sem -> cant = 0;
+	sem -> cant_blocked_pids = 0;
 	if (sem -> semid == -1)
 	{
 		return sem -> semid;
@@ -65,14 +52,14 @@ static int sem_init(sem_t * sem, int value){
 }
 
 void wakeup(sem_t * sem) {
-	for (int i = 0; i < sem->cant; i++) {
-		unblock(sem->pids[i]);
+	for (int i = 0; i < sem->cant_blocked_pids; i++) {
+		unblock(sem->blocked_pids[i]);
 	}
-	sem->cant = 0;
+	sem->cant_blocked_pids = 0;
 }
 
 int sem_post(sem_t * sem){
-	if (sem == NULL)
+	if (sem == NULL || sem->semid == -1)
 		return -1;
     acquire(&(sem->lock));
 
@@ -84,28 +71,36 @@ int sem_post(sem_t * sem){
 }
 
 int sem_wait(sem_t * sem){
-	if (sem == NULL)
+	if (sem == NULL || sem->semid == -1)
 		return -1;
-	acquire(&(sem->lock));
-	if (sem->value > 0) {
-		sem->value--;
-	} else {
-		release(&(sem->lock));
-		sem->pids[sem->cant] = getpid();
-		block(getpid());
-		acquire(&(sem->lock));
-		sem->value--;
-	}
 
-	release(&(sem->lock));
-	return 0;
+	while(1) {
+		acquire(&(sem->lock));
+		if (sem->value > 0) {
+			sem->value--;
+			release(&(sem->lock));
+			return 0;
+		} 
+		else {
+			release(&(sem->lock));
+			sem->blocked_pids[sem->cant_blocked_pids] = getpid();
+			sem->cant_blocked_pids++;
+			block(getpid());
+			//acquire(&(sem->lock));
+			//sem->value--;
+		}
+	}
 }
 
 int sem_close(sem_t * sem){
-	if (sem == NULL)
+	if (sem == NULL || sem->semid == -1)
 		return -1;
-	sem -> semid = -1;
-	size--;
+	if (sem->cant_pids == 1) {
+		sem -> semid = -1;
+		size--;
+	} else {
+		sem->cant_pids--;
+	}
 	return 0;
 }
 
@@ -120,28 +115,49 @@ static sem_t * getSem(){
     return NULL;
 }
 
+sem_t * semExists(char * semName) {
+	for (int i = 0; i < MAX_SIZE; i++) {
+		if (list[i] -> name == semName)
+		{
+			return list[i];				
+		}                
+	}
+	return NULL;
+}
+
+void addPidToSem(sem_t * sem, int pid) {
+	sem->pids[sem->cant_pids++] = pid;
+}
+
 sem_t * sem_open(char * semName, char createFlag, int value){   
+	sem_t * sem;
     switch (createFlag) {
-    case 0:;
-        sem_t * sem = getSem();
-        if (sem == NULL) return NULL;
-        sem -> name = semName;    
-        if (sem_init(sem, value) == 0) {
-            return sem;
-        }
-        return NULL;
-        break;
-    case 1:
-        for (int i = 0; i < MAX_SIZE; i++) {
-            if (list[i] -> name == semName)
-            {
-                return list[i];
-            }                
-        }
-        return sem_open(semName, 0, value);        
-        break;
-    default:
-        return NULL;
-        break;
+		case 0:;
+			sem = semExists(semName);
+			if (sem != NULL) {
+				addPidToSem(sem, getpid());
+				return sem;
+			}
+
+			sem = getSem();
+			if (sem == NULL) return NULL;
+
+			sem -> name = semName;  
+			if (sem_init(sem, value) != 0) {
+				return NULL;
+			}
+			addPidToSem(sem, getpid());
+			break;
+		case 1:
+			sem = semExists(semName);
+			if (sem != NULL) {
+				addPidToSem(sem, getpid());
+			} 
+			break;     
+		default:
+			return NULL;
+			break;
     }   
+	
+	return sem; 
 }

@@ -5,7 +5,7 @@
 //void inc(uint64_t sem, int64_t value, uint64_t N);
 void inc(int argc, char * argv[]);
 
-#define TOTAL_PAIR_PROCESSES 1
+#define TOTAL_PAIR_PROCESSES 2
 #define SEM_ID "sem"
 
 int64_t global;  //shared memory
