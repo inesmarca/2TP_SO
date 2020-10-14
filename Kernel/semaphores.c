@@ -19,17 +19,6 @@ void release(int * lock) {
 	_xchg(lock, 0);
 }
 
-/*
-void see_sems(){
-	printf("IMPRIMO LOS SEMS\n");
-	for (int i = 0; i < size; ++i)
-	{
-		printf("%d\n", list[i] -> semid);
-	}
-	printf("//////////////////////////////////\n");
-
-}*/
-
 static int sem_add(sem_t * sem){					//retorna 0 si no agrega, 1 si agrega 
 	if (size == MAX_SIZE)
 	{
