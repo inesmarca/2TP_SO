@@ -86,8 +86,6 @@ int sem_wait(sem_t * sem){
 			sem->blocked_pids[sem->cant_blocked_pids] = getpid();
 			sem->cant_blocked_pids++;
 			block(getpid());
-			//acquire(&(sem->lock));
-			//sem->value--;
 		}
 	}
 }
