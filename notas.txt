@@ -29,3 +29,21 @@ _xchg:
 retorna el valor del lock
 
 min 57 empieza con pipes
+
+
+p1 | p2
+
+printf() --> p2
+
+write(0, string, cant)
+
+fd[0] = 0 // pantalla
+
+fd[0] = &pipe --> index + 1
+
+fd[1] = 0 // pantalla
+
+fd[1] = &pipe --> index + 1
+
+fd[0] = -1 --> closed
+fd[1] = -1 --> closed
