@@ -22,4 +22,8 @@ void * malloc(int size);
 
 void free(void * dir);
 
+int getTotalMem();//falta hacerle las syscalls
+
+int getUsedMem();//falta hacer la syscall
+
 #endif

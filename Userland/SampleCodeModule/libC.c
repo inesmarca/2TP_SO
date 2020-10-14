@@ -12,8 +12,6 @@
 
 long stringtoLong_libc (char * string);
 int longToString_libc(long value, char * buffer);
-int stringtoInt (char * string);
-int intToString(int value, char * buffer);
 
 // http://www.color-hex.com
 // pagina para buscar los colores hexa correspondientes
@@ -26,6 +24,64 @@ void changeLetterColor(int code) {
 
 void changeBackgroundColor(int code) {
 	background_color = code;
+}
+
+// https://www.geeksforgeeks.org/write-your-own-atoi/
+int atoi(char* str) { 
+    int res = 0; 
+    int sign = 1; 
+    int i = 0; 
+    if (str[0] == '-') { 
+        sign = -1; 
+        i++; 
+    } 
+    for (; str[i] != '\0'; ++i) 
+        res = res * 10 + str[i] - '0'; 
+    return sign * res; 
+} 
+
+void swap(char *x, char *y) {
+	char t = *x; *x = *y; *y = t;
+}
+
+// function to reverse buffer[i..j]
+char* reverse(char *buffer, int i, int j) {
+	while (i < j)
+		swap(&buffer[i++], &buffer[j--]);
+
+	return buffer;
+}
+
+// https://www.techiedelight.com/implement-itoa-function-in-c/
+char* itoa(int value, char* buffer, int base) {
+	if (base < 2 || base > 32)
+		return buffer;
+
+	int n = value;
+	if (value < 0) 
+		n *= -1;
+
+	int i = 0;
+	while (n) {
+		int r = n % base;
+
+		if (r >= 10) 
+			buffer[i++] = 65 + (r - 10);
+		else
+			buffer[i++] = 48 + r;
+
+		n = n / base;
+	}
+
+	if (i == 0)
+		buffer[i++] = '0';
+
+	if (value < 0 && base == 10)
+		buffer[i++] = '-';
+
+	buffer[i] = '\0';
+
+	return reverse(buffer, 0, i - 1);
 }
 
 //https://www.techiedelight.com/implement-strcpy-function-c/ era muy sencilla asi que la tomamos de internet.
@@ -103,16 +159,20 @@ void printf(const char * format,...) {
 			case 'd':
                 ;//algo que ver con c y switch que son raros
 				char aux [MAX_DIGITOS_EN_UN_NUMERO];
+				itoa(va_arg( valist, int ), aux, 10);
+				/*
 				int counter=intToString(va_arg( valist, int ),aux);//me transforma el int a un string
 				if (counter>MAX_DIGITOS_EN_UN_NUMERO)
 				{
-					/* should throw exception*/
+					// should throw exception //
 					//no acepta int's con mas de MAX_DIGITOS_EN_UN_NUMERO digitos.
-				}
-				for (int j = 0; j < counter; j++)
+				} */
+				for (int j = 0; aux[j] != 0; j++)
 				{
 					output[output_pos++]=aux[j];//copio el in hecho string a mi output
 				}
+
+
 				break;
 			
 			case 'l':

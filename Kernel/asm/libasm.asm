@@ -2,6 +2,7 @@ GLOBAL cpuVendor
 GLOBAL getRSP
 GLOBAL getRTC
 GLOBAL tickInterrupt
+GLOBAL _xchg
 
 section .text
 	
@@ -49,4 +50,9 @@ getRTC:
 
 tickInterrupt:
 	int 0x20
+	ret
+
+_xchg:
+	mov rax, rsi 
+	xchg [rdi], eax 
 	ret

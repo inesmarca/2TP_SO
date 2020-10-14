@@ -9,3 +9,6 @@ uint8_t memcheck(void *start, uint8_t value, uint32_t size);
 void test_processes();
 void test_mm();
 void test_prio();
+
+void test_sync();
+void test_no_sync();
