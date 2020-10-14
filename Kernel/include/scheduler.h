@@ -5,7 +5,7 @@
 
 uint64_t * swap(uint64_t * rsp);
 
-int createProcess(const char * name, void * func, int priority, int argc, void * argv[]);
+int createProcess(const char * name, void * func, int priority, int fd[], int argc, void * argv[]);
 
 int kill(int pid);
 
