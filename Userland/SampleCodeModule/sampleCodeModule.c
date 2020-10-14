@@ -4,7 +4,32 @@
 #include <test_util.h>
 #include <libC.h>
 
+void test(int argc, char ** argv) {
+	for (int i = 0; i < argc; i++) {
+		printf("%d ", atoi(argv[i]));
+	}
+	printf("\nTermine\n");
+}
+
 int main() {
+	/*
+	char * buff[50];
+	buff[0] = malloc(20);
+	buff[1] = malloc(20);
+	buff[2] = malloc(20);
+
+	itoa(10, buff[0], 10);
+	itoa(10000000, buff[1], 10);
+	itoa(-4, buff[2], 10);
+
+	create("test", test, 0, 3, buff);
+	create("test", test, 0, 3, buff);
+	create("test", test, 0, 3, buff);
+	create("test", test, 0, 3, buff);
+	create("test", test, 0, 3, buff);
+	*/
+
+	
 	printf("Ingrese 1 para MM, 2 para Scheduler, 3 para Prioridades, 4 sync con semaforos y 5 sin semaforos \n");
 	char k = getChar();
 	switch (k)

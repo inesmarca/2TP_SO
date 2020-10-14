@@ -120,11 +120,7 @@ uint64_t * swap(uint64_t * rsp) {
 }
 
 // create
-int createProcess(const char * name, void * func, int priority, int argc, char * argv[]){
-    return createProcessPriority(name, func, argc, argv, priority);
-}
-
-static int createProcessPriority(const char * name, void * func, int argc, char * argv[], int priority) {
+int createProcess(const char * name, void * func, int priority, int argc, void * argv[]){
     if (priority < 0 || priority >= PRIORITY_LEVELS) {
         print("Esta fallando la prioridad ", LETTER_COLOR, BACKGROUND_COLOR);
         return -1;
@@ -208,6 +204,10 @@ int nice(int pid, int priority) {
     return 1;
 }
 
+// yield
+void yield() {
+    tickInterrupt();
+}
 
 /*          STATIC FUNCTIONS        */
 static void reset_processes(){ //reacomoda la lista de active y waiting

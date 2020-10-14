@@ -7,6 +7,7 @@
 #include <buddyMM.h>
 #include <scheduler.h>
 #include <simpleMM.h>
+#include <lib.h>
 
 extern int getRTC(int x);
 void _hlt();
@@ -168,6 +169,7 @@ void free(void * dir) {
         free_simple(dir);
     #endif
 }
+
 //Total Mem Available
 int getTotalMem(){
     #ifdef MM_BUDDY
@@ -184,7 +186,7 @@ int getUsedMem(){
         return getUsedMem_Simple();
     #endif
 }
-
+char buff[50] = {0};
 // Syscall Handler
 uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, int sys) {
     uint64_t res;
@@ -229,13 +231,17 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             res = changeState((int)reg1, (int)reg2);
             break;
         case 13:
-            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int)reg4, (char **)reg5);
+            //print(((char **)reg5)[0], LETTER_COLOR, BACKGROUND_COLOR);
+            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int)reg4, (void **)reg5);
             break;
         case 14:
             res = getpid();
             break;
         case 15:
             res = nice((int)reg1, (int)reg2);
+            break;
+        case 16: 
+            yield();
             break;
         default:
             break;

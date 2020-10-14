@@ -17,6 +17,7 @@ GLOBAL kill
 GLOBAL hlt
 GLOBAL getpid
 GLOBAL nice
+GLOBAL yield
 
 section .text
 
@@ -107,5 +108,10 @@ getpid:
 
 nice:
     mov rax, 15
+    int 80h
+    ret
+
+yield:
+    mov rax, 16
     int 80h
     ret

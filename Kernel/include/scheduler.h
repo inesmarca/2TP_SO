@@ -5,7 +5,7 @@
 
 uint64_t * swap(uint64_t * rsp);
 
-int createProcess(const char * name, void * func, int priority, int argc, char * argv[]);
+int createProcess(const char * name, void * func, int priority, int argc, void * argv[]);
 
 int kill(int pid);
 
@@ -16,3 +16,5 @@ int unblock(int pid);
 int getpid();
 
 int nice(int pid, int priority);
+
+void yield();

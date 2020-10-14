@@ -32,5 +32,12 @@ void changeLetterColor(int code);
 
 void changeBackgroundColor(int code);
 
+int stringtoInt (char * string);
+
+int intToString(int value, char * buffer);
+
+int atoi(char* str);
+
+char * itoa(int value, char* buffer, int base);
 
 #endif

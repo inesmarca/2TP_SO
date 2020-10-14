@@ -27,12 +27,14 @@ extern void * malloc(int size);
 
 extern void free(void * dir);
 
-extern int create(const char * name, void * func, int priority, int argc, char ** argv);
+extern int create(const char * name, void * func, int priority, int argc, char * argv[]);
 
 extern int kill(int pid, int state);
 
 extern int getpid();
 
 extern int nice(int pid, int priority);
+
+extern void yield();
 
 #endif
