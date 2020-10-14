@@ -8,6 +8,7 @@
 #include <scheduler.h>
 #include <simpleMM.h>
 #include <lib.h>
+#include <semaphore.h>
 
 extern int getRTC(int x);
 void _hlt();
@@ -232,7 +233,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             break;
         case 13:
             //print(((char **)reg5)[0], LETTER_COLOR, BACKGROUND_COLOR);
-            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int)reg4, (void **)reg5);
+            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int)reg4, (char **)reg5);
             break;
         case 14:
             res = getpid();
@@ -242,6 +243,18 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             break;
         case 16: 
             yield();
+            break;
+        case 17:
+            res = sem_open((char *)reg1, (char)reg2, (int)reg3);
+            break;
+        case 18:
+            res = sem_wait((sem_t *)reg1);
+            break;
+        case 19:
+            res = sem_post((sem_t *)reg1);
+            break;
+        case 20:
+            res = sem_close((sem_t *)reg1);
             break;
         default:
             break;

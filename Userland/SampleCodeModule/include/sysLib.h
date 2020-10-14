@@ -2,6 +2,7 @@
 #define __SYS_LIB_H_
 
 #include <stdint.h>
+#include <sem.h>
 
 extern void readKeyBuff(char * buf, int cant);
 
@@ -36,5 +37,13 @@ extern int getpid();
 extern int nice(int pid, int priority);
 
 extern void yield();
+
+extern sem_t * sem_open(char * name, char flag, int value);
+
+extern int sem_wait(sem_t * sem);
+
+extern int sem_post(sem_t * sem);
+
+extern int sem_close(sem_t * sem);
 
 #endif

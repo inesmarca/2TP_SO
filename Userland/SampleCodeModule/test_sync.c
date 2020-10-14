@@ -1,13 +1,8 @@
 #include <test_util.h>
 #include <libC.h>
 #include <sysLib.h>
-#include <semaphores.h>
 
 //void inc(uint64_t sem, int64_t value, uint64_t N);
-int incMain(int argc, char ** argv);
-int decMain(int argc, char ** argv);
-int incMainNo(int argc, char ** argv);
-int decMainNo(int argc, char ** argv);
 void inc(int argc, char * argv[]);
 
 #define TOTAL_PAIR_PROCESSES 1
@@ -43,7 +38,7 @@ void inc(int argc, char ** argv){
   int value = atoi(argv[1]);
   int N = atoi(argv[2]);
   
-  semaphore * semap = sem_open(SEM_ID, 0, 1);         //creo el sem
+  sem_t * semap = sem_open(SEM_ID, 0, 1);         //creo el sem
   if (sem && semap == NULL)
     printf("ERROR OPENING SEM\n");
     

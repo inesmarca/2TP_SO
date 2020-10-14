@@ -18,6 +18,10 @@ GLOBAL hlt
 GLOBAL getpid
 GLOBAL nice
 GLOBAL yield
+GLOBAL sem_open
+GLOBAL sem_wait
+GLOBAL sem_post
+GLOBAL sem_close
 
 section .text
 
@@ -113,5 +117,25 @@ nice:
 
 yield:
     mov rax, 16
+    int 80h
+    ret
+
+sem_open:
+    mov rax, 17
+    int 80h
+    ret 
+
+sem_wait:
+    mov rax, 18
+    int 80h
+    ret
+
+sem_post:
+    mov rax, 19
+    int 80h
+    ret
+
+sem_close:
+    mov rax, 20
     int 80h
     ret

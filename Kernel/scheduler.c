@@ -30,7 +30,6 @@ static void initializeScheduler();
 static int freeProcess();
 static int getNewPid();
 static void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
-static int createProcessPriority(const char * name,void * func, int argc, char * argv[],int priority);
 
 // VARIABLES
 static uint64_t processMemory[MAX_PROCESS][STACK_SIZE] = {{0}};
