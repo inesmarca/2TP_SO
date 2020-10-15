@@ -20,6 +20,8 @@ GLOBAL sem_open
 GLOBAL sem_wait
 GLOBAL sem_post
 GLOBAL sem_close
+GLOBAL pipe
+GLOBAL close
 
 section .text
 
@@ -135,5 +137,15 @@ sem_post:
 
 sem_close:
     mov rax, 20
+    int 80h
+    ret
+
+pipe:
+    mov rax, 21
+    int 80h
+    ret
+
+close:
+    mov rax, 22
     int 80h
     ret

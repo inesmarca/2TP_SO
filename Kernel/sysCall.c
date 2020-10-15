@@ -45,7 +45,11 @@ int write(int fd, const char * buff, int cant) {
     if (process->fd[fd] < 0) {
         return -1;
     }
-        
+    
+    char aux[50];
+    uintToBase(process->fd[fd], aux, 10);
+    print(aux, 10);
+
     if (process->fd[fd] == STDOUT) {
         return print(buff, cant);
     }
@@ -265,6 +269,12 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             break;
         case 20:
             res = sem_close((sem_t *)reg1);
+            break;
+        case 21:
+            res = pipe((int *)reg1);
+            break;
+        case 22:
+            res = pipe_close((int)reg1);
             break;
         default:
             break;

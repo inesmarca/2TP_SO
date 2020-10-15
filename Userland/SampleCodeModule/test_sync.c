@@ -26,7 +26,7 @@ uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un pr
 	itoa(sem, buff[0], 10);
 	itoa(value, buff[1], 10);
 	itoa(N, buff[2], 10);
-  int fd[2] = {0, 1};
+  int fd[2] = {STDIN, STDOUT};
   
   return create(name, inc, 0, fd, 3, buff);
 }

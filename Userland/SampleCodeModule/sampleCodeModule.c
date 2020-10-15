@@ -11,10 +11,37 @@ int createBackground(const char * name, void * func, int priority, int argc, cha
 	return create(name, func, priority, aux, argc, argv);
 }
 
-int test() {
+// test para pipes
+void readTest() {
 	while(1) {
-		printf("Hola Mundo\n");
+		char buff[50];
+		read(STDIN, buff, 50);
+		printf("\n String mandado por el otro proceso: %s\n", buff);
 	}
+}
+
+void writeTest() {
+	char buff[50] = "hola mundo";
+	while(1) {
+		write(STDOUT, buff, 50);
+	}
+}
+
+void pipeTest() {
+	int aux[2];
+	if (pipe(aux) == -1)
+		printf("Error creacion");
+
+	int p1[2];
+	p1[0] = STDIN;
+	p1[1] = aux[1];
+
+	int p2[2];
+	p2[0] = aux[0];
+	p2[1] = STDOUT;
+
+	create("readTest", readTest, 0, p2, 0, 0);
+	create("writeTest", writeTest, 0, p1, 0, 0);
 }
 
 int tests() {
@@ -50,7 +77,7 @@ int tests() {
 }
 
 int main() {
-	if (create("tests", tests, 0, fd, 0, 0) == -1)
+	if (create("tests", pipeTest, 0, fd, 0, 0) == -1)
 		printf("Error Creating Process\n");
 	return 0;
 }

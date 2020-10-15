@@ -48,4 +48,8 @@ extern int sem_close(sem_t * sem);
 
 extern void changeColor(int letter, int background);
 
+extern int pipe(int fd[]);
+
+extern int close(int fd);
+
 #endif
