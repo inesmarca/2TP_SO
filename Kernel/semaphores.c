@@ -1,6 +1,7 @@
 #include <semaphores.h>
 #include <lib.h>
 #include <consoleManager.h>
+#include <defs.h>
 
 extern int _xchg(int * lock, int value);
 

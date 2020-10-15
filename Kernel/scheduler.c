@@ -4,24 +4,13 @@
 #include <simpleMM.h>
 #include <lib.h>
 #include <sysCall.h>
+#include <defs.h>
+#include <stdint.h>
 #include <pipes.h>
 
 #define BLOCKED 2
 #define KILLED 0
 #define ACTIVE 1
-#define NULL 0
-
-typedef struct pcb {
-	uint64_t * rsp;
-    void * function;
-    int state;
-    uint64_t * mallocPos;
-    int pid;       
-    char priority;  
-    const char * name;
-    int quantum;
-    int fd[MAX_PIPES];
-} pcb;
 
 // DEFINICION DE FUNCIONES
 extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, int argc, char * argv[], int pid);
@@ -53,6 +42,10 @@ static int cant_active_processes = 0;
 // getpid
 int getpid() {
     return active_process_pid;
+}
+
+pcb * getPCB(int pid) {
+    return &proceses[pid];
 }
 
 // swap
@@ -121,9 +114,8 @@ uint64_t * swap(uint64_t * rsp) {
 }
 
 // create
-int createProcess(const char * name, void * func, int priority, int fd[], int argc, void * argv[]){
+int createProcess(const char * name, void * func, int priority, int fd[], int argc, char * argv[]){
     if (priority < 0 || priority >= PRIORITY_LEVELS) {
-        print("Esta fallando la prioridad ", LETTER_COLOR, BACKGROUND_COLOR);
         return -1;
     }
 
@@ -135,7 +127,6 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
 
     newProcess->pid = getNewPid();
     if (newProcess->pid == -1) {
-        print("Esta fallando el getNewPid ", LETTER_COLOR, BACKGROUND_COLOR);
         return -1;
     }
                                

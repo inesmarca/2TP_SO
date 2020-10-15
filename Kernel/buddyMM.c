@@ -140,9 +140,11 @@ static int friRec(point p, node * n){
 void free_buddy(point p){
 	friRec(p, tree);
 }
+
 int getTotalMem_Buddy(){
     return MM_SIZE;
 }
+
 int getUsedMem_Buddy(){
 	int suma=0;
 	for (int i = 0; i < SIZE; i++)

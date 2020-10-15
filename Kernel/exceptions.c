@@ -26,19 +26,19 @@ static char * regs[] = {
 void printRegs(uint64_t * stackFrame) {
 	char buffer[9];
 	for (int i = 0; i < 19; i++) {
-		print(regs[i], LETTER_COLOR, BACKGROUND_COLOR);
+		print(regs[i], 19);
 		uintToBase(stackFrame[i], buffer, 16);
 		baseToHexa(buffer);
-		print(buffer, LETTER_COLOR, BACKGROUND_COLOR);
+		print(buffer, 9);
 		if (i % 2 == 0) {
 			newLine(BACKGROUND_COLOR);
 		} else {
-			print("           ", LETTER_COLOR, BACKGROUND_COLOR);
+			print("           ", 12);
 		}
 	}
 	// habilita de vuelta las interrupciones
 	_sti();
-	print("La pantalla se reiniciara en ", LETTER_COLOR, BACKGROUND_COLOR);
+	print("La pantalla se reiniciara en ", 30);
 	char buff[3] = {0};
 	// espera a una interrupcion
 	_hlt();
@@ -46,7 +46,8 @@ void printRegs(uint64_t * stackFrame) {
 	int aux = 10;
 	int i = 10;
 	uintToBase(i, buff, 10);
-	print(buff, 0xFB781F, BACKGROUND_COLOR);
+	changeColor(0xFB781F, BACKGROUND_COLOR);
+	print(buff, 9);
 	while (i > 0) {
 		_hlt();
 		aux = 10 - (seconds_elapsed() - init_time);
@@ -57,7 +58,8 @@ void printRegs(uint64_t * stackFrame) {
 			}
 			i = aux;
 			uintToBase(i, buff, 10);
-			print(buff, 0xFB781F, BACKGROUND_COLOR);
+			changeColor(0xFB781F, BACKGROUND_COLOR);
+			print(buff, 3);
 		}
 	}
 	newLine(BACKGROUND_COLOR);
@@ -86,14 +88,16 @@ void exceptionDispatcher(int exception, uint64_t * stackFrame) {
 
 // handler de la excepcion 0
 static void zero_division(uint64_t * stackFrame) {
-	print("Exception 0: division by 0\n", 0xFF0000, BACKGROUND_COLOR);
+	changeColor(0xFF0000, BACKGROUND_COLOR);
+	print("Exception 0: division by 0\n", 28);
 	printRegs(stackFrame);
 	resetScreen(stackFrame);
 }
 
 // handler de la excepcion 6
 static void invalid_opcode(uint64_t * stackFrame) {
-	print("Exception 6: invalid opcode\n", 0xFF0000, BACKGROUND_COLOR);
+	changeColor(0xFF0000, BACKGROUND_COLOR);
+	print("Exception 6: invalid opcode\n", 29);
 	printRegs(stackFrame);
 	resetScreen(stackFrame);
 }

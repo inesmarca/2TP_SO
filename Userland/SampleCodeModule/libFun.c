@@ -62,12 +62,12 @@ void printmem(char * parameters) {
         if (i % 8 == 0) {
             putChar('\n');
         }
-        changeLetterColor(0xFEAB8A);
+        changeColor(0xFEAB8A, DEFAULT_BACKGROUND_COLOR);
         printf("%d ", i);
         if (i < 10) {
             putChar(' ');
         }
-        changeLetterColor(DEFAULT_LETTER_COLOR);
+        changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
         printf(": %s   ", buff);
     }
     printf("\n");
@@ -163,13 +163,13 @@ void printCPUInfo() {
 
 
 void printError(char * str) {
-	changeLetterColor(0xFF0000);
+    changeColor(0xFF0000, DEFAULT_BACKGROUND_COLOR);
     printf(str);
-    changeLetterColor(DEFAULT_LETTER_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 }
 
 void printBlock() {
-    changeBackgroundColor(0x808080);
+    changeColor(DEFAULT_LETTER_COLOR, 0x808080);
     putChar(' ');
-    changeBackgroundColor(DEFAULT_BACKGROUND_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 }

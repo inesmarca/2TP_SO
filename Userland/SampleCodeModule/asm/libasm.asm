@@ -1,20 +1,18 @@
-GLOBAL readKeyBuff
-GLOBAL writeScreen
+GLOBAL read
+GLOBAL write
 GLOBAL readPixel
 GLOBAL writePixel
 GLOBAL getExitFlag
-GLOBAL sysChangeScreen
-GLOBAL getRTC
 GLOBAL getTemperature
 GLOBAL getRegisters
 GLOBAL clear
+GLOBAL changeColor
 GLOBAL setCursor
 GLOBAL getTime
 GLOBAL malloc
 GLOBAL free
 GLOBAL create
 GLOBAL kill
-GLOBAL hlt
 GLOBAL getpid
 GLOBAL nice
 GLOBAL yield
@@ -25,14 +23,14 @@ GLOBAL sem_close
 
 section .text
 
-; void readKeyBuff(char * buf)
-readKeyBuff:
+; void read(int fd, char * buf, int cant)
+read:
     mov rax, 0
     int 80h
     ret
 
-; void writeScreen(const char * string, int letter_color, int background_color)
-writeScreen:
+; void write(int fd, const char * string, int cant)
+write:
     mov rax, 1
     int 80h
     ret
@@ -49,8 +47,14 @@ writePixel:
     int 80h
     ret
 
+; void clear()
+clear:
+    mov rax, 4
+    int 80h
+    ret
+
 ; void changeScreen(int screen)
-sysChangeScreen:
+changeColor:
     mov rax, 5
     int 80h
     ret
@@ -64,12 +68,6 @@ getTemperature:
 ; void getRegisters(uint64_t * buff) 
 getRegisters:
     mov rax, 7
-    int 80h
-    ret
-
-; void clear()
-clear:
-    mov rax, 4
     int 80h
     ret
 

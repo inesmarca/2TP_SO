@@ -37,9 +37,9 @@ void initialize() {
 }
 
 void printUser() {
-    changeLetterColor(0xFF00FF);
+    changeColor(0xFF00FF, DEFAULT_BACKGROUND_COLOR);
     printf("%s$: ", getUser());
-    changeLetterColor(DEFAULT_LETTER_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 }
 
 void programHandler() {
@@ -55,7 +55,7 @@ void programHandler() {
     printBlock();
 
     while (!exitFlag) {
-        readKeyBuff(buffer, WIDTH/8);
+        read(STDIN, buffer, WIDTH/8);
         for (int i = 0; buffer[i] != 0; i++) {
             if (buffer[i] == '\t') {
                 if (activeScreen == UP) {
@@ -85,13 +85,13 @@ void programHandler() {
     clear();
     changeScreen(DOWN);
     clear();
-    changeLetterColor(0x0000FF);
+    changeColor(0x0000FF, DEFAULT_BACKGROUND_COLOR);
     setCursor(WIDTH/2 - 15*LETTER_WIDTH, SCREEN_HEIGHT/2 - 3*LETTER_HEIGHT);
     printf("Has finalizado el programa\n");
-    changeLetterColor(0xE4D31B);
+    changeColor(0xE4D31B, DEFAULT_BACKGROUND_COLOR);
     setCursor(WIDTH/2 - 25*LETTER_WIDTH, SCREEN_HEIGHT/2 - 2*LETTER_HEIGHT);
     printf("Para volver a correrlo reiniciar el programa\n");
-    changeLetterColor(0x0000FF);
+    changeColor(0x0000FF, DEFAULT_BACKGROUND_COLOR);
     setCursor(WIDTH/2 - 15*LETTER_WIDTH, SCREEN_HEIGHT/2 - LETTER_HEIGHT);
     printf("Nos vemos luego %s", user);
 }

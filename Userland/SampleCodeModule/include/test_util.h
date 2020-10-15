@@ -1,7 +1,9 @@
+#ifndef __TEST_UTIL_H_
+#define __TEST_UTIL_H_
+
 #include <stdint.h>
 #include <sysLib.h>
 #include <libC.h>
-#define NULL 0
 
 uint32_t GetUint();
 uint32_t GetUniform(uint32_t max);
@@ -12,3 +14,5 @@ void test_prio();
 
 void test_sync();
 void test_no_sync();
+
+#endif

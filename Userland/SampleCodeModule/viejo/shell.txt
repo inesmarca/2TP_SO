@@ -30,18 +30,18 @@ static int pos = 0;
 
 void initShell() {
     setCursor(0, SCREEN_HEIGHT - LETTER_HEIGHT);
-    changeLetterColor(0xFF00FF);
+    changeColor(0xFF00FF, DEFAULT_BACKGROUND_COLOR);
     printf("Bienvenido %s!\n",getUser());
-    changeLetterColor(DEFAULT_LETTER_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
     printf("Para comenzar, ingrese un comando o presione la tecla ");
-    changeLetterColor(0xE4D31B);
+    changeColor(0xE4D31B, DEFAULT_BACKGROUND_COLOR);
     printf("TAB");
-    changeLetterColor(DEFAULT_LETTER_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
     printf(" para cambiar de programa\n");
     printf("Para una lista de los programas disponibles ingrese ");
-    changeLetterColor(0xE4D31B);
+    changeColor(0xE4D31B, DEFAULT_BACKGROUND_COLOR);
     printf("help\n");
-    changeLetterColor(DEFAULT_LETTER_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
     printUser();
 }
 
@@ -98,15 +98,15 @@ void shell(char key) {
 void help(){
     printf("La shell esta equipada con los siguientes Programas, para ejectutarlos ingrese el nombre del programa en la linea de comando \n");
     for (int i = 0; i < CANT_FUNC; i++) {
-        changeLetterColor(0x21DE7C);
+        changeColor(0x21DE7C, DEFAULT_BACKGROUND_COLOR);
         printf("%s ",functions[i]);
-        changeLetterColor(DEFAULT_LETTER_COLOR);
+        changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
         printf("- %s\n", descripcion[i]);
     }
     printf("Para finalizar el programa presione ");
-    changeLetterColor(0xE4D31B);
+    changeColor(0xE4D31B, DEFAULT_BACKGROUND_COLOR);
     printf("ESC");
-    changeLetterColor(DEFAULT_LETTER_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
     putChar('\n');
     printf("Para informacion adicional, consultar documentacion.\n");
 }

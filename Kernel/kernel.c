@@ -56,10 +56,7 @@ void * initializeKernelBinary()
 
 int main() {	
 	load_idt();
-	
-	middleLine();
 	// por default se indica esta como primera
-	changeScreen(2);
 	// se envian los valores iniciales del RSP y de la primera 
 	// instruccion para el reinicio luego de una excepcion
 	setAddresses((uint64_t *)sampleCodeModuleAddress, getRSP());

@@ -67,9 +67,11 @@ void free_simple(char * puntero){
     for (int i = 0; i <=pages_required; i++)
         occupied[aux+i]=0;
 }
+
 int getTotalMem_Simple(){
     return MM_SIZE;
 }
+
 int getUsedMem_Simple(){
     int counter=0;
     for (int i = 0; i < (NUMBEROFPAGES); i++)

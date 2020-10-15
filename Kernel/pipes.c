@@ -1,5 +1,7 @@
 #include <pipes.h>
-#include <semaphore.h>
+#include <semaphores.h>
+#include <scheduler.h>
+#include <defs.h>
 
 typedef struct pipe_t {
     int alive;
@@ -33,8 +35,8 @@ int pipe(int fd[]) {
     pipes[index].lock = 0;
     pipes[index].nread = 0;
     pipes[index].nwrite = 0;
-    pipes[index].pids[0] = 0;
-    pipes[index].pids[1] = 0;
+    pipes[index].pids[0] = -1;
+    pipes[index].pids[1] = -1;
 
     fd[0] = index*2 + 2;
     fd[1] = index*2 + 3;
@@ -46,13 +48,13 @@ pipe_t * getPipe(int fd) {
     return &pipes[index];
 }
 
-void writePipeBuff(pipe_t * p, char * string, int n) {
+void writePipeBuff(pipe_t * p, const char * string, int n) {
     for (int i = 0; i < n; ++i) {
         p->data[p->nwrite++ % PIPE_SIZE] = string[i];
     }
 }
 
-int pipewrite(int fd, char * string, int n) {
+int pipewrite(int fd, const char * string, int n) {
     pipe_t * p = getPipe(fd);
 
     int avail_space;
@@ -70,13 +72,16 @@ int pipewrite(int fd, char * string, int n) {
         writePipeBuff(p, string, avail_space);
         string += avail_space;
         n -= avail_space;
-        unblock(p->pids[1]);
+
+        if (p->pids[1] != -1)
+            unblock(p->pids[1]);
+
         release(&(p->lock));
     }
     return n;
 }
 
-readPipeBuff(pipe_t * p, char * buff, int cant) {
+void readPipeBuff(pipe_t * p, char * buff, int cant) {
     for (int i = 0; i < cant; i++) {
         buff[i] = p->data[p->nread++ % PIPE_SIZE];
     }
@@ -102,7 +107,10 @@ int piperead(int fd, char * string, int n){
         readPipeBuff(p, string, avail_read);
         string += avail_read;
         n -= avail_read;
-        unblock(p->pids[0]);
+
+        if (p->pids[0] != -1)
+            unblock(p->pids[0]);
+            
         release(&(p->lock));
     }
     return n;
@@ -126,5 +134,3 @@ int pipe_close(int fd) {
 
     return 0;
 }
-
-int close()

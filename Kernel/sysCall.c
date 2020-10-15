@@ -1,3 +1,4 @@
+#include <sysCall.h>
 #include <keyboard.h>
 #include <consoleManager.h>
 #include <videoDriver.h>
@@ -9,43 +10,64 @@
 #include <simpleMM.h>
 #include <lib.h>
 #include <semaphore.h>
+#include <pipes.h>
 
 extern int getRTC(int x);
 void _hlt();
 
 // Funcion de syscall que retorna el buffer de keys leidas
-void readKey(char * buf, int cant) {
+int readKey(char * buf, int cant) {
     char * input = getBuffer();
     int i;
     for (i = 0; input[i] != 0 && i < cant; i++) {
         (buf)[i] = input[i];
     }
     deleteBuff();
+    return i;
 }
 
-// escribe en pantalla dicho string con los colores especificados en la pantalla activa
-void writeString(const char * string, unsigned int letter_color, unsigned int background_color) {
-    print(string, letter_color, background_color);
+int read(int fd, char * buff, int cant) {
+    pcb * process = getPCB(getpid());
+    if (process->fd[fd] < 0)
+        return -1;
+
+    if (process->fd[fd] == STDIN)
+        return readKey(buff, cant);
+    else if (process->fd[fd] != STDOUT)
+        return piperead(process->fd[fd], buff, cant);
+
+    return -1;
+}
+
+int write(int fd, const char * buff, int cant) {
+    pcb * process = getPCB(getpid());
+
+    if (process->fd[fd] < 0) {
+        return -1;
+    }
+        
+    if (process->fd[fd] == STDOUT) {
+        return print(buff, cant);
+    }
+    else if (process->fd[fd] != STDIN) {
+        return pipewrite(process->fd[fd], buff, cant);
+    }
+
+    return -1;
 }
 
 // retorna un numero hexadecimal del color de dicho pixel
 int getPixelData(int x, int y) {
-    int screen = getCurrentScreen();
-    if ((y >= 0 && y < SCREEN_HEIGHT) && x >= 0 && x < WIDTH) {
-        int res;
-        if (screen == 1) res = getPixelColor(x, y);
-        else res = getPixelColor(x, y + SCREEN2_START_POS);
-        return res;
-    }
+    if (y >= 0 && y < HEIGHT && x >= 0 && x < WIDTH)
+        return getPixelColor(x, y);
+    
     return 0;
 }
 
 // dibuja en pantalla dicho pixel con el color recivido en base a las coordenads relativas de la pantalla activa
 void printPixel(int x, int y, int color) {
-    int screen = getCurrentScreen();
-    if ( y >= 0 && y < SCREEN_HEIGHT && x >= 0 && x < WIDTH) {
-        if (screen == 1) writePixel(x, y, color);
-        else writePixel(x, y + SCREEN2_START_POS, color);
+    if ( y >= 0 && y < HEIGHT && x >= 0 && x < WIDTH) {
+        writePixel(x, y, color);
     }
 }
 
@@ -63,21 +85,10 @@ void getRegVec(uint64_t * buff) {
     }
 }
 
-// limpia la pantalla activa
-void sysClear() {
-    clear(getCurrentScreen());
-}
-
 // cambia de posicion el cursor de escritura dependiendo de la pantalla activa
 void setCursor(int x, int y) {
-    int screen = getCurrentScreen();
-    if ((y >= LETTER_HEIGHT && y < SCREEN_HEIGHT) && x >= 0 && x < WIDTH - LETTER_WIDTH) {
-        if (screen == 1) {
-            changeCursor(screen, x, y + SCREEN1_START_POS);
-        } else {
-            changeCursor(screen, x, y + SCREEN2_START_POS);
-        }
-    }
+    if ((y >= LETTER_HEIGHT && y < HEIGHT) && x >= 0 && x < WIDTH - LETTER_WIDTH)
+        changeCursor(x, y);
 }
 
 // Get Time
@@ -187,16 +198,16 @@ int getUsedMem(){
         return getUsedMem_Simple();
     #endif
 }
-char buff[50] = {0};
+
 // Syscall Handler
-uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, int sys) {
+uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, uint64_t reg6, int sys) {
     uint64_t res;
     switch (sys) {
         case 0:
-            readKey((char *)reg1, (int)reg2);
+            res = read((int)reg1, (char *)reg2, (int)reg3);
             break;
         case 1:
-            writeString((const char *)reg1, (unsigned int)reg2, (unsigned int)reg3);
+            res = write((int)reg1, (const char *)reg2, (int)reg3);
             break;
         case 2:
             res = getPixelData((int)reg1, (int)reg2);
@@ -205,10 +216,10 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             printPixel((int)reg1, (int)reg2, (int)reg3);
             break;
         case 4:
-            sysClear();
+            clear();
             break;
         case 5:
-            changeScreen((int)reg1);
+            changeColor((int)reg1, (int)reg2);
             break;
         case 6:
             res = getTemperature();
@@ -232,8 +243,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             res = changeState((int)reg1, (int)reg2);
             break;
         case 13:
-            //print(((char **)reg5)[0], LETTER_COLOR, BACKGROUND_COLOR);
-            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int)reg4, (char **)reg5);
+            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int *)reg4, (int)reg5, (char **)reg6);
             break;
         case 14:
             res = getpid();
