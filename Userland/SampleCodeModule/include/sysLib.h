@@ -3,16 +3,25 @@
 
 #include <stdint.h>
 #include <sem.h>
+#define STDIN 0
+#define STDOUT 1
+#define MAX_PROCESS 20
 
-extern void readKeyBuff(char * buf, int cant);
+typedef struct infoPCB {
+    char name[50];
+    int priority;
+    char stackPointer[10];
+    char basePointer[10];
+    int fd[2];
+} infoPCB;
 
-extern void writeScreen(const char * string, int letter_color, int background_color);
+extern int read(int fd, char * buf, int cant);
+
+extern int write(int fd, const char * string, int cant);
 
 extern int readPixel(int x, int y);
 
 extern void writePixel(int x, int y, int color);
-
-extern void sysChangeScreen(int screen);
 
 extern int getRTC(int x);
 
@@ -28,7 +37,7 @@ extern void * malloc(int size);
 
 extern void free(void * dir);
 
-extern int create(const char * name, void * func, int priority, int argc, char * argv[]);
+extern int create(const char * name, void * func, int priority, int fd[], int argc, char * argv[]);
 
 extern int kill(int pid, int state);
 
@@ -45,5 +54,17 @@ extern int sem_wait(sem_t * sem);
 extern int sem_post(sem_t * sem);
 
 extern int sem_close(sem_t * sem);
+
+extern void changeColor(int letter, int background);
+
+extern int pipe(int fd[]);
+
+extern int close(int fd);
+
+extern void memState(int fd[]);
+
+extern int getListPids(int * buff);
+
+extern int getInfoPCB(int pid, infoPCB * buff);
 
 #endif

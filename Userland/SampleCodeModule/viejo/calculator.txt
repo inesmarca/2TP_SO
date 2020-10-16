@@ -40,9 +40,9 @@ void initCalculator() {
     printf("ej: ( 2 + 3 ) * 5 =\n");
     printf("las operaciones soportadas incluyen : + , - , * , / y el uso de parentesis\n");
     printf("para ejecutar la operacion presione la tecla = ");
-    changeLetterColor(0xFF0000);
+    changeColor(0xFF0000, DEFAULT_BACKGROUND_COLOR);
     printf("(recuerde dejar un espacio)\n");
-    changeLetterColor(DEFAULT_LETTER_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
     printUser();
 }
 

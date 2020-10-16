@@ -1,12 +1,100 @@
 #include <libC.h>
 #include <libFun.h>
+#include <sysLib.h>
 #define MAX_DIGITS 20
+#define MAX_READ 255
 
 extern int cpuModel();
 extern char * cpuVendor();
 extern void getRegisters(uint64_t * buff) ;
 extern int getTemperature();
 extern void getTime(int * buff);
+
+int isVocal(char c) {
+    return c == 'a' || c == 'A' || c == 'e' || c == 'E' || c == 'i' || c == 'I' || c == 'o' || c == 'O' || c == 'u' || c == 'U';
+}
+
+// wc
+void wc() {
+    char * buff = malloc(255);
+    read(STDIN, buff, 255);
+    int cant = 0;
+    for (int i = 0; i < 255 && buff[i] != 0; i++) {
+        if (buff[i] == '\n')
+            cant++;
+    }
+    printf("%d", cant);
+}
+
+// ps
+void ps() {
+    int * pids = malloc(MAX_PROCESS);
+    int cant = 0;
+    if ((cant = getListPids(pids)) == -1) {
+        return;
+    }
+    int foreground = 1;
+    infoPCB * info = malloc(sizeof(infoPCB));
+    for (int i = 0; i < cant; i++) {
+        if (getInfoPCB(pids[i], info) == -1) {
+            return;
+        }
+        if (info->fd[STDIN] != -1) 
+            foreground = 0;
+
+        printf("PID: %d, NAME: %s, PRIORITY: %d, STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", pids[i], info->name, info->priority, info->stackPointer, info->basePointer, foreground);
+    }
+    return;
+}
+
+// filter
+void filter() {
+    char * buff = malloc(255);
+    int dim = scanf("%s", buff);
+    char * aux = malloc(dim);
+    int i, j = 0;
+
+    for(i = 0; buff[i] != 0; i++) {
+        if(!isVocal(buff[i])) {
+            aux[j] = buff[i];
+            j++;
+        }
+    }
+    aux[j] = 0;
+    strcpy(buff, aux);
+    free(aux);
+    printf(buff);
+    free(buff);
+}
+
+// cat
+void cat() {
+	char * buff = malloc(255);
+	read(STDIN, buff, 50);
+	printf(buff);
+    free(buff);
+}
+
+// mem
+void mem() {
+    int buff[2];
+    memState(buff);
+    printf("Total Space: %d\nSpace Used: %d", buff[0], buff[1]);
+}
+
+// loop
+void loop() {
+    while(1) {
+        printf("%d ", getpid());
+        for (int i = 1000000000; i > 0; i--);
+    }
+}
+
+// create process on background
+int createBackground(const char * name, void * func, int priority, int argc, char * argv[]) {
+	int aux[2] = {-1, STDOUT};
+	return create(name, func, priority, aux, argc, argv);
+}
 
 // Trigger Exception 0
 void triggerException0() {
@@ -62,12 +150,12 @@ void printmem(char * parameters) {
         if (i % 8 == 0) {
             putChar('\n');
         }
-        changeLetterColor(0xFEAB8A);
+        changeColor(0xFEAB8A, DEFAULT_BACKGROUND_COLOR);
         printf("%d ", i);
         if (i < 10) {
             putChar(' ');
         }
-        changeLetterColor(DEFAULT_LETTER_COLOR);
+        changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
         printf(": %s   ", buff);
     }
     printf("\n");
@@ -163,13 +251,13 @@ void printCPUInfo() {
 
 
 void printError(char * str) {
-	changeLetterColor(0xFF0000);
+    changeColor(0xFF0000, DEFAULT_BACKGROUND_COLOR);
     printf(str);
-    changeLetterColor(DEFAULT_LETTER_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 }
 
 void printBlock() {
-    changeBackgroundColor(0x808080);
+    changeColor(DEFAULT_LETTER_COLOR, 0x808080);
     putChar(' ');
-    changeBackgroundColor(DEFAULT_BACKGROUND_COLOR);
+    changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 }

@@ -22,16 +22,6 @@ EXTERN exceptionDispatcher
 
 EXTERN sysHandler
 
-EXTERN readKey
-EXTERN writeString
-EXTERN getPixelData
-EXTERN printPixel
-EXTERN changeScreen
-EXTERN getTemperature
-EXTERN getRegVec
-EXTERN sysClear
-EXTERN setCursor
-
 SECTION .text
 
 %macro pushState 0
@@ -122,8 +112,9 @@ SECTION .text
 
 %macro sysCallHandler 0
 	pushReg
-	mov r9, rax
+	push rax
 	call sysHandler
+	pop rbx
 	push rax
 
 	; signal pic EOI (End of Interrupt)

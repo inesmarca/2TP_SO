@@ -1,5 +1,6 @@
 #include <libC.h>
 #include <test_util.h>
+#include <sysLib.h>
 
 //TO BE INCLUDED
 static void endless_loop(){
@@ -27,6 +28,8 @@ typedef struct P_rq{
   enum State state;
 } p_rq;
 
+int fd[2] = {0, 1};
+
 void test_processes(){
   printf("Testeo\n");
   p_rq p_rqs[MAX_PROCESSES];
@@ -37,13 +40,13 @@ void test_processes(){
   while (1){
     // Create MAX_PROCESSES processes
     for(rq = 0; rq < MAX_PROCESSES; rq++){
-      p_rqs[rq].pid = create("endless_loop", endless_loop, 0, 0, 0);  // TODO: Port this call as required
+
+      p_rqs[rq].pid = create("endless_loop", endless_loop, 0, fd, 0, 0);  // TODO: Port this call as required
 
       if (p_rqs[rq].pid == -1){                           // TODO: Port this as required
         printf("Error creating process\n");               // TODO: Port this as required
         return;
       } else {
-        printf("%d ", p_rqs[rq].pid);
         p_rqs[rq].state = RUNNING;
         alive++;
       }
@@ -89,7 +92,6 @@ void test_processes(){
           p_rqs[rq].state = RUNNING; 
         }
     }
-  printf("...\n"); 
   }
 }
 

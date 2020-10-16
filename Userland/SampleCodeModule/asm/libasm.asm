@@ -1,20 +1,18 @@
-GLOBAL readKeyBuff
-GLOBAL writeScreen
+GLOBAL read
+GLOBAL write
 GLOBAL readPixel
 GLOBAL writePixel
 GLOBAL getExitFlag
-GLOBAL sysChangeScreen
-GLOBAL getRTC
 GLOBAL getTemperature
 GLOBAL getRegisters
 GLOBAL clear
+GLOBAL changeColor
 GLOBAL setCursor
 GLOBAL getTime
 GLOBAL malloc
 GLOBAL free
 GLOBAL create
 GLOBAL kill
-GLOBAL hlt
 GLOBAL getpid
 GLOBAL nice
 GLOBAL yield
@@ -22,17 +20,22 @@ GLOBAL sem_open
 GLOBAL sem_wait
 GLOBAL sem_post
 GLOBAL sem_close
+GLOBAL pipe
+GLOBAL close
+GLOBAL memState
+GLOBAL getListPids
+GLOBAL getInfoPCB
 
 section .text
 
-; void readKeyBuff(char * buf)
-readKeyBuff:
+; void read(int fd, char * buf, int cant)
+read:
     mov rax, 0
     int 80h
     ret
 
-; void writeScreen(const char * string, int letter_color, int background_color)
-writeScreen:
+; void write(int fd, const char * string, int cant)
+write:
     mov rax, 1
     int 80h
     ret
@@ -49,8 +52,14 @@ writePixel:
     int 80h
     ret
 
+; void clear()
+clear:
+    mov rax, 4
+    int 80h
+    ret
+
 ; void changeScreen(int screen)
-sysChangeScreen:
+changeColor:
     mov rax, 5
     int 80h
     ret
@@ -64,12 +73,6 @@ getTemperature:
 ; void getRegisters(uint64_t * buff) 
 getRegisters:
     mov rax, 7
-    int 80h
-    ret
-
-; void clear()
-clear:
-    mov rax, 4
     int 80h
     ret
 
@@ -137,5 +140,30 @@ sem_post:
 
 sem_close:
     mov rax, 20
+    int 80h
+    ret
+
+pipe:
+    mov rax, 21
+    int 80h
+    ret
+
+close:
+    mov rax, 22
+    int 80h
+    ret
+
+memState:
+    mov rax, 23
+    int 80h
+    ret
+
+getListPids:
+    mov rax, 24
+    int 80h
+    ret
+
+getInfoPCB:
+    mov rax, 25
     int 80h
     ret

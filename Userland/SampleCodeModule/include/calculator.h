@@ -1,7 +1,6 @@
 #ifndef __CALCULATOR_H_
 #define __CALCULATOR_H_
-
-#define NULL (void *)0
+#include <libC.h>
 
 void initCalculator();
 

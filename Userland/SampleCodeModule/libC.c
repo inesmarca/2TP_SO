@@ -7,24 +7,10 @@
 #define DECIMALPLACES 4
 #define MAX_PRINTABLE_CHARACTERS 1024
 #define MAX_READABLE_CHARACTERS 1024
-#define NULL (void*)0
 #define DELETE 0x0E
 
 long stringtoLong_libc (char * string);
 int longToString_libc(long value, char * buffer);
-
-// http://www.color-hex.com
-// pagina para buscar los colores hexa correspondientes
-int letter_color = DEFAULT_LETTER_COLOR;
-int background_color = DEFAULT_BACKGROUND_COLOR;
-
-void changeLetterColor(int code) {
-	letter_color = code;
-} 
-
-void changeBackgroundColor(int code) {
-	background_color = code;
-}
 
 // https://www.geeksforgeeks.org/write-your-own-atoi/
 int atoi(char* str) { 
@@ -120,16 +106,17 @@ int strcmp(char * s1, char * s2) {
     return cmp;
 }
 
-void putChar(char str) {
+int putChar(char str) {
 	char buff[2] = {0};
 	buff[0] = str;
-	writeScreen(buff, letter_color, background_color);
+	return write(STDOUT, buff, 1);
 }
 
 char getChar() {
 	char res = 0;
     while (res == 0) {
-	    readKeyBuff(&res, 1);
+	    if (read(STDIN, &res, 1) == -1)
+			return -1;
     }
 	return res;
 }
@@ -215,9 +202,9 @@ void printf(const char * format,...) {
 			
 	
     		
-			changeLetterColor(0xFF0000);
+    		changeColor(0xFF0000, DEFAULT_BACKGROUND_COLOR);
 			printf("Expresion %s is unsupported \n",format[i]);
-			changeLetterColor(DEFAULT_LETTER_COLOR);
+    		changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 			//expression not suported
 				break;
 			}
@@ -231,7 +218,7 @@ void printf(const char * format,...) {
 	}
 	va_end(valist);
     output[output_pos]=0;
-	writeScreen(output, letter_color, background_color);
+	write(STDOUT, output, output_pos);
 }
 
 int scanf(const char *format, ...) {
@@ -251,15 +238,15 @@ int scanf(const char *format, ...) {
 			if (input_pos != 0) {
 				input_pos--;
 				input[input_pos] = 0;
-				putChar(in);
+				//putChar(in);
 			}
 		} else {
 			input[input_pos++] = in;
-			putChar(in);
+			//putChar(in);
 		}
 		in = getChar();
 	}
-	putChar('\n');
+	//putChar('\n');
 	
 	input[input_pos]=0;
 	input_pos=0;
@@ -327,9 +314,9 @@ int scanf(const char *format, ...) {
 			
 			default:
 			/* should throw exception*/
-			changeLetterColor(0xFF0000);
+    		changeColor(0xFF0000, DEFAULT_BACKGROUND_COLOR);
 			printf("Expresion %s is unsupported \n",format[i]);
-			changeLetterColor(DEFAULT_LETTER_COLOR);
+    		changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 			//expression not suported
 			return -1;
 				break;
@@ -411,9 +398,9 @@ int sscanf(const char *str,const char *format, ...) {
 			
 			default:
 			/* should throw exception*/
-			changeLetterColor(0xFF0000);
+    		changeColor(0xFF0000, DEFAULT_BACKGROUND_COLOR);
 			printf("Expresion %s is unsupported \n",format[i]);
-			changeLetterColor(DEFAULT_LETTER_COLOR);
+    		changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 			//expression not suported
 			return -1;
 				break;

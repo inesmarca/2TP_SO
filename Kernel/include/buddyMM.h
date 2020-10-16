@@ -1,3 +1,6 @@
+#ifndef __BUDDY_MM_H_
+#define __BUDDY_MM_H_
+
 /************************************************************/
 #define MAX_CANT_LEVELS 12		// Cantidad de niveles maximo
 #define pwrtwo(x) (1 << (x))
@@ -23,3 +26,9 @@ point malloc_buddy(int size);
 *	Tener en cuenta que al 17/09/2020 no posee indicador de errores en caso de no encontrar el puntero deseeado.
 ******************************************************************************************/
 void free_buddy(point p);
+
+int getTotalMem_Buddy();
+
+int getUsedMem_Buddy();
+
+#endif

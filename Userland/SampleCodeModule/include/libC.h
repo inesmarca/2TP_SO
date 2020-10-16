@@ -6,6 +6,7 @@
 #define DEFAULT_LETTER_COLOR 0xFFFFFF
 #define DEFAULT_BACKGROUND_COLOR 0x000000
 #define BLOCK 127
+#define NULL 0
 
 
 char * strcpy(char * destination,const char * source);
@@ -18,7 +19,7 @@ int scanf(const char * format, ...);
 
 int sscanf(const char *str,const char *format, ...);
 
-void putChar(char str);
+int putChar(char str);
 
 char getChar();
 
@@ -28,10 +29,6 @@ uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
 
 void baseToHexa(char * buff);
 
-void changeLetterColor(int code);
-
-void changeBackgroundColor(int code);
-
 int stringtoInt (char * string);
 
 int intToString(int value, char * buffer);
@@ -39,5 +36,7 @@ int intToString(int value, char * buffer);
 int atoi(char* str);
 
 char * itoa(int value, char* buffer, int base);
+
+void changeColor(int letter, int background);
 
 #endif

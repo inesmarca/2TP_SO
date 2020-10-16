@@ -12,4 +12,6 @@ uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
 
 void baseToHexa(char * buff);
 
+char * strcpy(char * destination, const char * source);
+
 #endif

@@ -4,22 +4,13 @@
 #include <simpleMM.h>
 #include <lib.h>
 #include <sysCall.h>
+#include <defs.h>
+#include <stdint.h>
+#include <pipes.h>
 
 #define BLOCKED 2
 #define KILLED 0
 #define ACTIVE 1
-#define NULL 0
-
-typedef struct pcb {
-	uint64_t * rsp;
-    void * function;
-    int state;
-    uint64_t * mallocPos;
-    int pid;       
-    char priority;  
-    const char * name;
-    int quantum;
-} pcb;
 
 // DEFINICION DE FUNCIONES
 extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, int argc, char * argv[], int pid);
@@ -39,7 +30,7 @@ static pcb * waiting_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static int number_of_proceses[PRIORITY_LEVELS] = {0};
 static int number_of_proceses_snapshot[PRIORITY_LEVELS] = {0};
 
-static int active_process_pid = -1;  // esto en realidad tiene que ser -1
+static int active_process_pid = -1;
 static int curr_priority = PRIORITY_LEVELS - 1;
 static int curr_index = 0;
 static int next_priority = PRIORITY_LEVELS - 1;
@@ -51,6 +42,37 @@ static int cant_active_processes = 0;
 // getpid
 int getpid() {
     return active_process_pid;
+}
+
+// getPCB
+pcb * getPCB(int pid) {
+    return &proceses[pid];
+}
+
+// getListPids
+int getListPids(int * buff) {
+    int cant = 0;
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        if (proceses[i].state != KILLED)
+            buff[cant++] = i;
+    }
+
+    return cant;
+}
+
+// getInfoPCB
+int getInfoPCB(int pid, infoPCB * buff) {
+    if (pid < 0 || pid >= MAX_PROCESS)
+        return -1;
+
+    strcpy(buff->name, proceses[pid].name);
+    buff->priority = proceses[pid].priority;
+    uintToBase(proceses[pid].rsp, buff->stackPointer, 16);
+    uintToBase(proceses[pid].mallocPos, buff->basePointer, 16);
+    buff->fd[0] = proceses[pid].fd[0];
+    buff->fd[1] = proceses[pid].fd[1];
+        
+    return 0;
 }
 
 // swap
@@ -119,9 +141,8 @@ uint64_t * swap(uint64_t * rsp) {
 }
 
 // create
-int createProcess(const char * name, void * func, int priority, int argc, void * argv[]){
+int createProcess(const char * name, void * func, int priority, int fd[], int argc, char * argv[]){
     if (priority < 0 || priority >= PRIORITY_LEVELS) {
-        print("Esta fallando la prioridad ", LETTER_COLOR, BACKGROUND_COLOR);
         return -1;
     }
 
@@ -133,7 +154,6 @@ int createProcess(const char * name, void * func, int priority, int argc, void *
 
     newProcess->pid = getNewPid();
     if (newProcess->pid == -1) {
-        print("Esta fallando el getNewPid ", LETTER_COLOR, BACKGROUND_COLOR);
         return -1;
     }
                                
@@ -141,6 +161,9 @@ int createProcess(const char * name, void * func, int priority, int argc, void *
     newProcess->state = ACTIVE;
     newProcess->name = name;
     newProcess->priority = priority;
+    
+    newProcess->fd[0] = fd[0];
+    newProcess->fd[1] = fd[1];
 
     newProcess->mallocPos = processMemory[newProcess->pid];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
@@ -254,3 +277,4 @@ static int getNewPid() {
 
     return -1;
 }
+

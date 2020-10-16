@@ -1,5 +1,17 @@
 #include <stdint.h>
 
+//https://www.techiedelight.com/implement-strcpy-function-c/ era muy sencilla asi que la tomamos de internet.
+char * strcpy(char * destination, const char * source) {
+	char * ptr=destination;
+	while (*source != 0) {
+		*destination=*source;
+		destination++;
+		source++;
+	}
+	*destination=0;
+	return ptr;
+}
+
 void * memset(void * destination, int32_t c, uint64_t length)
 {
 	uint8_t chr = (uint8_t)c;

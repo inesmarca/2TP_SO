@@ -19,4 +19,18 @@ void printError(char * string);
 
 void printBlock();
 
+void loop();
+
+void mem();
+
+int createBackground(const char * name, void * func, int priority, int argc, char * argv[]);
+
+void filter();
+
+void cat();
+
+void ps();
+
+void wc();
+
 #endif
