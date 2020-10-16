@@ -38,6 +38,10 @@ int tests() {
 	return 0;
 }
 
+void empty() {
+	printf("Hola mundo\nComo andan\nTodo Bien\nHADOIGAHD");
+}
+
 // test para pipes
 void testFilter() {
 	int aux[2];
@@ -52,12 +56,14 @@ void testFilter() {
 	p2[0] = aux[0];
 	p2[1] = STDOUT;
 
-	create("filter", filter, 0, p1, 0, 0);
-	create("cat", cat, 0, p2, 0, 0);
+	create("filter", empty, 0, p1, 0, 0);
+	create("cat", wc, 0, p2, 0, 0);
 }
+
 
 int main() {
 	if (create("tests", tests, 0, fd, 0, 0) == -1)
 		printf("Error Creating Process\n");
+
 	return 0;
 }

@@ -14,12 +14,44 @@ int isVocal(char c) {
     return c == 'a' || c == 'A' || c == 'e' || c == 'E' || c == 'i' || c == 'I' || c == 'o' || c == 'O' || c == 'u' || c == 'U';
 }
 
+// wc
+void wc() {
+    char * buff = malloc(255);
+    read(STDIN, buff, 255);
+    int cant = 0;
+    for (int i = 0; i < 255 && buff[i] != 0; i++) {
+        if (buff[i] == '\n')
+            cant++;
+    }
+    printf("%d", cant);
+}
+
+// ps
+void ps() {
+    int * pids = malloc(MAX_PROCESS);
+    int cant = 0;
+    if ((cant = getListPids(pids)) == -1) {
+        return;
+    }
+    int foreground = 1;
+    infoPCB * info = malloc(sizeof(infoPCB));
+    for (int i = 0; i < cant; i++) {
+        if (getInfoPCB(pids[i], info) == -1) {
+            return;
+        }
+        if (info->fd[STDIN] != -1) 
+            foreground = 0;
+
+        printf("PID: %d, NAME: %s, PRIORITY: %d, STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", pids[i], info->name, info->priority, info->stackPointer, info->basePointer, foreground);
+    }
+    return;
+}
+
 // filter
 void filter() {
-    char buff[255];
-    char buff2[255];
+    char * buff = malloc(255);
     int dim = scanf("%s", buff);
-    char aux[dim];
+    char * aux = malloc(dim);
     int i, j = 0;
 
     for(i = 0; buff[i] != 0; i++) {
@@ -30,14 +62,17 @@ void filter() {
     }
     aux[j] = 0;
     strcpy(buff, aux);
+    free(aux);
     printf(buff);
+    free(buff);
 }
 
 // cat
 void cat() {
-	char buff[50];
+	char * buff = malloc(255);
 	read(STDIN, buff, 50);
 	printf(buff);
+    free(buff);
 }
 
 // mem

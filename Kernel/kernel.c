@@ -54,16 +54,24 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+void defaultProcess() {
+	while(1)
+		_hlt();
+}
+
 int main() {	
 	load_idt();
-	// por default se indica esta como primera
+	
 	// se envian los valores iniciales del RSP y de la primera 
 	// instruccion para el reinicio luego de una excepcion
 	setAddresses((uint64_t *)sampleCodeModuleAddress, getRSP());
+
 	
 	((EntryPoint)sampleCodeModuleAddress)();
 
-	// no estoy segura de que esto este bien pero esta funcionando
+	int fd[2] = {-1, -1};
+	createProcess("defaultProcess", defaultProcess, 2, fd, 0, 0);
+
 	_sti();
 	_hlt();
 	return 0;

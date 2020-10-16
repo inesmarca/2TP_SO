@@ -5,6 +5,15 @@
 #include <sem.h>
 #define STDIN 0
 #define STDOUT 1
+#define MAX_PROCESS 20
+
+typedef struct infoPCB {
+    char name[50];
+    int priority;
+    char stackPointer[10];
+    char basePointer[10];
+    int fd[2];
+} infoPCB;
 
 extern int read(int fd, char * buf, int cant);
 
@@ -53,5 +62,9 @@ extern int pipe(int fd[]);
 extern int close(int fd);
 
 extern void memState(int fd[]);
+
+extern int getListPids(int * buff);
+
+extern int getInfoPCB(int pid, infoPCB * buff);
 
 #endif

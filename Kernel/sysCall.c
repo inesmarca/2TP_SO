@@ -280,6 +280,12 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
         case 23:
             mem((int*)reg1);
             break;
+        case 24:
+            res = getListPids((int*)reg1);
+            break;
+        case 25:
+            res = getInfoPCB((int)reg1, (infoPCB *)reg2);
+            break;
         default:
             break;
     }

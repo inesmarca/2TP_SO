@@ -30,7 +30,7 @@ static pcb * waiting_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static int number_of_proceses[PRIORITY_LEVELS] = {0};
 static int number_of_proceses_snapshot[PRIORITY_LEVELS] = {0};
 
-static int active_process_pid = -1;  // esto en realidad tiene que ser -1
+static int active_process_pid = -1;
 static int curr_priority = PRIORITY_LEVELS - 1;
 static int curr_index = 0;
 static int next_priority = PRIORITY_LEVELS - 1;
@@ -44,8 +44,35 @@ int getpid() {
     return active_process_pid;
 }
 
+// getPCB
 pcb * getPCB(int pid) {
     return &proceses[pid];
+}
+
+// getListPids
+int getListPids(int * buff) {
+    int cant = 0;
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        if (proceses[i].state != KILLED)
+            buff[cant++] = i;
+    }
+
+    return cant;
+}
+
+// getInfoPCB
+int getInfoPCB(int pid, infoPCB * buff) {
+    if (pid < 0 || pid >= MAX_PROCESS)
+        return -1;
+
+    strcpy(buff->name, proceses[pid].name);
+    buff->priority = proceses[pid].priority;
+    uintToBase(proceses[pid].rsp, buff->stackPointer, 16);
+    uintToBase(proceses[pid].mallocPos, buff->basePointer, 16);
+    buff->fd[0] = proceses[pid].fd[0];
+    buff->fd[1] = proceses[pid].fd[1];
+        
+    return 0;
 }
 
 // swap
@@ -250,3 +277,4 @@ static int getNewPid() {
 
     return -1;
 }
+

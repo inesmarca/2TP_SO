@@ -23,6 +23,8 @@ GLOBAL sem_close
 GLOBAL pipe
 GLOBAL close
 GLOBAL memState
+GLOBAL getListPids
+GLOBAL getInfoPCB
 
 section .text
 
@@ -153,5 +155,15 @@ close:
 
 memState:
     mov rax, 23
+    int 80h
+    ret
+
+getListPids:
+    mov rax, 24
+    int 80h
+    ret
+
+getInfoPCB:
+    mov rax, 25
     int 80h
     ret

@@ -63,7 +63,6 @@ int writePipeBuff(pipe_t * p, const char * string, int n) {
 
 int pipewrite(int fd, const char * string, int n) {
     pipe_t * p = getPipe(fd);
-    print(string, 50);
 
     int cant;
     int avail_space;

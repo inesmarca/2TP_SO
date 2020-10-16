@@ -19,6 +19,14 @@ typedef struct pcb {
     int fd[MAX_PIPES];
 } pcb;
 
+typedef struct infoPCB {
+    char name[50];
+    int priority;
+    char stackPointer[10];
+    char basePointer[10];
+    int fd[2];
+} infoPCB;
+
 uint64_t * swap(uint64_t * rsp);
 
 int createProcess(const char * name, void * func, int priority, int fd[], int argc, char * argv[]);
@@ -36,5 +44,9 @@ int nice(int pid, int priority);
 void yield();
 
 pcb * getPCB(int pid);
+
+int getListPids(int * buff);
+
+int getInfoPCB(int pid, infoPCB * buff);
 
 #endif

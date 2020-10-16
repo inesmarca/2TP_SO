@@ -29,4 +29,8 @@ void filter();
 
 void cat();
 
+void ps();
+
+void wc();
+
 #endif

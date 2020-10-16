@@ -1,4 +1,4 @@
-#include <keyboard.h>
+    #include <keyboard.h>
 #include <stdint.h>
 #include <registers.h>
 
@@ -72,6 +72,10 @@ void bufferAdd(char key) {
 void keyboard_handler(uint64_t * stackFrame) {
     // lee la tecla
     uint8_t key = getKey();
+    while (key == 0) {
+        _hlt();
+        key = getKey();
+    }
     currentkeyState = keyState(key);
     if (currentkeyState == PRESSED) {
         switch (key) {
