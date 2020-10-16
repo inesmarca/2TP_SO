@@ -23,7 +23,7 @@ void wc() {
         if (buff[i] == '\n')
             cant++;
     }
-    printf("%d", cant);
+    printf("%d ", cant);
 }
 
 // ps
