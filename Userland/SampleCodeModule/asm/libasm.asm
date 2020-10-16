@@ -22,6 +22,7 @@ GLOBAL sem_post
 GLOBAL sem_close
 GLOBAL pipe
 GLOBAL close
+GLOBAL memState
 
 section .text
 
@@ -147,5 +148,10 @@ pipe:
 
 close:
     mov rax, 22
+    int 80h
+    ret
+
+memState:
+    mov rax, 23
     int 80h
     ret

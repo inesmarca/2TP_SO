@@ -26,7 +26,7 @@ void changeCursor(int x, int y) {
 // imprime un string desde la posicion del cursor en forma horizontal con los colores recividos
 int print(const char * string, int cant) {
     int i;
-    for (i = 0; string[i] != 0; i++) {
+    for (i = 0; string[i] != 0 && i < cant; i++) {
         if (string[i] == '\n' || posX == WIDTH) {
             newLine(background_color);
         } else if (string[i] == B_SPACE) {

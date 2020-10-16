@@ -2,6 +2,7 @@
 #include <semaphores.h>
 #include <scheduler.h>
 #include <defs.h>
+#include <lib.h>
 
 typedef struct pipe_t {
     int alive;
@@ -37,6 +38,7 @@ int pipe(int fd[]) {
     pipes[index].nwrite = 0;
     pipes[index].pids[0] = -1;
     pipes[index].pids[1] = -1;
+    memset(pipes[index].data, -1, PIPE_SIZE);
 
     fd[0] = index*2 + 2;
     fd[1] = index*2 + 3;
@@ -48,51 +50,79 @@ pipe_t * getPipe(int fd) {
     return &pipes[index];
 }
 
-void writePipeBuff(pipe_t * p, const char * string, int n) {
-    for (int i = 0; i < n; ++i) {
+int writePipeBuff(pipe_t * p, const char * string, int n) {
+    int i;
+    for (i = 0; i < n && string[i] != 0; ++i) {
         p->data[p->nwrite++ % PIPE_SIZE] = string[i];
     }
+    if (string[i] == 0)
+        p->data[p->nwrite % PIPE_SIZE] = string[i++];
+
+    return i;
 }
 
 int pipewrite(int fd, const char * string, int n) {
     pipe_t * p = getPipe(fd);
+    print(string, 50);
 
+    int cant;
     int avail_space;
-    while (n != 0) {
+    int dim = 0;
+
+    while (n > 0 && *string != 0) {
         acquire(&(p -> lock));
+        p->pids[0] = -1;
         avail_space = (p->nread + PIPE_SIZE) - p->nwrite;
+
         if (avail_space > n)
             avail_space = n;
 
-        if (avail_space == 0) {
+        if (avail_space != 0) {
+            cant = writePipeBuff(p, string, avail_space);
+            string += cant;
+            n -= cant;
+            dim += cant;
+
+            if (p->pids[1] != -1) {
+                unblock(p->pids[1]);
+            }
+
+            release(&(p->lock));
+        } else {
             release(&(p->lock));
             p->pids[0] = getpid();
             block(getpid());
         }
-        writePipeBuff(p, string, avail_space);
-        string += avail_space;
-        n -= avail_space;
-
-        if (p->pids[1] != -1)
-            unblock(p->pids[1]);
-
-        release(&(p->lock));
     }
-    return n;
+    
+    return dim;
 }
 
-void readPipeBuff(pipe_t * p, char * buff, int cant) {
-    for (int i = 0; i < cant; i++) {
+int readPipeBuff(pipe_t * p, char * buff, int cant) {
+    int i;
+    for (i = 0; i < cant && p->data[p->nread % PIPE_SIZE] != 0; i++) {
         buff[i] = p->data[p->nread++ % PIPE_SIZE];
+        buff[i + 1] = 0;
     }
+
+    if (i < cant) {
+        buff[i++] = 0;
+        p->nread++;
+    }
+
+    return i;
 }
 
-int piperead(int fd, char * string, int n){
+int piperead(int fd, char * buff, int n){
     pipe_t * p = getPipe(fd);
 
     int avail_read;
-    while (n != 0) {
+    int cant;
+    int dim = 0;
+
+    while (n != 0 && p->data[p->nread % PIPE_SIZE] != 0) {
         acquire(&(p -> lock));
+        p->pids[1] = -1;
         avail_read = p->nwrite - p->nread;
 
         if (avail_read > n)
@@ -102,18 +132,21 @@ int piperead(int fd, char * string, int n){
             release(&(p->lock));
             p->pids[1] = getpid();
             block(getpid());
+        } else {
+            cant = readPipeBuff(p, buff, avail_read);
+            buff += cant;
+            n -= cant;
+            dim += cant;
+
+            if (p->pids[0] != -1) {
+                unblock(p->pids[0]);
+            }
+                
+            release(&(p->lock));
         }
-
-        readPipeBuff(p, string, avail_read);
-        string += avail_read;
-        n -= avail_read;
-
-        if (p->pids[0] != -1)
-            unblock(p->pids[0]);
-            
-        release(&(p->lock));
     }
-    return n;
+
+    return dim;
 }
 
 int pipe_close(int fd) {

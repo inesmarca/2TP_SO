@@ -1,12 +1,65 @@
 #include <libC.h>
 #include <libFun.h>
+#include <sysLib.h>
 #define MAX_DIGITS 20
+#define MAX_READ 255
 
 extern int cpuModel();
 extern char * cpuVendor();
 extern void getRegisters(uint64_t * buff) ;
 extern int getTemperature();
 extern void getTime(int * buff);
+
+int isVocal(char c) {
+    return c == 'a' || c == 'A' || c == 'e' || c == 'E' || c == 'i' || c == 'I' || c == 'o' || c == 'O' || c == 'u' || c == 'U';
+}
+
+// filter
+void filter() {
+    char buff[255];
+    char buff2[255];
+    int dim = scanf("%s", buff);
+    char aux[dim];
+    int i, j = 0;
+
+    for(i = 0; buff[i] != 0; i++) {
+        if(!isVocal(buff[i])) {
+            aux[j] = buff[i];
+            j++;
+        }
+    }
+    aux[j] = 0;
+    strcpy(buff, aux);
+    printf(buff);
+}
+
+// cat
+void cat() {
+	char buff[50];
+	read(STDIN, buff, 50);
+	printf(buff);
+}
+
+// mem
+void mem() {
+    int buff[2];
+    memState(buff);
+    printf("Total Space: %d\nSpace Used: %d", buff[0], buff[1]);
+}
+
+// loop
+void loop() {
+    while(1) {
+        printf("%d ", getpid());
+        for (int i = 1000000000; i > 0; i--);
+    }
+}
+
+// create process on background
+int createBackground(const char * name, void * func, int priority, int argc, char * argv[]) {
+	int aux[2] = {-1, STDOUT};
+	return create(name, func, priority, aux, argc, argv);
+}
 
 // Trigger Exception 0
 void triggerException0() {

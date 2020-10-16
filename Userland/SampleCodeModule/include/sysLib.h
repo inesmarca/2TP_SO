@@ -52,4 +52,6 @@ extern int pipe(int fd[]);
 
 extern int close(int fd);
 
+extern void memState(int fd[]);
+
 #endif

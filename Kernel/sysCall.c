@@ -45,10 +45,6 @@ int write(int fd, const char * buff, int cant) {
     if (process->fd[fd] < 0) {
         return -1;
     }
-    
-    char aux[50];
-    uintToBase(process->fd[fd], aux, 10);
-    print(aux, 10);
 
     if (process->fd[fd] == STDOUT) {
         return print(buff, cant);
@@ -203,6 +199,11 @@ int getUsedMem(){
     #endif
 }
 
+void mem(int buff[]) {
+    buff[0] = getTotalMem();
+    buff[1] = getUsedMem();
+}
+
 // Syscall Handler
 uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, uint64_t reg6, int sys) {
     uint64_t res;
@@ -275,6 +276,9 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             break;
         case 22:
             res = pipe_close((int)reg1);
+            break;
+        case 23:
+            mem((int*)reg1);
             break;
         default:
             break;

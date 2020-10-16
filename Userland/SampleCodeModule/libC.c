@@ -238,15 +238,15 @@ int scanf(const char *format, ...) {
 			if (input_pos != 0) {
 				input_pos--;
 				input[input_pos] = 0;
-				putChar(in);
+				//putChar(in);
 			}
 		} else {
 			input[input_pos++] = in;
-			putChar(in);
+			//putChar(in);
 		}
 		in = getChar();
 	}
-	putChar('\n');
+	//putChar('\n');
 	
 	input[input_pos]=0;
 	input_pos=0;
