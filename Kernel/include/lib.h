@@ -14,4 +14,6 @@ void baseToHexa(char * buff);
 
 char * strcpy(char * destination, const char * source);
 
+int strcmp(char * s1, char * s2);
+
 #endif

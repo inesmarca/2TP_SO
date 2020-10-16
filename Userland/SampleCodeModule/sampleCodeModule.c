@@ -72,7 +72,7 @@ void testFilter() {
 	p2[0] = aux[0];
 	p2[1] = STDOUT;
 
-	create("filter", empty, 0, p1, 0, 0);
+	create("cat", empty, 0, p1, 0, 0);
 	create("cat", wc, 0, p2, 0, 0);
 }
 

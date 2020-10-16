@@ -25,6 +25,10 @@ GLOBAL close
 GLOBAL memState
 GLOBAL getListPids
 GLOBAL getInfoPCB
+GLOBAL getListSem
+GLOBAL getSemInfo
+GLOBAL getListPipes
+GLOBAL getPipeInfo
 
 section .text
 
@@ -165,5 +169,25 @@ getListPids:
 
 getInfoPCB:
     mov rax, 25
+    int 80h
+    ret
+
+getListSem:
+    mov rax, 26
+    int 80h
+    ret
+
+getSemInfo:
+    mov rax, 27
+    int 80h
+    ret
+
+getListPipes:
+    mov rax, 28
+    int 80h
+    ret
+
+getPipeInfo:
+    mov rax, 29
     int 80h
     ret

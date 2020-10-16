@@ -5,13 +5,17 @@
 
 extern int _xchg(int * lock, int value);
 
-static sem_t * list[MAX_SIZE];
 static sem_t sems[MAX_SIZE];
-static char used[MAX_SIZE];        //Indica semaforos libres y ocupados
-static int size = 0;
+static int active_sems = 0;
 
-int sem_size(){
-	return size;
+int getListSem(int * buff) { // FALTA HACER ESTO
+
+	return 0;
+}
+
+int getSemInfo(int semid, infoSem * buff) { // FALTA HACER ESTO
+
+	return 0;
 }
 
 void acquire(int * lock) {
@@ -22,46 +26,96 @@ void release(int * lock) {
 	_xchg(lock, 0);
 }
 
-static int sem_add(sem_t * sem){					//retorna 0 si no agrega, 1 si agrega 
-	if (size == MAX_SIZE)
-	{
-		return -1;
-	}
-	for (int i = 0; i < size; ++i)
-	{
-		if (list[i] -> semid == -1)
-		{
-			size++;
-			list[i] = sem;
-			return i;
-		}
-	}
-	list[size++] = sem;
-	return size;
+void initializeSems() {
+	for (int i = 0; i < MAX_SIZE; i++)
+		sems[i].semid = -1;
 }
 
-static int sem_init(sem_t * sem, int value){
-	sem -> value = value;
-	sem -> semid = sem_add(sem);
-	sem -> lock = 0;
-	sem -> cant_blocked_pids = 0;
-	if (sem -> semid == -1)
-	{
-		return sem -> semid;
+static void sem_init(int index, int value){
+	sems[index].value = value;
+	sems[index].semid = index;
+	sems[index].lock = 0; 
+	sems[index].cant_blocked_pids = 0;
+	memset(sems[index].blocked_pids, -1, MAX_PROCESS);
+	active_sems++;
+}
+
+sem_t * semExists(char * semName) {
+	for (int i = 0; i < MAX_SIZE; i++) {
+		if (strcmp(sems[i].name, semName))
+			return &sems[i];		     
 	}
-	return 0;
+
+	return NULL;
+}
+
+void addPidToSem(sem_t * sem, int pid) {
+	sem->pids[sem->cant_pids++] = pid;
+}
+
+static int getSem(){
+	if (active_sems == MAX_SIZE)
+		return -1;
+
+    for (int i = 0; i < MAX_SIZE; i++) {
+        if (sems[i].semid == -1)
+            return i;
+    }
+
+    return -1;
+}
+
+sem_t * sem_open(char * semName, char createFlag, int value){   
+	sem_t * sem;
+    switch (createFlag) {
+		case 0:;
+			sem = semExists(semName);
+			if (sem != NULL) {
+				addPidToSem(sem, getpid());
+				return sem;
+			}
+
+			int index = getSem();
+			if (index == -1) {
+				print("Error in index ", 17);
+				return NULL;
+			} 
+
+			strcpy(sems[index].name, semName);
+			sem_init(index, value);
+
+			sem = &sems[index];
+			addPidToSem(sem, getpid());
+			break;
+		case 1:
+			sem = semExists(semName);
+			if (sem != NULL) {
+				addPidToSem(sem, getpid());
+			} else {
+				print("Error flag 1 ", 17);
+			}
+			break;     
+		default:
+			return NULL;
+			break;
+    }   
+	
+	return sem; 
 }
 
 void wakeup(sem_t * sem) {
 	for (int i = 0; i < sem->cant_blocked_pids; i++) {
 		unblock(sem->blocked_pids[i]);
+		sem->blocked_pids[i] = -1;
 	}
+
 	sem->cant_blocked_pids = 0;
 }
 
 int sem_post(sem_t * sem){
 	if (sem == NULL || sem->semid == -1)
 		return -1;
+
     acquire(&(sem->lock));
 
 	sem->value++;
@@ -83,9 +137,9 @@ int sem_wait(sem_t * sem){
 			return 0;
 		} 
 		else {
-			release(&(sem->lock));
 			sem->blocked_pids[sem->cant_blocked_pids] = getpid();
 			sem->cant_blocked_pids++;
+			release(&(sem->lock));
 			block(getpid());
 		}
 	}
@@ -94,69 +148,12 @@ int sem_wait(sem_t * sem){
 int sem_close(sem_t * sem){
 	if (sem == NULL || sem->semid == -1)
 		return -1;
+
 	if (sem->cant_pids == 1) {
-		sem -> semid = -1;
-		size--;
+		sem->semid = -1;
+		active_sems--;
 	} else {
 		sem->cant_pids--;
 	}
 	return 0;
-}
-
-static sem_t * getSem(){
-    for (int i = 0; i < MAX_SIZE; i++)
-    {
-        if (used[i] == 0)
-        {
-            return &sems[i];
-        }
-    }
-    return NULL;
-}
-
-sem_t * semExists(char * semName) {
-	for (int i = 0; i < MAX_SIZE; i++) {
-		if (list[i] -> name == semName)
-		{
-			return list[i];				
-		}                
-	}
-	return NULL;
-}
-
-void addPidToSem(sem_t * sem, int pid) {
-	sem->pids[sem->cant_pids++] = pid;
-}
-
-sem_t * sem_open(char * semName, char createFlag, int value){   
-	sem_t * sem;
-    switch (createFlag) {
-		case 0:;
-			sem = semExists(semName);
-			if (sem != NULL) {
-				addPidToSem(sem, getpid());
-				return sem;
-			}
-
-			sem = getSem();
-			if (sem == NULL) return NULL;
-
-			sem -> name = semName;  
-			if (sem_init(sem, value) != 0) {
-				return NULL;
-			}
-			addPidToSem(sem, getpid());
-			break;
-		case 1:
-			sem = semExists(semName);
-			if (sem != NULL) {
-				addPidToSem(sem, getpid());
-			} 
-			break;     
-		default:
-			return NULL;
-			break;
-    }   
-	
-	return sem; 
 }

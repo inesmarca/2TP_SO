@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <pipes.h>
+#include <sysCall.h>
 #define MAX_PROCESS 20
 #define PRIORITY_LEVELS 3
 #define STACK_SIZE 1024 * 4 
@@ -48,5 +49,7 @@ pcb * getPCB(int pid);
 int getListPids(int * buff);
 
 int getInfoPCB(int pid, infoPCB * buff);
+
+void initializeScheduler();
 
 #endif

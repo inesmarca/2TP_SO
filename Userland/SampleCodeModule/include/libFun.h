@@ -33,4 +33,8 @@ void ps();
 
 void wc();
 
+void sem();
+
+void pipeInfo();
+
 #endif

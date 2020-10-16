@@ -3,6 +3,7 @@
 #include <scheduler.h>
 #include <defs.h>
 #include <lib.h>
+#include <sysCall.h>
 
 typedef struct pipe_t {
     int alive;
@@ -16,6 +17,41 @@ typedef struct pipe_t {
 
 pipe_t pipes[MAX_PIPES];
 int cant_pipes;
+
+void initializePipes() {
+    for (int i = 0; i < MAX_PIPES; i++) {
+        pipes[i].alive = 0;
+    }
+}
+
+// getPipeList
+int getPipeList(int * buff) {
+    int cant = 0;
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        if (pipes[i].alive != 0)
+            buff[cant++] = i;
+    }
+
+    return cant;
+}
+
+// getInfoPCB
+int getInfoPipe(int id, infoPipe * buff) {
+    if (id < 0 || id >= MAX_PIPES)
+        return -1;
+
+    buff->nread = pipes[id].nread;
+    buff->nwrite = pipes[id].nwrite;
+
+    int pos = 0;
+    memset(buff->pids_blocked, 0, 2);
+    for (int i = 0; i < 2; i++) {
+        if (pipes[id].pids[i] != -1)
+            buff->pids_blocked[pos++] = pipes[id].pids[i];
+    }
+        
+    return 0;
+}
 
 int getFirstPipe() {
     for (int i = 0; i < cant_pipes; i++) {
@@ -42,6 +78,7 @@ int pipe(int fd[]) {
 
     fd[0] = index*2 + 2;
     fd[1] = index*2 + 3;
+
     return 0;
 }
 

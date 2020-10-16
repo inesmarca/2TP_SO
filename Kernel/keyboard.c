@@ -3,6 +3,7 @@
 #include <registers.h>
 
 extern uint8_t getKey();
+void _hlt();
 
 #define KEYS 59
 #define PRESSED 1

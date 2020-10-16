@@ -6,6 +6,7 @@
 #define STDIN 0
 #define STDOUT 1
 #define MAX_PROCESS 20
+#define MAX_SEMS 100
 
 typedef struct infoPCB {
     char name[50];
@@ -14,6 +15,19 @@ typedef struct infoPCB {
     char basePointer[10];
     int fd[2];
 } infoPCB;
+
+typedef struct infoSem {
+    char name[50];
+    int value;
+    int blocked_pids[MAX_PROCESS];
+    int cant_blocked;
+} infoSem;
+
+typedef struct infoPipe {
+    int nread;
+    int nwrite;
+    int pids_blocked[MAX_PROCESS];
+} infoPipe;
 
 extern int read(int fd, char * buf, int cant);
 
@@ -66,5 +80,13 @@ extern void memState(int fd[]);
 extern int getListPids(int * buff);
 
 extern int getInfoPCB(int pid, infoPCB * buff);
+
+extern int getSemList(int * buff);
+
+extern int getSemInfo(int pid, infoSem * buff);
+
+extern int getListPipe(int * buff);
+
+extern int getPipeInfo(int id, infoPipe * buff);
 
 #endif

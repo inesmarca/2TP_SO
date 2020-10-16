@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <string.h>
 #include <lib.h>
 #include <moduleLoader.h>
 #include <videoDriver.h>
@@ -7,6 +6,8 @@
 #include <idtLoader.h>
 #include <exception.h>
 #include <scheduler.h>
+#include <semaphores.h>
+#include <pipes.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -55,12 +56,14 @@ void * initializeKernelBinary()
 }
 
 void defaultProcess() {
-	while(1)
-		_hlt();
+	_hlt();
 }
 
 int main() {	
 	load_idt();
+	initializePipes();
+	initializeScheduler();
+	initializeSems();
 	
 	// se envian los valores iniciales del RSP y de la primera 
 	// instruccion para el reinicio luego de una excepcion

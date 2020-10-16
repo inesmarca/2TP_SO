@@ -14,6 +14,32 @@ int isVocal(char c) {
     return c == 'a' || c == 'A' || c == 'e' || c == 'E' || c == 'i' || c == 'I' || c == 'o' || c == 'O' || c == 'u' || c == 'U';
 }
 
+// sem
+void sem() {
+    // Llenar
+}
+
+// pipe
+void pipeInfo() {
+    int * ids = malloc(MAX_PROCESS);
+    int cant = 0;
+
+    if ((cant = getListPipes(ids)) == -1)
+        return;
+
+    int foreground = 1;
+    infoPipe * info = malloc(sizeof(infoPipe));
+
+    for (int i = 0; i < cant; i++) {
+        if (getPipeInfo(ids[i], info) == -1)
+            return;
+
+        printf("ID: %d, NWRITE: %d, NREAD: %d, BLOCKED PID: %d %d\n", ids[i], info->nwrite, info->nread, info->pids_blocked[0], info->pids_blocked[1]);
+    }
+
+    return;
+}
+
 // wc
 void wc() {
     char * buff = malloc(255);
@@ -30,20 +56,23 @@ void wc() {
 void ps() {
     int * pids = malloc(MAX_PROCESS);
     int cant = 0;
-    if ((cant = getListPids(pids)) == -1) {
+
+    if ((cant = getListPids(pids)) == -1)
         return;
-    }
+
     int foreground = 1;
     infoPCB * info = malloc(sizeof(infoPCB));
+
     for (int i = 0; i < cant; i++) {
-        if (getInfoPCB(pids[i], info) == -1) {
+        if (getInfoPCB(pids[i], info) == -1)
             return;
-        }
+
         if (info->fd[STDIN] != -1) 
             foreground = 0;
 
         printf("PID: %d, NAME: %s, PRIORITY: %d, STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", pids[i], info->name, info->priority, info->stackPointer, info->basePointer, foreground);
     }
+
     return;
 }
 

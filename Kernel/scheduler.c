@@ -17,7 +17,6 @@ extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, i
 extern void tickInterrupt();
 void _hlt();
 static void reset_processes();
-static void initializeScheduler();
 static int freeProcess();
 static int getNewPid();
 static void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
@@ -36,8 +35,13 @@ static int curr_index = 0;
 static int next_priority = PRIORITY_LEVELS - 1;
 static int next_index = 0;
 static int waiting_index[PRIORITY_LEVELS] = {0};
-static int scheduler_initialized = 0;
 static int cant_active_processes = 0;
+
+void initializeScheduler() {
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        proceses[i].state = KILLED;
+    }
+}
 
 // getpid
 int getpid() {
@@ -67,8 +71,8 @@ int getInfoPCB(int pid, infoPCB * buff) {
 
     strcpy(buff->name, proceses[pid].name);
     buff->priority = proceses[pid].priority;
-    uintToBase(proceses[pid].rsp, buff->stackPointer, 16);
-    uintToBase(proceses[pid].mallocPos, buff->basePointer, 16);
+    uintToBase((uint64_t)proceses[pid].rsp, buff->stackPointer, 16);
+    uintToBase((uint64_t)proceses[pid].mallocPos, buff->basePointer, 16);
     buff->fd[0] = proceses[pid].fd[0];
     buff->fd[1] = proceses[pid].fd[1];
         
@@ -77,10 +81,6 @@ int getInfoPCB(int pid, infoPCB * buff) {
 
 // swap
 uint64_t * swap(uint64_t * rsp) {
-    if (scheduler_initialized == 0) {
-        initializeScheduler();
-        scheduler_initialized++;
-    }
 
     if (active_process_pid != -1 && active_processes[curr_priority][curr_index]->quantum != 0 && active_processes[curr_priority][curr_index]->state == ACTIVE) {
         active_processes[curr_priority][curr_index]->quantum--;
@@ -252,12 +252,6 @@ static void reset_processes(){ //reacomoda la lista de active y waiting
         number_of_proceses[i] = waiting_index[i];
         waiting_index[i] = 0;
         number_of_proceses_snapshot[i] = number_of_proceses[i];
-    }
-}
-
-static void initializeScheduler() {
-    for (int i = 0; i < MAX_PROCESS; i++) {
-        proceses[i].state = KILLED;
     }
 }
 

@@ -2,6 +2,8 @@
 #define __SYSCALL_H_
 
 #include <stdint.h>
+#include <scheduler.h>
+#define MAX_PROCESS 20
 #define STDIN 0
 #define STDOUT 1
 
