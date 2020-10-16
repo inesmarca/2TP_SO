@@ -3,11 +3,27 @@
 #include <sysLib.h>
 #include <test_util.h>
 #include <libC.h>
+#include <shell.h>
 
 static int fd[2] = {STDIN, STDOUT};
 
-int tests() {
-	printf("Ingrese 1 para MM, 2 para Scheduler, 3 para Prioridades, 4 sync con semaforos y 5 sin semaforos \n");
+// int tests() {
+// 	printf("Ingrese 1 para MM, 2 para Scheduler, 3 para Prioridades, 4 sync con semaforos y 5 sin semaforos \n");
+// // void test(int argc, char ** argv) {
+// // 	for (int i = 0; i < argc; i++) {
+// // 		printf("%d ", atoi(argv[i]));
+// // 	}
+// // 	printf("\nTermine\n");
+// // }
+
+int main() {
+	printf("Initialize shell");
+	
+	if ( create("shell",shell, 2, fd, 0,0) == -1)
+		printf("Esta fallando la creacion del shell");
+	return -1;
+	
+	/*printf("Ingrese 1 para MM, 2 para Scheduler, 3 para Prioridades, 4 sync con semaforos y 5 sin semaforos \n");
 	char k = getChar();
 	switch (k)
 	{
@@ -66,4 +82,5 @@ int main() {
 		printf("Error Creating Process\n");
 
 	return 0;
+	*/
 }
