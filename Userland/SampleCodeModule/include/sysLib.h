@@ -81,11 +81,11 @@ extern int getListPids(int * buff);
 
 extern int getInfoPCB(int pid, infoPCB * buff);
 
-extern int getSemList();
+extern int getListSem();
 
 extern int getSemInfo(int pid, infoSem * buff);
 
-extern int getListPipe(int * buff);
+extern int getListPipes(int * buff);
 
 extern int getPipeInfo(int id, infoPipe * buff);
 

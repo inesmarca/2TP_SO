@@ -15,7 +15,6 @@ static int fd[2] = {STDIN, STDOUT};
 // // 	}
 // // 	printf("\nTermine\n");
 // // }
-
 int main() {
 
 	printf("Initialize shell");
@@ -24,7 +23,9 @@ int main() {
 		printf("Esta fallando la creacion del shell");
 	return -1;
 	
-	/*printf("Ingrese 1 para MM, 2 para Scheduler, 3 para Prioridades, 4 sync con semaforos y 5 sin semaforos \n");
+}
+/*
+	printf("Ingrese 1 para MM, 2 para Scheduler, 3 para Prioridades, 4 sync con semaforos y 5 sin semaforos \n");
 	char k = getChar();
 	switch (k)
 	{
@@ -77,11 +78,7 @@ void testFilter() {
 	create("cat", wc, 0, p2, 0, 0);
 }
 
-
-int main() {
-	if (create("tests", tests, 0, fd, 0, 0) == -1)
-		printf("Error Creating Process\n");
-
-	return 0;
-	*/
+void sleep() {
+	for (int i = 1000000000; i > 0; i--);
 }
+*/

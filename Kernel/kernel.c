@@ -56,7 +56,9 @@ void * initializeKernelBinary()
 }
 
 void defaultProcess() {
+	while(1){
 	_hlt();
+	}
 }
 
 int main() {	

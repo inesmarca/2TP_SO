@@ -56,7 +56,7 @@ static void * philospher(char argc, char ** argv){
         take_fork(i);           //INTENTO AGARRAR TENEDORES
         put_fork(i);        
     }
-    
+    return NULL;
 }
 /*
 int create_philo(){
@@ -78,8 +78,7 @@ int create_philo(){
     return 0;
 }
 */
-int philosphers()
-{
+int philosphers() {
     printf("Philosphers problem: \n");
     printf("CREATING SEMS\n");
     mutex = sem_open("mutex", 0, 1);

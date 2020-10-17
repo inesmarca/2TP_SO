@@ -44,10 +44,8 @@ int getInfoPipe(int id, infoPipe * buff) {
     buff->nwrite = pipes[id].nwrite;
 
     int pos = 0;
-    memset(buff->pids_blocked, 0, 2);
     for (int i = 0; i < 2; i++) {
-        if (pipes[id].pids[i] != -1)
-            buff->pids_blocked[pos++] = pipes[id].pids[i];
+        buff->pids_blocked[pos++] = pipes[id].pids[i];
     }
         
     return 0;

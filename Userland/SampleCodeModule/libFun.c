@@ -22,7 +22,7 @@ void sem(){                                 //FALTA TESTEAR
     printf("Listado de semaforos:\n");
 	infoSem * buff[MAX_SEMS];
 	int active_sems = getListSem(buff);
-    printf("Semaforos activos: %d", active_sems);
+    printf("Semaforos activos: %d\n", active_sems);
 	for (int i = 0; i < active_sems; i++){
         printf("holaa");
         printf("sem name: %s\n", buff[i] -> name);
@@ -34,6 +34,7 @@ void sem(){                                 //FALTA TESTEAR
         
 	}
 }
+
 // pipe
 void pipeInfo() {
     int * ids = malloc(MAX_PROCESS);
@@ -42,7 +43,6 @@ void pipeInfo() {
     if ((cant = getListPipes(ids)) == -1)
         return;
 
-    int foreground = 1;
     infoPipe * info = malloc(sizeof(infoPipe));
 
     for (int i = 0; i < cant; i++) {
@@ -123,7 +123,7 @@ void cat() {
 void mem() {
     int buff[2];
     memState(buff);
-    printf("Total Space: %d\nSpace Used: %d", buff[0], buff[1]);
+    printf("Total Space: %d\nSpace Used: %d\n", buff[0], buff[1]);
 }
 
 // loop
@@ -134,6 +134,7 @@ void loop() {
     }
 }
 
+// philosophers
 void philo(){
     philosphers();
 }
