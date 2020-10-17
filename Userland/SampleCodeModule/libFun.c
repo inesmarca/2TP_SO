@@ -27,11 +27,9 @@ void sem(){                                 //FALTA TESTEAR
         printf("holaa");
         printf("sem name: %s\n", buff[i] -> name);
         printf("sem value: %d\n", buff[i] -> value);
+
         for (int j = 0; j < buff[i] -> cant_blocked; j++)
-        {
             printf("PID del proceso bloqueado: %d\n", buff[i]->blocked_pids[j]);
-        }
-        
 	}
 }
 
@@ -42,6 +40,8 @@ void pipeInfo() {
 
     if ((cant = getListPipes(ids)) == -1)
         return;
+
+    printf("%d pipes opened\n", cant);
 
     infoPipe * info = malloc(sizeof(infoPipe));
 
@@ -87,8 +87,6 @@ void ps() {
 
         printf("PID: %d, NAME: %s, PRIORITY: %d, STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", pids[i], info->name, info->priority, info->stackPointer, info->basePointer, foreground);
     }
-
-    return;
 }
 
 // filter

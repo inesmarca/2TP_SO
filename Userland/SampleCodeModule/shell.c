@@ -143,58 +143,58 @@ static void shellControler(char key) {
                         if (background) {
                             if (createBackground(aux, func_ptr[j], 1, 0, 0) == -1)
                                 printError("Error Creating Process 2\n");
-                        } else if (!builtIn[j]) {
+                        } else if (!builtIn[j] || pipes != 0) {
                             if (create(aux, func_ptr[j], 1, fd, 0, 0) == -1)
                                 printError("Error Creating Process 3\n");
                         } else {
                             func_ptr[j]();
                         }   
-                    }
+                    } else {
+                        k++;
+                        char ** argv = malloc(parameters[j]);
 
-                    k++;
-                    char ** argv = malloc(parameters[j]);
+                        if (parameters[j]!=0) {
+                            if (argv == NULL)
+                                printError("Error Creating argv\n");
+                            for (int args= 0; args < parameters[j]; args++){
+                                argv[args] = malloc(255);
 
-                    if (parameters[j]!=0) {
-                        if (argv == NULL)
-                            printError("Error Creating argv\n");
-                        for (int args= 0; args < parameters[j]; args++){
-                            argv[args] = malloc(255);
+                                if (argv[args] == NULL)
+                                    printError("Error Creating Process 5\n");
+                            }      
+                        }
+                    
+                        while (input[k]!=0) {
+                            int args=0;
+                            int index=0;
 
-                            if (argv[args] == NULL)
-                                printError("Error Creating Process 5\n");
-                        }      
-                    }
-                
-                    while (input[k]!=0) {
-                        int args=0;
-                        int index=0;
+                            if (input[k]==' ') {
+                                argv[args][index]=0;
+                                args++;
+                                index=0;
+                            } else {
+                                argv[args][index++]=input[k];
+                            }
 
-                        if (input[k]==' ') {
-                            argv[args][index]=0;
-                            args++;
-                            index=0;
-                        } else {
-                            argv[args][index++]=input[k];
+                            k++;
                         }
 
-                        k++;
-                    }
+                        if (background) {
+                            if (createBackground(aux, func_ptr[j], 1, parameters[j], argv) == -1)
+                                printError("Error Creating Process 6\n");
+                        } else if (!builtIn[j] || pipes != 0) {
+                            if (create(aux, func_ptr[j], 1, fd, parameters[j], argv) == -1)
+                                printError("Error Creating Process 7\n");
+                        } else {
+                            func_ptr[j](parameters[j], argv);
+                        }
 
-                    if (background) {
-                        if (createBackground(aux, func_ptr[j], 1, parameters[j], argv) == -1)
-                            printError("Error Creating Process 6\n");
-                    } else if (!builtIn[j]) {
-                        if (create(aux, func_ptr[j], 1, fd, parameters[j], argv) == -1)
-                            printError("Error Creating Process 7\n");
-                    } else {
-                        // falta agregar las funciones no built in
-                    }
+                        for (int auxi = 0; auxi < parameters[j]; auxi++) {
+                            free(argv[auxi]);
+                        }
 
-                    for (int auxi = 0; auxi < parameters[j]; auxi++) {
-                        free(argv[auxi]);
+                        free(argv);
                     }
-
-                    free(argv);
                     
                 } else {
                     printError("Not a valid function\n");
