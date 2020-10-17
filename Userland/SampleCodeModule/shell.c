@@ -103,7 +103,7 @@ static void shellControler(char key) {
             int j;
             int k=0;
             int background=isBackground();
-            int pipes=isPipe();
+            int pipes = isPipe();
             int fd[2] = {STDIN, STDOUT};
             int fdcopy[2];
 
@@ -125,16 +125,15 @@ static void shellControler(char key) {
                 }
                 
                 char * aux = malloc(DIM_BUFFER);
+                memset(aux, 0, DIM_BUFFER);
 
                 if (aux == NULL)
                     printError("Error Creating Process 1\n");
                 
-                while (input[k] != ' ' && input[k] != 0) {
-                    aux[k] = input[k];
+                for (int x = 0; input[k] != 0 && input[k] != ' '; x++) {
+                    aux[x] = input[k];
                     k++;
                 }
-
-                aux[k]=0;
                 
                 for (j = 0; j < CANT_FUNC && !strcmp(aux, functions[j]) ; j++);
 
@@ -164,11 +163,12 @@ static void shellControler(char key) {
                             }      
                         }
                     
-                        while (input[k]!=0) {
+
+                        while (!(input[k] == 0 || input[k] == '|')) {
                             int args=0;
                             int index=0;
 
-                            if (input[k]==' ') {
+                            if (input[k] == ' ') {
                                 argv[args][index]=0;
                                 args++;
                                 index=0;
@@ -195,16 +195,22 @@ static void shellControler(char key) {
 
                         free(argv);
                     }
-                    
+
+                    if (pipes) {
+                        while (input[k] != '|') {
+                            k++;
+                        }
+                        k += 2;
+                    }
                 } else {
                     printError("Not a valid function\n");
                 }
 
                 input[0] = 0;
-                pos = 0;
                 free(aux);
             }
         }
+        pos = 0;
         printUser();
     } else {
         if (key == DELETE) {

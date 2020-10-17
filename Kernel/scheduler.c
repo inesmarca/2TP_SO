@@ -156,10 +156,10 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
     if (newProcess->pid == -1) {
         return -1;
     }
-                               
+                            
     newProcess->function = func;
     newProcess->state = ACTIVE;
-    newProcess->name = name;
+    memcpy(newProcess->name, name, 255);
     newProcess->priority = priority;
     
     newProcess->fd[0] = fd[0];

@@ -15,7 +15,7 @@ typedef struct pcb {
     uint64_t * mallocPos;
     int pid;       
     char priority;  
-    const char * name;
+    const char name[255];
     int quantum;
     int fd[MAX_PIPES];
 } pcb;

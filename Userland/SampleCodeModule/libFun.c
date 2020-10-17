@@ -111,9 +111,9 @@ void filter() {
 
 // cat
 void cat() {
-	char * buff = malloc(255);
-	read(STDIN, buff, 50);
-	printf(buff);
+	char * buff = malloc(1024);
+	read(STDIN, buff, 1024);
+	printf("Im CAT\n%s", buff);
     free(buff);
 }
 
