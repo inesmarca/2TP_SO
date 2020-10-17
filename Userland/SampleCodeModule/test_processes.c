@@ -91,6 +91,7 @@ void test_processes(){
           }
           p_rqs[rq].state = RUNNING; 
         }
+        printf("loop complete \n");
     }
   }
 }

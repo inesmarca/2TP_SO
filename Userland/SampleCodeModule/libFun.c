@@ -142,12 +142,8 @@ void nice_shell(int argc,char * argv[]){
     {
         printError("invalid ammount of arguments");
     }
-    
     int pid=atoi(argv[0]);
-    
     int priority=atoi(argv[1]);
-    printf("pasandole %s y %s \n",argv[0], argv[1]);
-    printf("pasandole %d y %d \n",pid, priority);
     nice(pid,priority);
 }
 // create process on background
