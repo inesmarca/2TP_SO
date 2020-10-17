@@ -136,17 +136,27 @@ void loop() {
 void philo(){
     philosphers();
 }
-
+//cat para la shell(pointer type)
+void nice_shell(int argc,char * argv[]){
+    if (argc!=2)
+    {
+        printError("invalid ammount of arguments");
+    }
+    
+    int pid=atoi(argv[0]);
+    
+    int priority=atoi(argv[1]);
+    printf("pasandole %s y %s \n",argv[0], argv[1]);
+    printf("pasandole %d y %d \n",pid, priority);
+    nice(pid,priority);
+}
 // create process on background
 int createBackground(const char * name, void * func, int priority, int argc, char * argv[]) {
 	int aux[2] = {-1, STDOUT};
 	return create(name, func, priority, aux, argc, argv);
 }
 
-// Trigger Exception 0
-void triggerException0() {
-    int x = 5 / 0;
-}
+
 
 void printTime(){
     int buff[3];

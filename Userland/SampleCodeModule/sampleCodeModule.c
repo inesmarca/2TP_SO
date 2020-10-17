@@ -19,7 +19,7 @@ int main() {
 
 	printf("Initialize shell");
 	
-	if ( create("shell",shell, 2, fd, 0,0) == -1)
+	if ( create("shell",shell, 0, fd, 0,0) == -1)
 		printf("Esta fallando la creacion del shell");
 	return -1;
 	

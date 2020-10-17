@@ -14,7 +14,7 @@ static void shellControler(char key);
 
 
 static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice", "cat",  "wc", "filter", "clear", "sem",  "philo",  "pipe"};
-static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,  loop,   nice,    cat,    wc,   filter ,  clear,   sem,     philo,  pipeInfo};
+static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,  loop,   nice_shell,    cat,    wc,   filter ,  clear,   sem,     philo,  pipeInfo};
 static char parameters[CANT_FUNC]    = { 0,     0,     0,   0,      2,       0,      0,    0,          0,      0,      0,      0};
 static char builtIn[CANT_FUNC]    =    { 1,     1,     1,   0,      1,       0,      0,    0,          1,      1,      0,      1};
 static char descripcion[CANT_FUNC][101] = {
@@ -163,10 +163,10 @@ static void shellControler(char key) {
                             }      
                         }
                     
-
+                        int args=0;
+                        int index=0;
                         while (!(input[k] == 0 || input[k] == '|')) {
-                            int args=0;
-                            int index=0;
+                            
 
                             if (input[k] == ' ') {
                                 argv[args][index]=0;
@@ -178,6 +178,11 @@ static void shellControler(char key) {
 
                             k++;
                         }
+                        if (input[k]== 0)
+                        {
+                            argv[args][index]=0;
+                        }
+                        
 
                         if (background) {
                             if (createBackground(aux, func_ptr[j], 1, parameters[j], argv) == -1)

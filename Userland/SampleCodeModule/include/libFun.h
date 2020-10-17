@@ -39,4 +39,6 @@ void philo();
 
 void pipeInfo();
 
+void nice_shell(int argc,char * argv[]);
+
 #endif
