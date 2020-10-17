@@ -35,6 +35,8 @@ void wc();
 
 void sem();
 
+void philo();
+
 void pipeInfo();
 
 #endif

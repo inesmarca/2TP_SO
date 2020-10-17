@@ -3,18 +3,63 @@
 #include <consoleManager.h>
 #include <defs.h>
 
+
 extern int _xchg(int * lock, int value);
 
 static sem_t sems[MAX_SIZE];
 static int active_sems = 0;
+/*
+typedef struct sem_t {
+    char * name;
+    int value;
+    int semid;
+    int lock;
+    int blocked_pids[MAX_PROCESS];
+    int cant_blocked_pids;
+    int pids[MAX_PROCESS];
+    int cant_pids;
+} sem_t;
 
-int getListSem(int * buff) { // FALTA HACER ESTO
+typedef struct infoSem {
+    char name[50];
+    int value;
+    int blocked_pids[MAX_PROCESS];
+} infoSem;
+*/
 
-	return 0;
+int getListSem(infoSem * buff) { // FALTA TESTING
+	infoSem info[MAX_SIZE];
+	int index = 0;
+	int active_sems = 0;
+	for (int i = 0; i < MAX_SIZE; i++)
+	{
+		if (sems[i].semid != -1)
+		{
+			active_sems++;
+			strcpy(info[index].name, sems[i].name);
+			info[index].value = sems[i].value;
+			for (int j = 0; j < sems[i].cant_blocked_pids; j++)	{
+				info[index].blocked_pids[j] = sems[i].blocked_pids[j];
+				info[index].cant_blocked++;
+			}
+			index++;
+		}		
+	}
+	buff = info;
+	return active_sems;
 }
 
-int getSemInfo(int semid, infoSem * buff) { // FALTA HACER ESTO
-
+int getSemInfo(int semid, infoSem * buff) { // FALTA TESTING (LA CONSIGNA NO PIDE ESTO CREO)
+	for (int i = 0; i < MAX_SIZE; i++)
+	{
+		if (sems[i].semid == semid){
+			strcpy(buff -> name, sems[i].name);
+			buff -> value = sems[i].value;
+			for (int j = 0; j < sems[i].cant_blocked_pids; j++)	{
+				buff -> blocked_pids[j] = sems[i].blocked_pids[j];
+			}
+		}	
+	}
 	return 0;
 }
 
@@ -157,3 +202,4 @@ int sem_close(sem_t * sem){
 	}
 	return 0;
 }
+

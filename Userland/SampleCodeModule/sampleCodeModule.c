@@ -17,6 +17,7 @@ static int fd[2] = {STDIN, STDOUT};
 // // }
 
 int main() {
+
 	printf("Initialize shell");
 	
 	if ( create("shell",shell, 2, fd, 0,0) == -1)

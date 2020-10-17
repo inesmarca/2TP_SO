@@ -5,7 +5,7 @@
 #include <libFun.h>
 #include <sysLib.h>
 
-#define CANT_FUNC 9
+#define CANT_FUNC 11
 
 static void help();
 static void initShell();
@@ -13,9 +13,9 @@ static void shellControler(char key);
 
 
 
-static char functions[CANT_FUNC][20] = {"help","printTime", "printTemperature","printCPUInfo", "inforeg", "triggerException0", "triggerException6","printmem", "clear"};
-static void (*func_ptr[CANT_FUNC])() = { help , printTime,   printTemperature,  printCPUInfo,   inforeg,   triggerException0,   triggerException6,  printmem ,  clear};
-static char parameters[CANT_FUNC]    = { 0,     0,           0,                 0,              0,         0,                   0,                  1,          0       };
+static char functions[CANT_FUNC][20] = {"help","printTime", "printTemperature","printCPUInfo", "inforeg", "triggerException0", "triggerException6","printmem", "clear", "sem",  "philo"};
+static void (*func_ptr[CANT_FUNC])() = { help , printTime,   printTemperature,  printCPUInfo,   inforeg,   triggerException0,   triggerException6,  printmem ,  clear,  sem,    philo};
+static char parameters[CANT_FUNC]    = { 0,     0,           0,                 0,              0,         0,                   0,                  1,          0,      0,      0};
 static char descripcion[CANT_FUNC][101] = {
     "enumeracion de las funciones disponibles del sistema", 
     "imprime en pantalla la hora actual", 
@@ -25,7 +25,9 @@ static char descripcion[CANT_FUNC][101] = {
     "demostracion de la excepcion division por 0",
     "demostracion de la excepcion invalid opcode",
     "recibe una direccion de memoria y hace un volcado de memoria de 32 bytes a partir de dicho parametro",
-    "limpia la pantalla"
+    "limpia la pantalla",
+    "Lista los semaforos activos con su informacion correspondiente",
+    "Problema de los filosofos comensales"
     };  
 
 
@@ -236,6 +238,7 @@ static void help(){
     putChar('\n');
     printf("Para informacion adicional, consultar documentacion.\n");
 }
+
 
 
 char * getUser() {

@@ -287,7 +287,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             res = getInfoPCB((int)reg1, (infoPCB *)reg2);
             break;
         case 26:
-            res = getListSem((int*)reg1);
+            res = getListSem((infoSem*)reg1);
             break;
         case 27:
             res = getSemInfo((int)reg1, (infoSem *)reg2);

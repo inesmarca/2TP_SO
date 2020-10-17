@@ -81,7 +81,7 @@ extern int getListPids(int * buff);
 
 extern int getInfoPCB(int pid, infoPCB * buff);
 
-extern int getSemList(int * buff);
+extern int getSemList();
 
 extern int getSemInfo(int pid, infoSem * buff);
 

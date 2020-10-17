@@ -1,6 +1,9 @@
 #include <libC.h>
 #include <libFun.h>
 #include <sysLib.h>
+
+#include <philo.h>
+
 #define MAX_DIGITS 20
 #define MAX_READ 255
 
@@ -15,10 +18,22 @@ int isVocal(char c) {
 }
 
 // sem
-void sem() {
-    // Llenar
+void sem(){                                 //FALTA TESTEAR
+    printf("Listado de semaforos:\n");
+	infoSem * buff[MAX_SEMS];
+	int active_sems = getListSem(buff);
+    printf("Semaforos activos: %d", active_sems);
+	for (int i = 0; i < active_sems; i++){
+        printf("holaa");
+        printf("sem name: %s\n", buff[i] -> name);
+        printf("sem value: %d\n", buff[i] -> value);
+        for (int j = 0; j < buff[i] -> cant_blocked; j++)
+        {
+            printf("PID del proceso bloqueado: %d\n", buff[i]->blocked_pids[j]);
+        }
+        
+	}
 }
-
 // pipe
 void pipeInfo() {
     int * ids = malloc(MAX_PROCESS);
@@ -117,6 +132,10 @@ void loop() {
         printf("%d ", getpid());
         for (int i = 1000000000; i > 0; i--);
     }
+}
+
+void philo(){
+    philosphers();
 }
 
 // create process on background

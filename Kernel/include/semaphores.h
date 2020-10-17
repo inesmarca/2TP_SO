@@ -22,6 +22,7 @@ typedef struct infoSem {
     char name[50];
     int value;
     int blocked_pids[MAX_PROCESS];
+    int cant_blocked;
 } infoSem;
 
 int sem_size();
@@ -38,7 +39,7 @@ void acquire(int * lock);
 
 void release(int * lock);
 
-int getListSem(int * buff);
+int getListSem(infoSem * buff);
 
 int getSemInfo(int semid, infoSem * buff);
 

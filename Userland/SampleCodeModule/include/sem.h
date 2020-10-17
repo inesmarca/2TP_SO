@@ -1,6 +1,6 @@
 #ifndef __SEM_H_
 #define __SEM_H_
-#include <sysLib.h>
+//#include <sysLib.h>
 #define MAX_PROCESS 20
 
 typedef struct sem_t
@@ -14,5 +14,6 @@ typedef struct sem_t
     int pids[MAX_PROCESS];
     int cant_pids;
 } sem_t;
+
 
 #endif
