@@ -41,4 +41,11 @@ void pipeInfo();
 
 void nice_shell(int argc,char * argv[]);
 
+void kill_shell(int argc,char *argv[]);
+   
+void block_shell(int argc,char *argv[]);
+    
+void unblock_shell(int argc,char *argv[]);
+   
+
 #endif

@@ -123,7 +123,34 @@ void mem() {
     memState(buff);
     printf("Total Space: %d\nSpace Used: %d\n", buff[0], buff[1]);
 }
-
+//kill
+void kill_shell(int argc,char *argv[]){
+    if (argc!=1)
+    {
+        printError("invalid ammount of arguments");
+    }
+    int pid=atoi(argv[0]);
+    kill(pid,0);
+    
+}
+//block
+void block_shell(int argc,char *argv[]){
+    if (argc!=1)
+    {
+        printError("invalid ammount of arguments");
+    }
+    int pid=atoi(argv[0]);
+    kill(pid,1);
+}
+//unblock
+void unblock_shell(int argc,char *argv[]){
+    if (argc!=1)
+    {
+        printError("invalid ammount of arguments");
+    }
+    int pid=atoi(argv[0]);
+    kill(pid,2);
+}
 // loop
 void loop() {
     while(1) {

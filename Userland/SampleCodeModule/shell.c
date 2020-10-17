@@ -5,16 +5,16 @@
 #include <libFun.h>
 #include <sysLib.h>
 
-#define CANT_FUNC 12
+#define CANT_FUNC 15
 
 static void help();
 static void initShell();
 static void shellControler(char key);
 
-static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice",         "cat",  "wc", "filter", "clear", "sem",  "philo",  "pipe"};
-static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,   loop,   nice_shell,     cat,    wc,   filter ,  clear,   sem,    philo,    pipeInfo};
-static char parameters[CANT_FUNC]    = { 0,     0,     0,    0,      2,              0,      0,    0,        0,       0,      0,        0};
-static char builtIn[CANT_FUNC]    =    { 1,     1,     1,    0,      1,              0,      0,    0,        1,       1,      0,        1};
+static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice",         "cat",  "wc", "filter", "clear", "sem",  "philo",  "pipe",      "kill",     "block",     "unblock"};
+static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,   loop,   nice_shell,     cat,    wc,   filter ,  clear,   sem,    philo,    pipeInfo,    kill_shell, block_shell, unblock_shell};
+static char parameters[CANT_FUNC]    = { 0,     0,     0,    0,      2,              0,      0,    0,        0,       0,      0,        0,           1,          1,           1};
+static char builtIn[CANT_FUNC]    =    { 1,     1,     1,    0,      1,              0,      0,    0,        1,       1,      0,        1,           1,          1,           1};
 static char descripcion[CANT_FUNC][101] = {
     "enumeracion de las funciones disponibles del sistema", 
     "imprime el estado de la memoria", 
@@ -27,7 +27,10 @@ static char descripcion[CANT_FUNC][101] = {
     "limpia la pantalla",
     "lista los semaforos activos con su informacion correspondiente",
     "problema de los filosofos comensales",
-    "imprime la lista de todos los pipes con sus propiedades"
+    "imprime la lista de todos los pipes con sus propiedades",
+    "Recibe el PID de un proceso y lo elimina",
+    "Recibe el PID de un proceso y lo bloquea",
+    "Recibe el PID de un proceso y lo desbloquea"
     };  
 
 
