@@ -11,8 +11,6 @@ static void help();
 static void initShell();
 static void shellControler(char key);
 
-
-
 static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice", "cat",  "wc", "filter", "clear", "sem",  "philo",  "pipe"};
 static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,  loop,   nice_shell,    cat,    wc,   filter ,  clear,   sem,     philo,  pipeInfo};
 static char parameters[CANT_FUNC]    = { 0,     0,     0,   0,      2,       0,      0,    0,          0,      0,      0,      0};

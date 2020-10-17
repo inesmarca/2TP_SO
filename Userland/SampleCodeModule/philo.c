@@ -102,7 +102,7 @@ int philosphers() {
         char * num = itoa(i, num, 10);
         create(num, philospher, 2, fd, 1, buff0);
     }
-    */
+*/
   
     char ** buff0 = malloc(1);                      //BUFFER PARA PASAR ARGV
 	buff0[0] = malloc(20);

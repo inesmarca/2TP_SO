@@ -181,9 +181,21 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
 }
 
 static void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
+
+    char ** buff = malloc(argc);
+    int auxArgc = argc;
+    for (int i = 0; i < argc; i++) {
+	    buff[i] = malloc(255);
+        memcpy(buff[i], argv[i], 255);
+    }
+
+    (*func)(auxArgc, buff);
     
-    (*func)(argc, argv);
-    
+    for (int i = 0; i < auxArgc; i++) {
+        free(buff[i]);
+    }
+    free(buff);
+
     kill(pid);
 }
 
