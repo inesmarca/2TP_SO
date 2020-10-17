@@ -28,8 +28,6 @@ static pcb * active_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static pcb * waiting_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static int number_of_proceses[PRIORITY_LEVELS] = {0};
 static int number_of_proceses_snapshot[PRIORITY_LEVELS] = {0};
-static pcb defaultProcessPcb;
-static uint64_t defaultProcessMemory[STACK_SIZE];
 
 static int active_process_pid = -1;
 static int curr_priority = PRIORITY_LEVELS - 1;
@@ -39,40 +37,10 @@ static int next_index = 0;
 static int waiting_index[PRIORITY_LEVELS] = {0};
 static int cant_active_processes = 0;
 
-
-
-static void defaultProcess() {
-	while(1){
-		_hlt();
-	}
-}
-static int initializeDefaultProcess(){
-    defaultProcessPcb.pid = -1;
-    if (defaultProcessPcb.pid == -1) {
-        return -1;
-    }
-                            
-    defaultProcessPcb.function = defaultProcess;
-    defaultProcessPcb.state = ACTIVE;
-    memcpy(defaultProcessPcb.name, "Default Process (idler)", 255);
-    defaultProcessPcb.priority = 0;
-    
-    defaultProcessPcb.fd[0] = STDIN;
-    defaultProcessPcb.fd[1] = STDOUT;
-
-    defaultProcessPcb.mallocPos = defaultProcessMemory;
-    defaultProcessPcb.rsp = defaultProcessPcb.mallocPos + STACK_SIZE;
-
-    defaultProcessPcb.rsp = initializeStack(defaultProcessPcb.rsp, wrapper, defaultProcessPcb.function, 0, NULL, defaultProcessPcb.pid);
-    return 0;
-}
-
 void initializeScheduler() {
     for (int i = 0; i < MAX_PROCESS; i++) {
         proceses[i].state = KILLED;
     }
-    if(initializeDefaultProcess()!=0);
-        //error
 }
 
 // getpid
@@ -120,11 +88,7 @@ uint64_t * swap(uint64_t * rsp) {
     }
     
     int aux_total = cant_active_processes;
-    if ( aux_total == 0 ) { //chequea caso no proceso(porbablemente se reemplaze por tirar a un proceso halt predefinido)
-        if (active_process_pid != -1)
-        {
-            return defaultProcessPcb.rsp;
-        }    
+    if ( aux_total == 0) { //chequea caso no proceso(porbablemente se reemplaze por tirar a un proceso halt predefinido)
         return rsp;
     }
     
@@ -217,21 +181,9 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
 }
 
 static void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
-
-    char ** buff = malloc(argc);
-    int auxArgc = argc;
-    for (int i = 0; i < argc; i++) {
-	    buff[i] = malloc(255);
-        memcpy(buff[i], argv[i], 255);
-    }
-
-    (*func)(auxArgc, buff);
     
-    for (int i = 0; i < auxArgc; i++) {
-        free(buff[i]);
-    }
-    free(buff);
-
+    (*func)(argc, argv);
+    
     kill(pid);
 }
 
