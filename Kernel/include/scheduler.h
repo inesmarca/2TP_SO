@@ -17,8 +17,9 @@ typedef struct pcb {
     char priority;  
     const char name[255];
     int quantum;
-    int fd[MAX_PROCESS];
     int has_pipe;
+    int fd[MAX_PROCESS];
+    int foreground;//si es foreground esto es 1 sino es bg y es 0
 } pcb;
 
 typedef struct infoPCB {
@@ -33,7 +34,7 @@ typedef struct infoPCB {
 
 uint64_t * swap(uint64_t * rsp);
 
-int createProcess(const char * name, void * func, int priority, int fd[], int argc, char * argv[]);
+int createProcess(const char * name, void * func, int priority, int fd[],int foreground, int argc, char * argv[]);
 
 int kill(int pid);
 

@@ -88,7 +88,8 @@ int addPhilo(int i){
         printError("Error al crear semaforo");
         return -1;
     }
-    philPID[i] = createBackground(names[i], philospher, 2, 0, 0);
+    int fd[2]={-1,STDOUT};
+    philPID[i] = createBackground(names[i], philospher, 2,fd, 0, 0);
     cant++;
     return 0;    
 }

@@ -185,10 +185,15 @@ void nice_shell(int argc,char * argv[]){
 }
 
 // create process on background
-int createBackground(const char * name, void * func, int priority, int argc, char * argv[]) {
-	int aux[2] = {-1, STDOUT};
-	return create(name, func, priority, aux, argc, argv);
+int createBackground(const char * name, void * func, int priority,int fd[], int argc, char * argv[]) {
+	
+	return create(name, func, priority, fd,0, argc, argv);
 }
+int createForeground(const char * name, void * func, int priority,int fd[], int argc, char * argv[]) {
+	
+	return create(name, func, priority, fd,1, argc, argv);
+}
+
 
 void printTime(){
     int buff[3];

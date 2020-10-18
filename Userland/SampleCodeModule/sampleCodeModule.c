@@ -18,7 +18,7 @@ static int fd[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
 
 int main() {
 	printf("Initialize shell");
-	if ( create("shell", shell, 0, fd, 0,0) == -1)
+	if ( createForeground("shell", shell, 0, fd, 0,0) == -1)
 		printf("Esta fallando la creacion del shell");
 	return -1;
 }

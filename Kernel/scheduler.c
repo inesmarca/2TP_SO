@@ -20,6 +20,7 @@ static void reset_processes();
 static int freeProcess();
 static int getNewPid();
 static void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
+static void kill_foreground(int pid);
 
 // VARIABLES
 static uint64_t processMemory[MAX_PROCESS][STACK_SIZE] = {{0}};
@@ -28,6 +29,7 @@ static pcb * active_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static pcb * waiting_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static int number_of_proceses[PRIORITY_LEVELS] = {0};
 static int number_of_proceses_snapshot[PRIORITY_LEVELS] = {0};
+static pcb * foreground_processes[MAX_PROCESS]={0};
 
 static int active_process_pid = -1;
 static int curr_priority = PRIORITY_LEVELS - 1;
@@ -36,6 +38,7 @@ static int next_priority = PRIORITY_LEVELS - 1;
 static int next_index = 0;
 static int waiting_index[PRIORITY_LEVELS] = {0};
 static int cant_active_processes = 0;
+static int foreground_processes_index=0;
 
 void initializeScheduler() {
     for (int i = 0; i < MAX_PROCESS; i++) {
@@ -150,7 +153,7 @@ uint64_t * swap(uint64_t * rsp) {
 }
 
 // create
-int createProcess(const char * name, void * func, int priority, int fd[], int argc, char * argv[]){
+int createProcess(const char * name, void * func, int priority, int fd[],int foreground, int argc, char * argv[]){
     if (priority < 0 || priority >= PRIORITY_LEVELS) {
         return -1;
     }
@@ -180,6 +183,7 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
         }
         newProcess->fd[i] = fd[i];
     }
+    newProcess->foreground=foreground;
 
     newProcess->mallocPos = processMemory[newProcess->pid];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
@@ -199,7 +203,14 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
     
     number_of_proceses[priority]++;
     cant_active_processes++;
-
+    if (foreground)
+    {
+        foreground_processes[foreground_processes_index]=newProcess;
+        foreground_processes_index++;
+        if(foreground_processes_index>1){
+            block(foreground_processes[foreground_processes_index-1]->pid);
+        }
+    }
     return newProcess->pid;
 }
 
@@ -227,10 +238,31 @@ int kill(int pid) {
         proceses[pid].state = KILLED;
         number_of_proceses[(int)proceses[pid].priority]--;
         cant_active_processes--;
+        if (proceses[pid].foreground==1)
+        {
+            kill_foreground(pid);
+        }
+        
         if (pid == active_process_pid) 
             tickInterrupt();
         return 1;
     } else return -1;
+}
+static void kill_foreground(int pid){
+    int j=0;
+    for (int i = 0; i < foreground_processes_index ; i++)
+    {
+        if (foreground_processes[i]->pid!=pid)
+        {
+            foreground_processes[j]=foreground_processes[i];
+            j++;
+        }
+    }
+    foreground_processes_index--;
+    if (foreground_processes_index > 0 && foreground_processes[foreground_processes_index]->state==BLOCKED)
+    {
+        unblock(foreground_processes[foreground_processes_index]->pid);
+    }
 }
 
 // block

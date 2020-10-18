@@ -12,8 +12,8 @@ static uint64_t my_getpid(){
 }
 
 static uint64_t my_create_process(char * name){
-  int fd[2] = {0, 1};
-  return create(name, endless_loop, 0, fd, 0, 0);
+  int fd[2] = {-1, 1};
+  return createBackground(name, endless_loop, 0, fd, 0, 0);
 }
 
 static uint64_t my_nice(uint64_t pid, uint64_t newPrio){
