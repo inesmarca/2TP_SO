@@ -260,7 +260,7 @@ static void kill_foreground(int pid){
         }
     }
     foreground_processes_index--;
-    if (foreground_processes_index > 0 && foreground_processes[foreground_processes_index]->state==BLOCKED)
+    if (foreground_processes_index >= 0 && foreground_processes[foreground_processes_index]->state==BLOCKED)
     {
         unblock(foreground_processes[foreground_processes_index]->pid);
     }
