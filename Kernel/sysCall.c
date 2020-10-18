@@ -39,7 +39,7 @@ int read(int fd, char * buff, int cant) {
     if (process->fd[fd] < 0)
         return -1;
 
-    if (process->fd[fd] == STDIN)
+    if (process->fd[fd] == STDIN && process->foreground==1)
         return readKey(buff, cant);
     else if (process->fd[fd] != STDOUT)
         return piperead(process->fd[fd], buff, cant);
@@ -213,7 +213,7 @@ void mem(int buff[]) {
 }
 
 // Syscall Handler
-uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, uint64_t reg6, int sys) {
+uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, uint64_t reg6,uint64_t reg7, int sys) {
     uint64_t res;
     switch (sys) {
         case 0:
@@ -256,7 +256,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             res = changeState((int)reg1, (int)reg2);
             break;
         case 13:
-            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int *)reg4, (int)reg5, (char **)reg6);
+            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int *)reg4, (int)reg5, (int)reg6, (char **)reg7);
             break;
         case 14:
             res = getpid();

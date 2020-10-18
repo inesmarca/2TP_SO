@@ -23,7 +23,9 @@ void loop();
 
 void mem();
 
-int createBackground(const char * name, void * func, int priority, int argc, char * argv[]);
+int createBackground(const char * name, void * func, int priority,int fd[], int argc, char * argv[]);
+
+int createForeground(const char * name, void * func, int priority,int fd[], int argc, char * argv[]);
 
 void filter();
 

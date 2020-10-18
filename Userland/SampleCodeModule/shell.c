@@ -106,24 +106,13 @@ static void shellControler(char key) {
             int background=isBackground();
             int pipes = isPipe();
             int fd[2] = {STDIN, STDOUT};
-            int fdcopy[2];
 
             if (pipes)
                 pipe(fd);
 
-            fdcopy[0]=fd[0];
-            fdcopy[1]=fd[1];
 
             for (int pipecounter = 0;  pipecounter < pipes + 1; pipecounter++) {
-                if (pipes == 1) {
-                    if (pipecounter==0) {
-                        fd[0] = STDIN;
-                        fd[1] = fdcopy[1];                       
-                    } else {
-                        fd[0] = fdcopy[0];
-                        fd[1] = STDOUT;
-                    }
-                }
+                
                 
                 char * aux = malloc(DIM_BUFFER);
                 memset(aux, 0, DIM_BUFFER);
@@ -140,15 +129,43 @@ static void shellControler(char key) {
 
                 if (j < CANT_FUNC) {
                     if (parameters[j] == 0) {
-                        if (background) {
-                            if (createBackground(aux, func_ptr[j], 1, 0, 0) == -1)
+                        int fd_aux[2]={STDIN,STDOUT};
+                        if (builtIn[j])
+                        {
+                           func_ptr[j]();
+                        }
+                        else if(background && pipes==0) // back no pipe
+                        {
+                            fd_aux[0]=-1;
+                            if (createBackground(aux, func_ptr[j], 1,fd_aux, 0, 0) == -1)
                                 printError("Error Creating Process 2\n");
-                        } else if (!builtIn[j] || pipes != 0) {
-                            if (create(aux, func_ptr[j], 1, fd, 0, 0) == -1)
-                                printError("Error Creating Process 3\n");
-                        } else {
-                            func_ptr[j]();
-                        }   
+                        }
+                        else if(pipes!=0)
+                        {
+                            
+                            if (pipecounter) // pipe del lado de y  ->  x | y 
+                            {
+                                fd_aux[0]=fd[0];
+                                if (createBackground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
+                                    printError("Error Creating Process 3\n");
+                            }
+                            else// pipe del lado de x  ->  x | y 
+                            {
+                                fd_aux[1]=fd[1];
+                                if (createForeground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
+                                    printError("Error Creating Process 3\n");
+                            }
+                            
+                            
+                        }
+                        else //el foreground clasico
+                        {
+                            if (createForeground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
+                                    printError("Error Creating Process 3\n");
+                        }
+                        
+                        
+       
                     } else {
                         k++;
                         char ** argv = malloc(parameters[j]);
@@ -163,6 +180,8 @@ static void shellControler(char key) {
                                     printError("Error Creating Process 5\n");
                             }      
                         }
+
+
                     
                         int args=0;
                         int index=0;
@@ -184,16 +203,49 @@ static void shellControler(char key) {
                             argv[args][index]=0;
                         }
                         
-
-                        if (background) {
-                            if (createBackground(aux, func_ptr[j], 1, parameters[j], argv) == -1)
-                                printError("Error Creating Process 6\n");
-                        } else if (!builtIn[j] || pipes != 0) {
-                            if (create(aux, func_ptr[j], 1, fd, parameters[j], argv) == -1)
-                                printError("Error Creating Process 7\n");
-                        } else {
-                            func_ptr[j](parameters[j], argv);
+                        int fd_aux[2]={STDIN,STDOUT};
+                        if (builtIn[j])
+                        {
+                           func_ptr[j]();
                         }
+                        else if(background && pipes==0) // back no pipe
+                        {
+                            fd_aux[0]=-1;
+                            if (createBackground(aux, func_ptr[j], 1,fd_aux, 0, 0) == -1)
+                                printError("Error Creating Process 2\n");
+                        }
+                        else if(pipes!=0)
+                        {
+                            
+                            if (pipecounter) // pipe del lado de y  ->  x | y 
+                            {
+                                fd_aux[0]=fd[0];
+                                if (createBackground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
+                                    printError("Error Creating Process 3\n");
+                            }
+                            else// pipe del lado de x  ->  x | y 
+                            {
+                                fd_aux[1]=fd[1];
+                                if (createForeground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
+                                    printError("Error Creating Process 3\n");
+                            }
+                            
+                            
+                        }
+                        else //el foreground clasico
+                        {
+                            if (createForeground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
+                                    printError("Error Creating Process 3\n");
+                        }
+                        // if (background) {
+                        //     if (createBackground(aux, func_ptr[j], 1, parameters[j], argv) == -1)
+                        //         printError("Error Creating Process 6\n");
+                        // } else if (!builtIn[j] || pipes != 0) {
+                        //     if (create(aux, func_ptr[j], 1, fd, parameters[j], argv) == -1)
+                        //         printError("Error Creating Process 7\n");
+                        // } else {
+                        //     func_ptr[j](parameters[j], argv);
+                        // }
 
                         for (int auxi = 0; auxi < parameters[j]; auxi++) {
                             free(argv[auxi]);
