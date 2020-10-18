@@ -56,4 +56,8 @@ void initializeScheduler();
 
 int close(int fd);
 
+int getInfoPCB(int pid, infoPCB * buff);
+
+int getListPids(int * buff);
+
 #endif

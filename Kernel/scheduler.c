@@ -56,24 +56,30 @@ pcb * getPCB(int pid) {
     return &proceses[pid];
 }
 
-// getListPCB
-int getListPCB(infoPCB * buff[]) {
+// getListPids
+int getListPids(int * buff) {
     int cant = 0;
-    for (int pid = 0; pid < MAX_PROCESS; pid++) {
-        if (proceses[pid].state != KILLED) {
-            buff[cant]->pid = pid;
-            strcpy(buff[cant]->name, proceses[pid].name);
-            buff[cant]->priority = proceses[pid].priority;
-            buff[cant]->state = proceses[pid].state;
-            uintToBase((uint64_t)proceses[pid].rsp, buff[cant]->stackPointer, 16);
-            uintToBase((uint64_t)proceses[pid].mallocPos, buff[cant]->basePointer, 16);
-            buff[cant]->fd[0] = proceses[pid].fd[0];
-            buff[cant]->fd[1] = proceses[pid].fd[1];
-            cant++;
-        }
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        if (proceses[i].state != KILLED)
+            buff[cant++] = i;
     }
-        
+
     return cant;
+}
+
+// getInfoPCB
+int getInfoPCB(int pid, infoPCB * buff) {
+    if (pid < 0 || pid >= MAX_PROCESS)
+        return -1;
+
+    strcpy(buff->name, proceses[pid].name);
+    buff->priority = proceses[pid].priority;
+    uintToBase((uint64_t)proceses[pid].rsp, buff->stackPointer, 16);
+    uintToBase((uint64_t)proceses[pid].mallocPos, buff->basePointer, 16);
+    buff->fd[0] = proceses[pid].fd[0];
+    buff->fd[1] = proceses[pid].fd[1];
+        
+    return 0;
 }
 
 
@@ -172,7 +178,7 @@ int createProcess(const char * name, void * func, int priority, int fd[],int for
                             
     newProcess->function = func;
     newProcess->state = ACTIVE;
-    memcpy(newProcess->name, name, 255);
+    strcpy(newProcess->name, name);
     newProcess->priority = priority;
     
     // CHECK FOR PIPES
@@ -222,14 +228,6 @@ static void wrapper(void * func(int, char **), int argc, char * argv[], int pid)
         free(argv[i]);
     }
     free(argv);
-
-    if (proceses[pid].has_pipe != 0) {
-        for (int i = 0; i < MAX_PROCESS; i++) {
-            if (proceses[pid].fd[i] != i) {
-                removePidFromPipe(proceses[pid].fd[i], pid);
-            }
-        } 
-    }
     kill(pid);
 }
 
@@ -239,6 +237,15 @@ int kill(int pid) {
         proceses[pid].state = KILLED;
         number_of_proceses[(int)proceses[pid].priority]--;
         cant_active_processes--;
+
+        if (proceses[pid].has_pipe != 0) {
+            for (int i = 0; i < MAX_PROCESS; i++) {
+                if (proceses[pid].fd[i] != i) {
+                    removePidFromPipe(proceses[pid].fd[i], pid);
+                }
+            } 
+        }
+
         if (proceses[pid].foreground==1)
         {
             kill_foreground(pid);
@@ -249,6 +256,8 @@ int kill(int pid) {
         return 1;
     } else return -1;
 }
+
+
 static void kill_foreground(int pid){
     int j=0;
     for (int i = 0; i < foreground_processes_index ; i++)

@@ -87,4 +87,8 @@ extern int getListSem(infoSem ** buff);
 
 extern int getPipeList(infoPipe ** buff);
 
+extern int getListPids(int * buff);
+
+extern int getInfoPCB(int pid, infoPCB * buff);
+
 #endif

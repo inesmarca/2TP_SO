@@ -256,7 +256,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             res = changeState((int)reg1, (int)reg2);
             break;
         case 13:
-            res = createProcess((char *)reg1, (void *)reg2, (int)reg3, (int *)reg4, (int)reg5, (int)reg6, (char **)reg7);
+            res = createProcess((const char *)reg1, (void *)reg2, (int)reg3, (int *)reg4, (int)reg5, (int)reg6, (char **)reg7);
             break;
         case 14:
             res = getpid();
@@ -289,12 +289,15 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             mem((int*)reg1);
             break;
         case 24:
-            res = getListPCB((infoPCB **)reg1);
+            res = getListPids((int*)reg1);
             break;
         case 25:
+            res = getInfoPCB((int)reg1, (infoPCB *)reg2);
+            break;
+        case 26:
             res = getListSem((infoSem **)reg1);
             break;
-        case 26: 
+        case 27: 
             res = getPipeList((infoPipe **)reg1);
             break;
     }

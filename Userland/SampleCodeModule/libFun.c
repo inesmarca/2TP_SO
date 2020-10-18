@@ -59,36 +59,51 @@ void pipeInfo() {
     return;
 }
 
-// wc
+// wc https://github.com/guilleiguaran/xv6/blob/master/wc.c
 void wc() {
-    char c;
-    int cant = 0;
-    while((c = getChar()) != 0)
-        if (c == '\n') cant ++;
-    
-    printf("%d\n", cant);
+  int i, n;
+  int l;
+
+  l = 0;
+  char buf[512];
+  int flag = 1;
+  while((n = read(STDIN, buf, sizeof(buf))) > 0 && flag){
+    for(i = 0; i < n; i++) {
+        if(buf[i] == '\n')
+            l++;
+        if (buf[i] == 0)
+            flag = 0;
+    }
+  }
+
+  if (n < 0){
+    printf("wc: read error\n");
+    return;
+  }
+  printf("%d\n", l);
 }
 
 // ps
 void ps() {
-	infoPCB * buff[MAX_PROCESS];
-    int cant = getListPCB(buff);
+    int * pids = malloc(MAX_PROCESS);
+    int cant = 0;
 
-    if (cant == -1)
+    if ((cant = getListPids(pids)) == -1)
         return;
 
-    printf("%d process opened\n", cant);
-
-    int foreground;
+    int foreground = 1;
+    infoPCB * info = malloc(sizeof(infoPCB));
 
     for (int i = 0; i < cant; i++) {
-        foreground = 1;
-        
-        if (buff[i]->fd[STDIN] != -1) 
+        if (getInfoPCB(pids[i], info) == -1)
+            return;
+
+        if (info->fd[STDIN] != -1) 
             foreground = 0;
 
-        printf("PID: %d, NAME: %s, PRIORITY: %d, ACTIVE: %d STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", buff[i]->pid, buff[i]->name, buff[i]->priority, buff[i]->state - 1, buff[i]->stackPointer, buff[i]->basePointer, foreground);
+        printf("PID: %d, NAME: %s, PRIORITY: %d, STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", pids[i], info->name, info->priority, info->stackPointer, info->basePointer, foreground);
     }
+
     return;
 }
 
@@ -112,18 +127,16 @@ void filter() {
     free(buff);
 }
 
-// cat
-void cat() {
-	char * buff = malloc(255);
-	int cant = read(STDIN, buff, 255);
-    int pos = cant - 1;
-	printf("%s", buff);
-    while (cant == 255 && buff[pos] != 0) {
-        cant = read(STDIN, buff, 255);
-	    printf("%s", buff);
-        pos += cant - 1;
+// cat from https://github.com/guilleiguaran/xv6/blob/master/cat.c
+void cat(int fd) {
+    int n;
+    char buf[512];
+    while((n = read(fd, buf, sizeof(buf))) > 0)
+        write(1, buf, n);
+    if(n < 0){
+        printf("cat: read error\n");
+        return;
     }
-    free(buff);
 }
 
 // mem
@@ -132,6 +145,7 @@ void mem() {
     memState(buff);
     printf("Total Space: %d\nSpace Used: %d\n", buff[0], buff[1]);
 }
+
 //kill
 void kill_shell(int argc,char *argv[]){
     if (argc!=1)
@@ -142,6 +156,7 @@ void kill_shell(int argc,char *argv[]){
     kill(pid,0);
     
 }
+
 //block
 void block_shell(int argc,char *argv[]){
     if (argc!=1)
@@ -151,6 +166,7 @@ void block_shell(int argc,char *argv[]){
     int pid=atoi(argv[0]);
     kill(pid,1);
 }
+
 //unblock
 void unblock_shell(int argc,char *argv[]){
     if (argc!=1)
@@ -160,6 +176,7 @@ void unblock_shell(int argc,char *argv[]){
     int pid=atoi(argv[0]);
     kill(pid,2);
 }
+
 // loop
 void loop() {
     while(1) {

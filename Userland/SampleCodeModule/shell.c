@@ -204,14 +204,14 @@ static void shellControler(char key) {
                             argv[args][index]=0;
                         }
                         
-                        int fd_aux[2]={STDIN,STDOUT};
+                        int fd_aux[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
                         if (builtIn[j])
                         {
                            func_ptr[j]();
                         }
                         else if(background && pipes==0) // back no pipe
                         {
-                            fd_aux[0]=-1;
+                            fd_aux[STDIN]=-1;
                             if (createBackground(aux, func_ptr[j], 1,fd_aux, 0, 0) == -1)
                                 printError("Error Creating Process 2\n");
                         }
@@ -220,7 +220,7 @@ static void shellControler(char key) {
                             
                             if (pipecounter) // pipe del lado de y  ->  x | y 
                             {
-                                fd_aux[0]=fd[0];
+                                fd_aux[STDIN]=fd[0];
                                 if (createBackground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
                                     printError("Error Creating Process 3\n");
                             }

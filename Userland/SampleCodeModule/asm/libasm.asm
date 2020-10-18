@@ -27,6 +27,9 @@ GLOBAL getListPCB
 GLOBAL getListSem
 GLOBAL getPipeList
 
+GLOBAL getListPids
+GLOBAL getInfoPCB
+
 section .text
 
 ; void read(int fd, char * buf, int cant)
@@ -159,17 +162,23 @@ memState:
     int 80h
     ret
 
-getListPCB:
+getListPids:
     mov rax, 24
     int 80h
     ret
 
-getListSem:
+getInfoPCB:
     mov rax, 25
     int 80h
     ret
 
-getPipeList:
+getListSem:
     mov rax, 26
     int 80h
     ret
+
+getPipeList:
+    mov rax, 27
+    int 80h
+    ret
+
