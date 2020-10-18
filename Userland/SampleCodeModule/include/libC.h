@@ -39,4 +39,6 @@ char * itoa(int value, char* buffer, int base);
 
 void changeColor(int letter, int background);
 
+void * memcpy(void * destination, const void * source, uint64_t length);
+
 #endif

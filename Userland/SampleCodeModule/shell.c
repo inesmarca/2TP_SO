@@ -129,7 +129,8 @@ static void shellControler(char key) {
 
                 if (j < CANT_FUNC) {
                     if (parameters[j] == 0) {
-                        int fd_aux[2]={STDIN,STDOUT};
+                        int fd_aux[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+
                         if (builtIn[j])
                         {
                            func_ptr[j]();

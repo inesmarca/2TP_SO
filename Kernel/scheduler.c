@@ -146,6 +146,7 @@ uint64_t * swap(uint64_t * rsp) {
         curr_priority = next_priority;
         cant++;
     }
+
     active_process_pid = active_processes[next_priority][next_index]->pid;
     active_processes[next_priority][next_index]->quantum = PRIORITY_LEVELS - active_processes[next_priority][next_index]->priority;
 
@@ -206,10 +207,10 @@ int createProcess(const char * name, void * func, int priority, int fd[],int for
     if (foreground)
     {
         foreground_processes[foreground_processes_index]=newProcess;
-        foreground_processes_index++;
-        if(foreground_processes_index>1){
+        if(foreground_processes_index >= 1){
             block(foreground_processes[foreground_processes_index-1]->pid);
         }
+        foreground_processes_index++;
     }
     return newProcess->pid;
 }
