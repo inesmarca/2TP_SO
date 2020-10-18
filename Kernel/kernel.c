@@ -72,7 +72,6 @@ int main() {
 
 //	int fd[2] = {-1, -1};
 //	createProcess("defaultProcess", defaultProcess, 2, fd, 0, 0);
-
 	_sti();
 	_hlt();
 	return 0;

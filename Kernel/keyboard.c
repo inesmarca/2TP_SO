@@ -70,6 +70,10 @@ void bufferAdd(char key) {
     buffer[pos] = 0;
 }
 
+void addEOF() {
+    buffer[pos++] = -1;
+}
+
 void keyboard_handler(uint64_t * stackFrame) {
     // lee la tecla
     uint8_t key = getKey();
@@ -105,6 +109,8 @@ void keyboard_handler(uint64_t * stackFrame) {
         default: 
             if (control == 1 && key == 0x1F) { // Control S para guardar un backup de los registros
                 saveReg(stackFrame);
+            } else if (control == 1 && key == 0x20) {
+                addEOF();
             } else {
                 if (left_shift == 1 || right_shift == 1 || capsLock == 1) { // agrega el segundo valor de la tecla apretada
                     bufferAdd(pressCodes[key][1]);

@@ -14,7 +14,7 @@ void test_mm(){
   uint8_t rq;
   uint32_t total;
 
-  while (1){
+  while (1) {
     rq = 0;
     total = 0;
 

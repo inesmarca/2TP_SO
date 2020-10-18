@@ -113,11 +113,9 @@ int putChar(char str) {
 }
 
 char getChar() {
-	char res = 0;
-    while (res == 0) {
-	    if (read(STDIN, &res, 1) == -1)
-			return -1;
-    }
+	char res;
+	if (read(STDIN, &res, 1) == -1)
+		return -1;
 	return res;
 }
 

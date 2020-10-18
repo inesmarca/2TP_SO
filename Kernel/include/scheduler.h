@@ -21,8 +21,10 @@ typedef struct pcb {
 } pcb;
 
 typedef struct infoPCB {
+    int pid;
     char name[50];
     int priority;
+    int state;
     char stackPointer[10];
     char basePointer[10];
     int fd[2];
@@ -46,9 +48,7 @@ void yield();
 
 pcb * getPCB(int pid);
 
-int getListPids(int * buff);
-
-int getInfoPCB(int pid, infoPCB * buff);
+int getListPCB(infoPCB * buff[]);
 
 void initializeScheduler();
 

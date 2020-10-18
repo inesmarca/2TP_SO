@@ -19,8 +19,16 @@ void _hlt();
 int readKey(char * buf, int cant) {
     char * input = getBuffer();
     int i;
+    while (input[0] == 0) {
+        _hlt();
+        input = getBuffer();
+    }
+
     for (i = 0; input[i] != 0 && i < cant; i++) {
-        (buf)[i] = input[i];
+        if (input[i] == -1)
+            buf[i] = 0;
+        else 
+            (buf)[i] = input[i];
     }
     deleteBuff();
     return i;
@@ -281,23 +289,13 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             mem((int*)reg1);
             break;
         case 24:
-            res = getListPids((int*)reg1);
+            res = getListPCB((infoPCB **)reg1);
             break;
         case 25:
-            res = getInfoPCB((int)reg1, (infoPCB *)reg2);
+            res = getListSem((infoSem **)reg1);
             break;
-        case 26:
-            res = getListSem((infoSem*)reg1);
-            break;
-        case 27:
-            res = getSemInfo((int)reg1, (infoSem *)reg2);
-            break;
-        case 28: 
-            res = getPipeList((int *)reg1);
-            break;
-        case 29:
-            res = getInfoPipe((int)reg1, (infoPipe *)reg2);
-        default:
+        case 26: 
+            res = getPipeList((infoPipe **)reg1);
             break;
     }
     return res;

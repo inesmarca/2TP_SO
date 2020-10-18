@@ -39,9 +39,7 @@ void acquire(int * lock);
 
 void release(int * lock);
 
-int getListSem(infoSem * buff);
-
-int getSemInfo(int semid, infoSem * buff);
+int getListSem(infoSem ** buff);
 
 void initializeSems();
 

@@ -25,30 +25,28 @@ void initializePipes() {
 }
 
 // getPipeList
-int getPipeList(int * buff) {
+int getPipeList(infoPipe * buff[]) {
     int cant = 0;
-    for (int i = 0; i < MAX_PROCESS; i++) {
-        if (pipes[i].alive != 0)
-            buff[cant++] = i;
+    int pos;
+
+    if (buff == NULL)
+        return -1;
+
+    for (int i = 0; i < MAX_PIPES; i++) {
+        if (pipes[i].alive != 0) {
+            buff[cant]->id = i;
+            buff[cant]->nread = pipes[i].nread;
+            buff[cant]->nwrite = pipes[i].nwrite;
+
+            pos = 0;
+            for (int j = 0; j < 2; j++) {
+                buff[cant]->pids_blocked[pos++] = pipes[i].pids[j];
+            }
+            cant++;
+        }
     }
 
     return cant;
-}
-
-// getInfoPCB
-int getInfoPipe(int id, infoPipe * buff) {
-    if (id < 0 || id >= MAX_PIPES)
-        return -1;
-
-    buff->nread = pipes[id].nread;
-    buff->nwrite = pipes[id].nwrite;
-
-    int pos = 0;
-    for (int i = 0; i < 2; i++) {
-        buff->pids_blocked[pos++] = pipes[id].pids[i];
-    }
-        
-    return 0;
 }
 
 int getFirstPipe() {

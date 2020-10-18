@@ -7,6 +7,7 @@
 #define MAX_PROCESS 20
 
 typedef struct infoPipe {
+    int id;
     int nread;
     int nwrite;
     int pids_blocked[MAX_PROCESS];
@@ -22,8 +23,6 @@ int pipe_close(int fd);
 
 void initializePipes();
 
-int getPipeList(int * buff);
-
-int getInfoPipe(int id, infoPipe * buff);
+int getPipeList(infoPipe * buff[]);
 
 #endif

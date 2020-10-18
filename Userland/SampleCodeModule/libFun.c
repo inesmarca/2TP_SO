@@ -35,57 +35,43 @@ void sem(){                                 //FALTA TESTEAR
 
 // pipe
 void pipeInfo() {
-    int * ids = malloc(MAX_PROCESS);
-    int cant = 0;
-
-    if ((cant = getListPipes(ids)) == -1)
-        return;
+	infoPipe * buff[MAX_SEMS];
+    int cant = getPipeList(buff);
 
     printf("%d pipes opened\n", cant);
 
-    infoPipe * info = malloc(sizeof(infoPipe));
-
-    for (int i = 0; i < cant; i++) {
-        if (getPipeInfo(ids[i], info) == -1)
-            return;
-
-        printf("ID: %d, NWRITE: %d, NREAD: %d, BLOCKED PID: %d %d\n", ids[i], info->nwrite, info->nread, info->pids_blocked[0], info->pids_blocked[1]);
-    }
+    for (int i = 0; i < cant; i++)
+        printf("ID: %d, NWRITE: %d, NREAD: %d, BLOCKED PID: %d %d\n", buff[i]->id, buff[i]->nwrite, buff[i]->nread, buff[i]->pids_blocked[0], buff[i]->pids_blocked[1]);
 
     return;
 }
 
 // wc
 void wc() {
-    char * buff = malloc(255);
-    read(STDIN, buff, 255);
+    char c;
     int cant = 0;
-    for (int i = 0; i < 255 && buff[i] != 0; i++) {
-        if (buff[i] == '\n')
-            cant++;
-    }
+    while((c = getChar()) != 0)
+        putChar(c);
+    
     printf("%d ", cant);
 }
 
 // ps
 void ps() {
-    int * pids = malloc(MAX_PROCESS);
-    int cant = 0;
+	infoPCB * buff[MAX_PROCESS];
+    int cant = getListPCB(buff);
 
-    if ((cant = getListPids(pids)) == -1)
-        return;
+    printf("%d process opened\n", cant);
 
-    int foreground = 1;
-    infoPCB * info = malloc(sizeof(infoPCB));
+    int foreground;
 
     for (int i = 0; i < cant; i++) {
-        if (getInfoPCB(pids[i], info) == -1)
-            return;
-
-        if (info->fd[STDIN] != -1) 
+        foreground = 1;
+        
+        if (buff[i]->fd[STDIN] != -1) 
             foreground = 0;
 
-        printf("PID: %d, NAME: %s, PRIORITY: %d, STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", pids[i], info->name, info->priority, info->stackPointer, info->basePointer, foreground);
+        printf("PID: %d, NAME: %s, PRIORITY: %d, ACTIVE: %d STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", buff[i]->pid, buff[i]->name, buff[i]->priority, buff[i]->state - 1, buff[i]->stackPointer, buff[i]->basePointer, foreground);
     }
 }
 
@@ -111,9 +97,15 @@ void filter() {
 
 // cat
 void cat() {
-	char * buff = malloc(1024);
-	read(STDIN, buff, 1024);
-	printf("Im CAT\n%s", buff);
+	char * buff = malloc(255);
+	int cant = read(STDIN, buff, 255);
+    int pos = cant - 1;
+	printf("%s", buff);
+    while (cant == 255 && buff[pos] != 0) {
+        cant = read(STDIN, buff, 255);
+	    printf("%s", buff);
+        pos += cant - 1;
+    }
     free(buff);
 }
 

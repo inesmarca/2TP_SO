@@ -53,30 +53,24 @@ pcb * getPCB(int pid) {
     return &proceses[pid];
 }
 
-// getListPids
-int getListPids(int * buff) {
+// getListPCB
+int getListPCB(infoPCB * buff[]) {
     int cant = 0;
-    for (int i = 0; i < MAX_PROCESS; i++) {
-        if (proceses[i].state != KILLED)
-            buff[cant++] = i;
+    for (int pid = 0; pid < MAX_PROCESS; pid++) {
+        if (proceses[pid].state != KILLED) {
+            buff[cant]->pid = pid;
+            strcpy(buff[cant]->name, proceses[pid].name);
+            buff[cant]->priority = proceses[pid].priority;
+            buff[cant]->state = proceses[pid].state;
+            uintToBase((uint64_t)proceses[pid].rsp, buff[cant]->stackPointer, 16);
+            uintToBase((uint64_t)proceses[pid].mallocPos, buff[cant]->basePointer, 16);
+            buff[cant]->fd[0] = proceses[pid].fd[0];
+            buff[cant]->fd[1] = proceses[pid].fd[1];
+            cant++;
+        }
     }
-
-    return cant;
-}
-
-// getInfoPCB
-int getInfoPCB(int pid, infoPCB * buff) {
-    if (pid < 0 || pid >= MAX_PROCESS)
-        return -1;
-
-    strcpy(buff->name, proceses[pid].name);
-    buff->priority = proceses[pid].priority;
-    uintToBase((uint64_t)proceses[pid].rsp, buff->stackPointer, 16);
-    uintToBase((uint64_t)proceses[pid].mallocPos, buff->basePointer, 16);
-    buff->fd[0] = proceses[pid].fd[0];
-    buff->fd[1] = proceses[pid].fd[1];
         
-    return 0;
+    return cant;
 }
 
 // swap
@@ -168,7 +162,14 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
     newProcess->mallocPos = processMemory[newProcess->pid];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
 
-    newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, argc, argv, newProcess->pid); // retorna el rsp luego de hacer los push
+    char ** auxArgv = malloc(argc);
+    int auxArgc = argc;
+    for (int i = 0; i < argc; i++) {
+	    auxArgv[i] = malloc(255);
+        memcpy(auxArgv[i], argv[i], 255);
+    }
+
+    newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, auxArgc, auxArgv, newProcess->pid); // retorna el rsp luego de hacer los push
 
     waiting_processes[priority][waiting_index[priority]] = newProcess; //pongo el nuevo proceso en la lista de procesos para la proxima ejecucion
     waiting_index[priority]++;
@@ -181,9 +182,14 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
 }
 
 static void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
-    
+
     (*func)(argc, argv);
     
+    for (int i = 0; i < argc; i++) {
+        free(argv[i]);
+    }
+    free(argv);
+
     kill(pid);
 }
 
@@ -271,4 +277,3 @@ static int getNewPid() {
 
     return -1;
 }
-

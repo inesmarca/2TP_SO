@@ -9,8 +9,10 @@
 #define MAX_SEMS 100
 
 typedef struct infoPCB {
+    int pid;
     char name[50];
     int priority;
+    int state;
     char stackPointer[10];
     char basePointer[10];
     int fd[2];
@@ -24,6 +26,7 @@ typedef struct infoSem {
 } infoSem;
 
 typedef struct infoPipe {
+    int id;
     int nread;
     int nwrite;
     int pids_blocked[MAX_PROCESS];
@@ -77,16 +80,10 @@ extern int close(int fd);
 
 extern void memState(int fd[]);
 
-extern int getListPids(int * buff);
+extern int getListPCB(infoPCB ** buff);
 
-extern int getInfoPCB(int pid, infoPCB * buff);
+extern int getListSem(infoSem ** buff);
 
-extern int getListSem();
-
-extern int getSemInfo(int pid, infoSem * buff);
-
-extern int getListPipes(int * buff);
-
-extern int getPipeInfo(int id, infoPipe * buff);
+extern int getPipeList(infoPipe ** buff);
 
 #endif
