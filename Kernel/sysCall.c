@@ -283,7 +283,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             res = pipe((int *)reg1);
             break;
         case 22:
-            res = pipe_close((int)reg1);
+            res = close((int)reg1);
             break;
         case 23:
             mem((int*)reg1);

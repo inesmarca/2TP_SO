@@ -17,7 +17,8 @@ typedef struct pcb {
     char priority;  
     const char name[255];
     int quantum;
-    int fd[MAX_PIPES];
+    int fd[MAX_PROCESS];
+    int has_pipe;
 } pcb;
 
 typedef struct infoPCB {
@@ -51,5 +52,7 @@ pcb * getPCB(int pid);
 int getListPCB(infoPCB * buff[]);
 
 void initializeScheduler();
+
+int close(int fd);
 
 #endif

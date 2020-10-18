@@ -5,7 +5,7 @@
 #include <libC.h>
 #include <shell.h>
 
-static int fd[2] = {STDIN, STDOUT};
+static int fd[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
 
 // int tests() {
 // 	printf("Ingrese 1 para MM, 2 para Scheduler, 3 para Prioridades, 4 sync con semaforos y 5 sin semaforos \n");

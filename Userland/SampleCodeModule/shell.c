@@ -14,7 +14,7 @@ static void shellControler(char key);
 static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice",         "cat",  "wc", "filter", "clear", "sem",  "philo",  "pipe",      "kill",     "block",     "unblock"};
 static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,   loop,   nice_shell,     cat,    wc,   filter ,  clear,   sem,    philo,    pipeInfo,    kill_shell, block_shell, unblock_shell};
 static char parameters[CANT_FUNC]    = { 0,     0,     0,    0,      2,              0,      0,    0,        0,       0,      0,        0,           1,          1,           1};
-static char builtIn[CANT_FUNC]    =    { 1,     1,     1,    0,      1,              0,      1,    0,        1,       1,      0,        1,           1,          1,           1};
+static char builtIn[CANT_FUNC]    =    { 1,     1,     1,    0,      1,              0,      0,    0,        1,       1,      0,        1,           1,          1,           1};
 static char descripcion[CANT_FUNC][101] = {
     "enumeracion de las funciones disponibles del sistema", 
     "imprime el estado de la memoria", 
@@ -105,8 +105,8 @@ static void shellControler(char key) {
             int k=0;
             int background=isBackground();
             int pipes = isPipe();
-            int fd[2] = {STDIN, STDOUT};
-            int fdcopy[2];
+            int fd[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+            int fdcopy[MAX_PROCESS];
 
             if (pipes)
                 pipe(fd);
@@ -249,11 +249,10 @@ static void help(){
     printf("Para informacion adicional, consultar documentacion.\n");
 }
 
-
-
 char * getUser() {
     return user;
 }
+
 void printUser() {
     changeColor(0xFF00FF, DEFAULT_BACKGROUND_COLOR);
     printf("%s$: ", getUser());

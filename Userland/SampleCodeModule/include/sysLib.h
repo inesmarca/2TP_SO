@@ -15,7 +15,7 @@ typedef struct infoPCB {
     int state;
     char stackPointer[10];
     char basePointer[10];
-    int fd[2];
+    int fd[MAX_PROCESS];
 } infoPCB;
 
 typedef struct infoSem {
@@ -29,7 +29,8 @@ typedef struct infoPipe {
     int id;
     int nread;
     int nwrite;
-    int pids_blocked[MAX_PROCESS];
+    int write_blocked[MAX_PROCESS];
+    int read_blocked[MAX_PROCESS];
 } infoPipe;
 
 extern int read(int fd, char * buf, int cant);

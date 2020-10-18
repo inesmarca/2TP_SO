@@ -73,6 +73,21 @@ int getListPCB(infoPCB * buff[]) {
     return cant;
 }
 
+
+int close(int fd) {
+    if (fd < 0 || fd > MAX_PROCESS)
+        return -1;
+
+    pcb * myProcess = &proceses[getpid()];
+
+    if (myProcess->fd[fd] != fd && myProcess->fd[fd] > 1) {
+        removePidFromPipe(myProcess->fd[fd], getpid());
+    }
+
+    myProcess->fd[fd] = -1;
+    return 0;
+}
+
 // swap
 uint64_t * swap(uint64_t * rsp) {
 
@@ -156,8 +171,15 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
     memcpy(newProcess->name, name, 255);
     newProcess->priority = priority;
     
-    newProcess->fd[0] = fd[0];
-    newProcess->fd[1] = fd[1];
+    // CHECK FOR PIPES
+    newProcess->has_pipe = 0;
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        if (fd[i] != i) {
+            insertPidToPipe(fd[i], newProcess->pid);
+            newProcess->has_pipe++;
+        }
+        newProcess->fd[i] = fd[i];
+    }
 
     newProcess->mallocPos = processMemory[newProcess->pid];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
@@ -182,7 +204,6 @@ int createProcess(const char * name, void * func, int priority, int fd[], int ar
 }
 
 static void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
-
     (*func)(argc, argv);
     
     for (int i = 0; i < argc; i++) {
@@ -190,6 +211,13 @@ static void wrapper(void * func(int, char **), int argc, char * argv[], int pid)
     }
     free(argv);
 
+    if (proceses[pid].has_pipe != 0) {
+        for (int i = 0; i < MAX_PROCESS; i++) {
+            if (proceses[pid].fd[i] != i) {
+                removePidFromPipe(proceses[pid].fd[i], pid);
+            }
+        } 
+    }
     kill(pid);
 }
 

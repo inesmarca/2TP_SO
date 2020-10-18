@@ -38,10 +38,23 @@ void pipeInfo() {
 	infoPipe * buff[MAX_SEMS];
     int cant = getPipeList(buff);
 
+    if (cant == -1)
+        return;
+
     printf("%d pipes opened\n", cant);
 
-    for (int i = 0; i < cant; i++)
-        printf("ID: %d, NWRITE: %d, NREAD: %d, BLOCKED PID: %d %d\n", buff[i]->id, buff[i]->nwrite, buff[i]->nread, buff[i]->pids_blocked[0], buff[i]->pids_blocked[1]);
+    for (int i = 0; i < cant; i++) {
+        printf("ID: %d, NWRITE: %d, NREAD: %d, ", buff[i]->id, buff[i]->nwrite, buff[i]->nread);
+        printf("WRITE BLOCKED: ");
+        for (int j = 0; j < MAX_PROCESS && buff[i]->write_blocked[j] != -1; j++) {
+            printf("%d ", buff[i]->write_blocked[j]);
+        }
+        
+        printf("READ BLOCKED: ");
+        for (int j = 0; j < MAX_PROCESS && buff[i]->read_blocked[j] != -1; j++) {
+            printf("%d ", buff[i]->read_blocked[j]);
+        }
+    }
 
     return;
 }
@@ -51,15 +64,18 @@ void wc() {
     char c;
     int cant = 0;
     while((c = getChar()) != 0)
-        putChar(c);
+        if (c == '\n') cant ++;
     
-    printf("%d ", cant);
+    printf("%d\n", cant);
 }
 
 // ps
 void ps() {
 	infoPCB * buff[MAX_PROCESS];
     int cant = getListPCB(buff);
+
+    if (cant == -1)
+        return;
 
     printf("%d process opened\n", cant);
 
@@ -73,6 +89,7 @@ void ps() {
 
         printf("PID: %d, NAME: %s, PRIORITY: %d, ACTIVE: %d STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", buff[i]->pid, buff[i]->name, buff[i]->priority, buff[i]->state - 1, buff[i]->stackPointer, buff[i]->basePointer, foreground);
     }
+    return;
 }
 
 // filter
@@ -155,6 +172,7 @@ void loop() {
 void philo(){
     philosphers();
 }
+
 //cat para la shell(pointer type)
 void nice_shell(int argc,char * argv[]){
     if (argc!=2)
@@ -165,20 +183,18 @@ void nice_shell(int argc,char * argv[]){
     int priority=atoi(argv[1]);
     nice(pid,priority);
 }
+
 // create process on background
 int createBackground(const char * name, void * func, int priority, int argc, char * argv[]) {
 	int aux[2] = {-1, STDOUT};
 	return create(name, func, priority, aux, argc, argv);
 }
 
-
-
 void printTime(){
     int buff[3];
     getTime(buff);
     printf("%d:%d:%d\n", buff[0], buff[1], buff[2]);
 }
-
 
 // Print Temperature
 void printTemperature() {

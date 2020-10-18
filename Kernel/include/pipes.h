@@ -10,7 +10,8 @@ typedef struct infoPipe {
     int id;
     int nread;
     int nwrite;
-    int pids_blocked[MAX_PROCESS];
+    int write_blocked[MAX_PROCESS];
+    int read_blocked[MAX_PROCESS];
 } infoPipe;
 
 int pipe(int fd[]);
@@ -24,5 +25,9 @@ int pipe_close(int fd);
 void initializePipes();
 
 int getPipeList(infoPipe * buff[]);
+
+void insertPidToPipe(int fd, int pid);
+
+void removePidFromPipe(int fd, int pid);
 
 #endif

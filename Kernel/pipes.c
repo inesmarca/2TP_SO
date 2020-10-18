@@ -4,19 +4,29 @@
 #include <defs.h>
 #include <lib.h>
 #include <sysCall.h>
+#include <consoleManager.h>
 
 typedef struct pipe_t {
     int alive;
-    int closed_ends[2];
     int lock;
     char data[PIPE_SIZE];
     int nread;                //bytes read
     int nwrite;                //bytes write
-    int pids[2];
+    int write_blocked[MAX_PROCESS];
+    int cant_write;
+    int read_blocked[MAX_PROCESS];
+    int cant_read;
+    int pids[MAX_PROCESS];
+    int cant_pids;
 } pipe_t;
 
 pipe_t pipes[MAX_PIPES];
 int cant_pipes;
+
+pipe_t * getPipe(int fd) {
+    int index = (fd - 2) / 2;
+    return &pipes[index];
+}
 
 void initializePipes() {
     for (int i = 0; i < MAX_PIPES; i++) {
@@ -27,7 +37,8 @@ void initializePipes() {
 // getPipeList
 int getPipeList(infoPipe * buff[]) {
     int cant = 0;
-    int pos;
+    int pos_write;
+    int pos_read;
 
     if (buff == NULL)
         return -1;
@@ -38,9 +49,13 @@ int getPipeList(infoPipe * buff[]) {
             buff[cant]->nread = pipes[i].nread;
             buff[cant]->nwrite = pipes[i].nwrite;
 
-            pos = 0;
-            for (int j = 0; j < 2; j++) {
-                buff[cant]->pids_blocked[pos++] = pipes[i].pids[j];
+            pos_read = 0;
+            pos_write = 0;
+            memset(buff[cant]->write_blocked, -1, MAX_PROCESS);
+            memset(buff[cant]->read_blocked, -1, MAX_PROCESS);
+            for (int j = 0; j < MAX_PROCESS; j++) {
+                buff[cant]->write_blocked[pos_write++] = pipes[i].write_blocked[j];
+                buff[cant]->read_blocked[pos_read++] = pipes[i].write_blocked[j];
             }
             cant++;
         }
@@ -57,30 +72,45 @@ int getFirstPipe() {
     return cant_pipes;
 }
 
+void insertPidToPipe(int fd, int pid) {
+    pipe_t * pipe = getPipe(fd);
+    pipe->pids[pid] = 1;
+    pipe->cant_pids++;
+}
+
+void removePidFromPipe(int fd, int pid) {
+    pipe_t * pipe = getPipe(fd);
+    if (pipe->alive == 0 || pipe->pids[pid] != 1)
+        return;
+
+    pipe->pids[pid] = 0;
+    pipe->cant_pids--;
+    if (pipe->cant_pids == 0) {
+        pipe->alive = 0;
+        cant_pipes--;
+    }   
+}
+
 int pipe(int fd[]) {
     if (cant_pipes == MAX_PIPES)
         return -1;
     
     int index = getFirstPipe();
     pipes[index].alive = 1;
-    pipes[index].closed_ends[0] = 2;
-    pipes[index].closed_ends[1] = 2;
     pipes[index].lock = 0;
     pipes[index].nread = 0;
     pipes[index].nwrite = 0;
-    pipes[index].pids[0] = -1;
-    pipes[index].pids[1] = -1;
+    pipes[index].cant_read = 0;
+    pipes[index].cant_write = 0;
+    memset(pipes[index].write_blocked, -1, MAX_PROCESS);
+    memset(pipes[index].read_blocked, -1, MAX_PROCESS);
     memset(pipes[index].data, -1, PIPE_SIZE);
+    pipes[index].cant_pids = 0;
 
     fd[0] = index*2 + 2;
     fd[1] = index*2 + 3;
 
     return 0;
-}
-
-pipe_t * getPipe(int fd) {
-    int index = (fd - 2) / 2;
-    return &pipes[index];
 }
 
 int writePipeBuff(pipe_t * p, const char * string, int n) {
@@ -94,6 +124,13 @@ int writePipeBuff(pipe_t * p, const char * string, int n) {
     return i;
 }
 
+void wakeupRead(pipe_t * p) {
+    for (int i = 0; i < p->cant_read; i++) {
+        unblock(p->read_blocked[i]);
+    }
+    p->cant_read = 0;
+}
+
 int pipewrite(int fd, const char * string, int n) {
     pipe_t * p = getPipe(fd);
 
@@ -103,7 +140,6 @@ int pipewrite(int fd, const char * string, int n) {
 
     while (n > 0 && *string != 0) {
         acquire(&(p -> lock));
-        p->pids[0] = -1;
         avail_space = (p->nread + PIPE_SIZE) - p->nwrite;
 
         if (avail_space > n)
@@ -115,14 +151,14 @@ int pipewrite(int fd, const char * string, int n) {
             n -= cant;
             dim += cant;
 
-            if (p->pids[1] != -1) {
-                unblock(p->pids[1]);
+            if (p->cant_read != 0) {
+                wakeupRead(p);
             }
 
             release(&(p->lock));
         } else {
             release(&(p->lock));
-            p->pids[0] = getpid();
+            p->write_blocked[p->cant_write++] = getpid();
             block(getpid());
         }
     }
@@ -145,6 +181,13 @@ int readPipeBuff(pipe_t * p, char * buff, int cant) {
     return i;
 }
 
+void wakeupWrite(pipe_t * p) {
+    for (int i = 0; i < p->cant_write; i++) {
+        unblock(p->write_blocked[i]);
+    }
+    p->cant_write = 0;
+}
+
 int piperead(int fd, char * buff, int n){
     pipe_t * p = getPipe(fd);
 
@@ -154,7 +197,6 @@ int piperead(int fd, char * buff, int n){
 
     while (n != 0 && p->data[p->nread % PIPE_SIZE] != 0) {
         acquire(&(p -> lock));
-        p->pids[1] = -1;
         avail_read = p->nwrite - p->nread;
 
         if (avail_read > n)
@@ -162,7 +204,7 @@ int piperead(int fd, char * buff, int n){
 
         if (avail_read <= 0) {
             release(&(p->lock));
-            p->pids[1] = getpid();
+            p->read_blocked[p->cant_read++] = getpid();
             block(getpid());
         } else {
             cant = readPipeBuff(p, buff, avail_read);
@@ -170,8 +212,8 @@ int piperead(int fd, char * buff, int n){
             n -= cant;
             dim += cant;
 
-            if (p->pids[0] != -1) {
-                unblock(p->pids[0]);
+            if (p->cant_write != 0) {
+                wakeupWrite(p);
             }
                 
             release(&(p->lock));
@@ -179,23 +221,4 @@ int piperead(int fd, char * buff, int n){
     }
 
     return dim;
-}
-
-int pipe_close(int fd) {
-    pipe_t * p = getPipe(fd);
-
-    if (p->alive == 0 || p == NULL)
-        return -1;
-        
-    int index = fd % 2;
-
-    if (p->closed_ends[index] != 0)
-        p->closed_ends[index]--;
-    else 
-        return -1;
-
-    if (p->closed_ends[0] == 0 && p->closed_ends[1] == 0)
-        p->alive = 0;
-
-    return 0;
 }
