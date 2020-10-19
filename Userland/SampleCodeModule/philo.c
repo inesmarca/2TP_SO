@@ -95,7 +95,12 @@ int addPhiloinit(int i){
         printError("Error al crear semaforo");
         return -1;
     }
-    int fd[2]={-1,STDOUT};
+
+    int fd[MAX_PROCESS];
+	memset(fd, -1, MAX_PROCESS);
+	fd[0] = STDIN;
+	fd[1] = STDOUT;
+
     philPID[i] = createBackground(names[i], philospher, 2,fd, 0, 0);
     cant++;
     for (int vueltas = 0; vueltas < i+1; vueltas++)
@@ -149,7 +154,11 @@ int addPhilo(int i){
         printError("Error al crear semaforo");
         return -1;
     }
-    int fd[2]={-1,STDOUT};
+    
+    int fd[MAX_PROCESS];
+	memset(fd, -1, MAX_PROCESS);
+	fd[0] = STDIN;
+	fd[1] = STDOUT;
     philPID[i] = createBackground(names[i], philospher, 2,fd, 0, 0);
     cant++;
 

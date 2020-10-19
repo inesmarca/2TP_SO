@@ -42,8 +42,11 @@ uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un pr
 	itoa(value, buff[1], 10);
 	itoa(N, buff[2], 10);
 
-  int fd[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-
+  int fd[MAX_PROCESS];
+	memset(fd, -1, MAX_PROCESS);
+	fd[0] = STDIN;
+	fd[1] = STDOUT;
+  
   return createBackground(name, inc, 0, fd, 4, buff);
 }
 

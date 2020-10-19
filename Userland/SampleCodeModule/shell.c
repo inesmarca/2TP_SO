@@ -11,10 +11,10 @@ static void help();
 static void initShell();
 static void shellControler(char key);
 
-static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice",         "cat",  "wc", "filter", "clear", "sem",  "philo",  "pipe",      "kill",     "block",     "unblock"};
-static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,   loop,   nice_shell,     cat,    wc,   filter ,  clear,   sem,    philo,    pipeInfo,    kill_shell, block_shell, unblock_shell};
-static char parameters[CANT_FUNC]    = { 0,     0,     0,    0,      2,              0,      0,    0,        0,       0,      0,        0,           1,          1,           1};
-static char builtIn[CANT_FUNC]    =    { 1,     1,     1,    0,      1,              0,      0,    0,        1,       1,      0,        1,           1,          1,           1};
+static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice",         "cat",  "wc", "filter", "clear", "sem",  "philo",  "pipe",      "kill",     "block",     "unblock", "testNamedPipes"};
+static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,   loop,   nice_shell,     cat,    wc,   filter ,  clear,   sem,    philo,    pipeInfo,    kill_shell, block_shell, unblock_shell, testNamedPipes};
+static char parameters[CANT_FUNC]    = { 0,     0,     0,    0,      2,              0,      0,    0,        0,       0,      0,        0,           1,          1,           1,             0};
+static char builtIn[CANT_FUNC]    =    { 1,     1,     1,    0,      1,              0,      0,    0,        1,       1,      0,        1,           1,          1,           1,             0};
 static char descripcion[CANT_FUNC][101] = {
     "enumeracion de las funciones disponibles del sistema", 
     "imprime el estado de la memoria", 
@@ -162,7 +162,10 @@ static void shellControler(char key) {
                 for (j = 0; j < CANT_FUNC && !strcmp(aux, functions[j]) ; j++); // me fijo que la funcion sea valida
 
                 if (j < CANT_FUNC) {
-                    int fd_aux[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+                    int fd_aux[MAX_PROCESS];
+                    memset(fd_aux, -1, MAX_PROCESS);
+                    fd_aux[0] = STDIN;
+                    fd_aux[1] = STDOUT;
                     
                     char ** argv = NULL;
                     int argc = parameters[j];

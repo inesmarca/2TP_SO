@@ -303,6 +303,12 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
         case 29:
             res = getPipeInfo((int)reg1, (infoPipe *)reg2);
             break;
+        case 30:
+            res = mkfifo((char *)reg1);
+            break;
+        case 31:
+            res = open((char *)reg1, (int)reg2);
+            break;
         default:
             break;
     }
