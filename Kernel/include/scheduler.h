@@ -20,6 +20,8 @@ typedef struct pcb {
     int has_pipe;
     int fd[MAX_PROCESS];
     int foreground;//si es foreground esto es 1 sino es bg y es 0
+    int argc;
+    char ** argv;
 } pcb;
 
 typedef struct infoPCB {

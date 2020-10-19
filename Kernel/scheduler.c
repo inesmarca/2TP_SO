@@ -191,19 +191,22 @@ int createProcess(const char * name, void * func, int priority, int fd[],int for
         }
         newProcess->fd[i] = fd[i];
     }
-    newProcess->foreground=foreground;
+    
 
     newProcess->mallocPos = processMemory[newProcess->pid];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
+    
+    newProcess->foreground=foreground;
+    newProcess->argc=argc;
 
-    char ** auxArgv = malloc(argc);
-    int auxArgc = argc;
+    newProcess->argv = malloc(argc);
+    // int auxArgc = argc;
     for (int i = 0; i < argc; i++) {
-	    auxArgv[i] = malloc(255);
-        memcpy(auxArgv[i], argv[i], 255);
+	    newProcess->argv[i] = malloc(255);
+        memcpy(newProcess->argv[i], argv[i], 255);
     }
 
-    newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, auxArgc, auxArgv, newProcess->pid); // retorna el rsp luego de hacer los push
+    newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, newProcess->argc, newProcess->argv, newProcess->pid); // retorna el rsp luego de hacer los push
 
     waiting_processes[priority][waiting_index[priority]] = newProcess; //pongo el nuevo proceso en la lista de procesos para la proxima ejecucion
     waiting_index[priority]++;
@@ -224,11 +227,6 @@ int createProcess(const char * name, void * func, int priority, int fd[],int for
 
 static void wrapper(void * func(int, char **), int argc, char * argv[], int pid) {
     (*func)(argc, argv);
-    
-    for (int i = 0; i < argc; i++) {
-        free(argv[i]);
-    }
-    free(argv);
     kill(pid);
 }
 
@@ -239,13 +237,17 @@ int kill(int pid) {
         number_of_proceses[(int)proceses[pid].priority]--;
         cant_active_processes--;
 
-        if (proceses[pid].has_pipe != 0) {
+        if (proceses[pid].has_pipe != 0) { //remove pipes
             for (int i = 0; i < MAX_PROCESS; i++) {
                 if (proceses[pid].fd[i] != i) {
                     removePidFromPipe(proceses[pid].fd[i], pid);
                 }
             } 
         }
+        for (int i = 0; i < proceses[pid].argc; i++) { // free de los parametros
+            free(proceses[pid].argv[i]);
+        }
+        free(proceses[pid].argv);
 
         if (proceses[pid].foreground==1)
         {
