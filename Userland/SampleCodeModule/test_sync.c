@@ -6,9 +6,6 @@
 void inc(int argc, char * argv[]);
 
 #define TOTAL_PAIR_PROCESSES 3
-#define SEM_ID_1 "sem 1"
-#define SEM_ID_2 "sem 2"
-#define SEM_ID_3 "sem 3"
 
 int64_t global1;  //shared memory
 int64_t global2;  //shared memory
@@ -21,6 +18,7 @@ void slowInc(int64_t * p, int64_t inc) {
   yield();
   *p = aux;
 }
+
 
 uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un procesos que altera la shared mem
   char ** buff = malloc(3);
@@ -43,10 +41,9 @@ uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un pr
 	itoa(sem, buff[0], 10);
 	itoa(value, buff[1], 10);
 	itoa(N, buff[2], 10);
-  
 
   int fd[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-  
+
   return createBackground(name, inc, 0, fd, 4, buff);
 }
 
@@ -54,13 +51,13 @@ uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un pr
 void inc(int argc, char ** argv){  
   uint64_t i;
 
-  int sem = atoi(argv[0]);
+  int semValue = atoi(argv[0]);
   int value = atoi(argv[1]);
   int N = atoi(argv[2]);
   char * sem_name = argv[3];
   
   sem_t * semap = sem_open(sem_name, 0, 1);         //creo el sem
-  if (sem && semap == NULL)
+  if (semValue && semap == NULL)
     printf("ERROR OPENING SEM\n");
     
   int64_t * global;
@@ -72,12 +69,12 @@ void inc(int argc, char ** argv){
     global = &global3;   
 
   for (i = 0; i < N; i++){
-    if (sem) sem_wait(semap);
+    if (semValue) sem_wait(semap);
       slowInc(global, value);                            //incremento la mem
-    if (sem) sem_post(semap);
+    if (semValue) sem_post(semap);
   }
 
-  if (sem) sem_close(semap);                         //cierro el sem
+  if (semValue) sem_close(semap);                         //cierro el sem
   
   printf("Finished: %d %s\n", *global, sem_name);
 

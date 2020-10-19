@@ -37,7 +37,8 @@ void sem() {
             return;
         }
 
-        printf("NAME: %s, VALUE %d ", buff->name, buff->value);
+        printf("NAME: %s, VALUE %d, ", buff->name, buff->value);
+        printf("CANT BLOCKED PIDS: %d, ", buff->cant_blocked);
         printf("BLOCKED PIDS: ");
         for (int j = 0; j < buff->cant_blocked; j++)
             printf("%d ", buff->blocked_pids[j]);
@@ -215,13 +216,12 @@ void philo(){
 }
 
 //cat para la shell(pointer type)
-void nice_shell(int argc,char * argv[]){
-    if (argc!=2)
-    {
+void nice_shell(int argc, char * argv[]){
+    if (argc != 2) {
         printError("invalid ammount of arguments");
     }
-    int pid=atoi(argv[0]);
-    int priority=atoi(argv[1]);
+    int pid = atoi(argv[0]);
+    int priority = atoi(argv[1]);
     nice(pid,priority);
 }
 

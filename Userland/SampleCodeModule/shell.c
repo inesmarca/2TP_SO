@@ -143,9 +143,6 @@ static void shellControler(char key) {
             int background=isBackground();
             int pipes = isPipe();  // retorna la cantidad de pipes que hay
             int fd_pipe[2];
-            char ** argv = NULL;
-            int argc = parameters[j];
-
 
             if (pipes)
                 pipe(fd_pipe);
@@ -178,7 +175,7 @@ static void shellControler(char key) {
                         }
 
                         int aux;
-                        if ((aux = lookForParameters(argv, argc, input)) == -1) { // tomo los parametros de la funcion
+                        if ((aux = lookForParameters(argv, argc, input + k + 1)) == -1) { // tomo los parametros de la funcion
                             printError("Error Creating parameters\n");
                         }
 
@@ -216,10 +213,8 @@ static void shellControler(char key) {
 
                     if (argc != 0) {
                         // Liberacion de los parametros
-                        for (int auxi = 0; auxi < argc; auxi++) {
-                            printf("Im stuck here");
+                        for (int auxi = 0; auxi < argc; auxi++)
                             free(argv[auxi]);
-                        }
 
                         free(argv);
                     }
