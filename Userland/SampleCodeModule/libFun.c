@@ -88,22 +88,27 @@ void ps() {
     int * pids = malloc(MAX_PROCESS);
     int cant = 0;
 
-    if ((cant = getListPids(pids)) == -1)
+    if ((cant = getListPids(pids)) == -1){
+        free(pids);
         return;
+    }
+       
 
-    int foreground = 1;
+    
     infoPCB * info = malloc(sizeof(infoPCB));
 
     for (int i = 0; i < cant; i++) {
-        if (getInfoPCB(pids[i], info) == -1)
+        if (getInfoPCB(pids[i], info) == -1){
+            free(pids);
+            free(info);
             return;
+        }
+           
 
-        if (info->fd[STDIN] != -1) 
-            foreground = 0;
-
-        printf("PID: %d, NAME: %s, PRIORITY: %d, STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", pids[i], info->name, info->priority, info->stackPointer, info->basePointer, foreground);
+        printf("PID: %d, NAME: %s, PRIORITY: %d, STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", pids[i], info->name, info->priority, info->stackPointer, info->basePointer, info->foreground);
     }
-
+    free(pids);
+    free(info);
     return;
 }
 

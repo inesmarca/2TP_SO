@@ -16,6 +16,7 @@ typedef struct infoPCB {
     char stackPointer[10];
     char basePointer[10];
     int fd[MAX_PROCESS];
+    int foreground;//si es foreground esto es 1 sino es bg y es 0
 } infoPCB;
 
 typedef struct infoSem {

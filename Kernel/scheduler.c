@@ -78,6 +78,7 @@ int getInfoPCB(int pid, infoPCB * buff) {
     uintToBase((uint64_t)proceses[pid].mallocPos, buff->basePointer, 16);
     buff->fd[0] = proceses[pid].fd[0];
     buff->fd[1] = proceses[pid].fd[1];
+    buff->foreground= proceses[pid].foreground;
         
     return 0;
 }
