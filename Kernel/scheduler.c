@@ -29,7 +29,7 @@ static pcb * active_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static pcb * waiting_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static int number_of_proceses[PRIORITY_LEVELS] = {0};
 static int number_of_proceses_snapshot[PRIORITY_LEVELS] = {0};
-static pcb * foreground_processes[MAX_PROCESS]={0};
+static pcb * foreground_processes[MAX_PROCESS] = {0};
 
 static int active_process_pid = -1;
 static int curr_priority = PRIORITY_LEVELS - 1;

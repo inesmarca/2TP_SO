@@ -5,10 +5,13 @@
 //void inc(uint64_t sem, int64_t value, uint64_t N);
 void inc(int argc, char * argv[]);
 
-#define TOTAL_PAIR_PROCESSES 2
-#define SEM_ID "sem"
+#define TOTAL_PAIR_PROCESSES 3
+#define SEM_ID_1 "sem 1"
+#define SEM_ID_2 "sem 2"
+#define SEM_ID_3 "sem 3"
 
 int64_t global;  //shared memory
+int cant = 0;
 
 void slowInc(int64_t * p, int64_t inc) {
   int64_t aux = *p;
@@ -25,14 +28,24 @@ uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un pr
     return -1;
   if ((buff[2] = malloc(20)) == NULL)
     return -1;
+  if ((buff[3] = malloc(20)) == NULL)
+    return -1;
+
+  if (cant == 0)
+    strcpy(buff[3], "sem 1");
+  if (cant == 1)
+    strcpy(buff[3], "sem 2");
+  if (cant == 2)
+    strcpy(buff[3], "sem 3");
 
 	itoa(sem, buff[0], 10);
 	itoa(value, buff[1], 10);
 	itoa(N, buff[2], 10);
+  
 
   int fd[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
   
-  return createBackground(name, inc, 0, fd, 3, buff);
+  return createBackground(name, inc, 0, fd, 4, buff);
 }
 
 // inc
@@ -42,8 +55,10 @@ void inc(int argc, char ** argv){
   int sem = atoi(argv[0]);
   int value = atoi(argv[1]);
   int N = atoi(argv[2]);
+  char * sem_name = argv[3];
   
-  sem_t * semap = sem_open(SEM_ID, 0, 1);         //creo el sem
+  sem_t * semap = sem_open(sem_name, 0, 1);         //creo el sem
+  printf(semap->name);
   if (sem && semap == NULL)
     printf("ERROR OPENING SEM\n");
     
@@ -56,7 +71,7 @@ void inc(int argc, char ** argv){
 
   if (sem) sem_close(semap);                         //cierro el sem
   
-  printf("Finished: %d \n", global);
+  printf("Finished: %d %s\n", global, sem_name);
 
   // free de los mallocs hechos en create
   free(argv[0]);
@@ -76,6 +91,7 @@ void test_sync(){
     if (my_create_process("inc", 1, 1, 1000000) == -1) printf("Error in create");        //arg1: flag que indica si usa sem, 
     if (my_create_process("inc", 1, -1, 1000000) == -1) printf("Error in create");       //arg2: incremento que usa la func. inc
     printf("PROCESSES CREATED\n");
+    cant++;
   }                                                 //arg3: cantidad de veces que cuenta
 }
 
