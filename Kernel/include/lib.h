@@ -12,7 +12,7 @@ uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
 
 void baseToHexa(char * buff);
 
-char * strcpy(char * destination, const char * source);
+char *strcpy(char *dest, const char *src);
 
 int strcmp(char * s1, char * s2);
 

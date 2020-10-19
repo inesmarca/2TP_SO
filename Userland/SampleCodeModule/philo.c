@@ -78,8 +78,13 @@ int philospher(int argc, char ** argv){
     }
     return 0;
 }
+int addPhiloinit(int i){
+    for (int vueltas = 0; vueltas < i; vueltas++)
+    {
+        sem_wait(lock);
+    }
 
-int addPhilo(int i){
+
     
     if (cant >= N) return -1;
     S[i] = sem_open(names[i], 0, 0);
@@ -91,6 +96,67 @@ int addPhilo(int i){
     int fd[2]={-1,STDOUT};
     philPID[i] = createBackground(names[i], philospher, 2,fd, 0, 0);
     cant++;
+    for (int vueltas = 0; vueltas < i+1; vueltas++)
+    {
+        sem_post(lock);
+    }
+    return 0;    
+}
+
+int addPhilo(int i){
+    for (int vueltas = 0; vueltas < i; vueltas++)
+    {
+        sem_wait(lock);
+    }
+     
+
+    for (int vueltas = 0; vueltas < i; vueltas++){
+        state[vueltas]=THINKING;
+        if(S[vueltas]->value==0){
+            sem_post(S[vueltas]);
+        }
+    }
+
+    //state[0] = THINKING;
+    // state[1] = THINKING;
+    // state[i-2] = THINKING;
+    // state[i-1] = THINKING;
+
+    // if (S[0]->value==1)
+    // {
+    //     sem_post(S[0]);
+    // }else
+    // {
+    //     sem_post(S[1]);
+    // }
+    // if (S[i-2]->value==1)
+    // {
+    //     sem_post(S[i-2]);
+    // }else
+    // {
+    //     sem_post(S[i-1]);
+    // }
+    
+    
+
+
+    if (cant >= N) return -1;
+    S[i] = sem_open(names[i], 0, 0);
+    if (S[i] == NULL)
+    {
+        printError("Error al crear semaforo");
+        return -1;
+    }
+    int fd[2]={-1,STDOUT};
+    philPID[i] = createBackground(names[i], philospher, 2,fd, 0, 0);
+    cant++;
+
+    // sem_post(S[0]);
+    // sem_post(S[i-1]);
+    for (int vueltas = 0; vueltas < i+1; vueltas++)
+    {
+        sem_post(lock);
+    }
     return 0;    
 }
 
@@ -104,10 +170,10 @@ int philosphers(){
        
     printf("Problema de los filosofos comensales: \n");
     mutex = sem_open("mutex", 0, 1);
-    lock = sem_open("lock", 0, 6);
+    lock = sem_open("lock", 0, 5);
     for (int i = 0; i < 5; i++) {
         sem_wait(lock);
-        addPhilo(i);
+        addPhiloinit(i);
         sem_post(lock);
     }
     printf("Filosofos pensando...\n");
@@ -118,9 +184,10 @@ int philosphers(){
         switch (k)
         {
         case 'a':
-            sem_wait(lock);
+            printf("ADD recibido \n");
+            
             addPhilo(cant);
-            sem_post(lock);
+           
             break;
         case 'r':
             killPhil(cant);           
