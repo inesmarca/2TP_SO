@@ -15,7 +15,7 @@ typedef struct pcb {
     uint64_t * mallocPos;
     int pid;       
     char priority;  
-    const char name[255];
+    char name[255];
     int quantum;
     int has_pipe;
     int fd[MAX_PROCESS];
@@ -26,13 +26,12 @@ typedef struct pcb {
 
 typedef struct infoPCB {
     int pid;
-    char name[50];
+    char name[255];
     int priority;
     int state;
     char stackPointer[10];
     char basePointer[10];
-    int fd[MAX_PROCESS];
-    int foreground;//si es foreground esto es 1 sino es bg y es 0
+    int foreground;
 } infoPCB;
 
 uint64_t * swap(uint64_t * rsp);

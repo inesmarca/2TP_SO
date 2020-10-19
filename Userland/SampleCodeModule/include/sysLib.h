@@ -10,13 +10,12 @@
 
 typedef struct infoPCB {
     int pid;
-    char name[50];
+    char name[255];
     int priority;
     int state;
     char stackPointer[10];
     char basePointer[10];
-    int fd[MAX_PROCESS];
-    int foreground;//si es foreground esto es 1 sino es bg y es 0
+    int foreground;
 } infoPCB;
 
 typedef struct infoSem {
@@ -82,14 +81,16 @@ extern int close(int fd);
 
 extern void memState(int fd[]);
 
-extern int getListPCB(infoPCB ** buff);
+extern int getInfoSem(int id, infoSem * buff);
 
-extern int getListSem(infoSem ** buff);
-
-extern int getPipeList(infoPipe ** buff);
+extern int getListSem(int * buff);
 
 extern int getListPids(int * buff);
 
 extern int getInfoPCB(int pid, infoPCB * buff);
+
+extern int getListPipes(int * buff);
+
+extern int getPipeInfo(int id, infoPipe * buff);
 
 #endif

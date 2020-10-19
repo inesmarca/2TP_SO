@@ -23,12 +23,12 @@ GLOBAL sem_close
 GLOBAL pipe
 GLOBAL close
 GLOBAL memState
-GLOBAL getListPCB
-GLOBAL getListSem
-GLOBAL getPipeList
-
+GLOBAL getListPipes
+GLOBAL getPipeInfo
 GLOBAL getListPids
 GLOBAL getInfoPCB
+GLOBAL getListSem
+GLOBAL getInfoSem
 
 section .text
 
@@ -177,8 +177,18 @@ getListSem:
     int 80h
     ret
 
-getPipeList:
+getInfoSem:
     mov rax, 27
+    int 80h
+    ret
+
+getListPipes:
+    mov rax, 28
+    int 80h
+    ret
+
+getPipeInfo:
+    mov rax, 29
     int 80h
     ret
 

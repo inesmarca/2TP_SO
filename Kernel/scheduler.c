@@ -76,9 +76,7 @@ int getInfoPCB(int pid, infoPCB * buff) {
     buff->priority = proceses[pid].priority;
     uintToBase((uint64_t)proceses[pid].rsp, buff->stackPointer, 16);
     uintToBase((uint64_t)proceses[pid].mallocPos, buff->basePointer, 16);
-    buff->fd[0] = proceses[pid].fd[0];
-    buff->fd[1] = proceses[pid].fd[1];
-    buff->foreground= proceses[pid].foreground;
+    buff->foreground = proceses[pid].foreground;
         
     return 0;
 }

@@ -35,33 +35,35 @@ void initializePipes() {
 }
 
 // getPipeList
-int getPipeList(infoPipe * buff[]) {
+int getPipeList(int * buff) {
     int cant = 0;
-    int pos_write;
-    int pos_read;
-
-    if (buff == NULL)
-        return -1;
-
-    for (int i = 0; i < MAX_PIPES; i++) {
-        if (pipes[i].alive != 0) {
-            buff[cant]->id = i;
-            buff[cant]->nread = pipes[i].nread;
-            buff[cant]->nwrite = pipes[i].nwrite;
-
-            pos_read = 0;
-            pos_write = 0;
-            memset(buff[cant]->write_blocked, -1, MAX_PROCESS);
-            memset(buff[cant]->read_blocked, -1, MAX_PROCESS);
-            for (int j = 0; j < MAX_PROCESS; j++) {
-                buff[cant]->write_blocked[pos_write++] = pipes[i].write_blocked[j];
-                buff[cant]->read_blocked[pos_read++] = pipes[i].write_blocked[j];
-            }
-            cant++;
-        }
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        if (pipes[i].alive != 0)
+            buff[cant++] = i;
     }
 
     return cant;
+}
+
+// getInfoPCB
+int getPipeInfo(int id, infoPipe * buff) {
+    if (id < 0 || id >= MAX_PIPES)
+        return -1;
+
+    buff->id = id;
+    buff->nread = pipes[id].nread;
+    buff->nwrite = pipes[id].nwrite;
+
+    int pos_read = 0;
+    int pos_write = 0;
+    memset(buff->write_blocked, -1, MAX_PROCESS);
+    memset(buff->read_blocked, -1, MAX_PROCESS);
+    for (int j = 0; j < MAX_PROCESS; j++) {
+        buff->write_blocked[pos_write++] = pipes[id].write_blocked[j];
+        buff->read_blocked[pos_read++] = pipes[id].read_blocked[j];
+    }
+        
+    return 0;
 }
 
 int getFirstPipe() {
@@ -109,6 +111,8 @@ int pipe(int fd[]) {
 
     fd[0] = index*2 + 2;
     fd[1] = index*2 + 3;
+
+    cant_pipes++;
 
     return 0;
 }

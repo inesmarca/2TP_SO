@@ -17,45 +17,73 @@ int isVocal(char c) {
     return c == 'a' || c == 'A' || c == 'e' || c == 'E' || c == 'i' || c == 'I' || c == 'o' || c == 'O' || c == 'u' || c == 'U';
 }
 
-// sem
-void sem(){                                 //FALTA TESTEAR
-    printf("Listado de semaforos:\n");
-	infoSem * buff[MAX_SEMS];
-	int active_sems = getListSem(buff);
-    printf("Semaforos activos: %d\n", active_sems);
-	for (int i = 0; i < active_sems; i++){
-        printf("holaa");
-        printf("sem name: %s\n", buff[i] -> name);
-        printf("sem value: %d\n", buff[i] -> value);
+// sem 
+void sem() {
+    int * ids = malloc(MAX_SEMS);
+    int cant = 0;
 
-        for (int j = 0; j < buff[i] -> cant_blocked; j++)
-            printf("PID del proceso bloqueado: %d\n", buff[i]->blocked_pids[j]);
-	}
+    if ((cant = getListSem(ids)) == -1) {
+        free(ids);
+        return;
+    }
+
+    printf("%d semaphores active\n", cant);
+    infoSem * buff = malloc(sizeof(infoSem));
+
+    for (int i = 0; i < cant; i++) {
+        if (getInfoSem(ids[i], buff) == -1) {
+            free(buff);
+            free(ids);
+            return;
+        }
+
+        printf("NAME: %s, VALUE %d ", buff->name, buff->value);
+        printf("BLOCKED PIDS: ");
+        for (int j = 0; j < buff->cant_blocked; j++)
+            printf("%d ", buff->blocked_pids[j]);
+        
+        putChar('\n');
+    }
+    free(buff);
+    free(ids);
+    return;
 }
 
 // pipe
 void pipeInfo() {
-	infoPipe * buff[MAX_SEMS];
-    int cant = getPipeList(buff);
+    int * ids = malloc(MAX_PROCESS);
+    int cant = 0;
 
-    if (cant == -1)
+    if ((cant = getListPipes(ids)) == -1) {
+        free(ids);
         return;
+    }
 
     printf("%d pipes opened\n", cant);
+    infoPipe * buff = malloc(sizeof(infoPipe));
 
     for (int i = 0; i < cant; i++) {
-        printf("ID: %d, NWRITE: %d, NREAD: %d, ", buff[i]->id, buff[i]->nwrite, buff[i]->nread);
+        if (getPipeInfo(ids[i], buff) == -1) {
+            free(buff);
+            free(ids);
+            return;
+        }
+    
+        printf("ID: %d, NWRITE: %d, NREAD: %d, ", buff->id, buff->nwrite, buff->nread);
         printf("WRITE BLOCKED: ");
-        for (int j = 0; j < MAX_PROCESS && buff[i]->write_blocked[j] != -1; j++) {
-            printf("%d ", buff[i]->write_blocked[j]);
+        for (int j = 0; j < MAX_PROCESS && buff->write_blocked[j] != -1; j++) {
+            printf("%d ", buff->write_blocked[j]);
         }
         
         printf("READ BLOCKED: ");
-        for (int j = 0; j < MAX_PROCESS && buff[i]->read_blocked[j] != -1; j++) {
-            printf("%d ", buff[i]->read_blocked[j]);
+        for (int j = 0; j < MAX_PROCESS && buff->read_blocked[j] != -1; j++) {
+            printf("%d ", buff->read_blocked[j]);
         }
+        putChar('\n');
     }
-
+    
+    free(buff);
+    free(ids);
     return;
 }
 
@@ -69,6 +97,7 @@ void wc() {
   int flag = 1;
   while((n = read(STDIN, buf, sizeof(buf))) > 0 && flag){
     for(i = 0; i < n; i++) {
+        putChar(buf[i]);
         if(buf[i] == '\n')
             l++;
         if (buf[i] == 0)
@@ -94,7 +123,6 @@ void ps() {
     }
        
 
-    
     infoPCB * info = malloc(sizeof(infoPCB));
 
     for (int i = 0; i < cant; i++) {
@@ -104,7 +132,6 @@ void ps() {
             return;
         }
            
-
         printf("PID: %d, NAME: %s, PRIORITY: %d, STACK POINTER: %s, BASE POINTER: %s, FOREGROUND: %d\n", pids[i], info->name, info->priority, info->stackPointer, info->basePointer, info->foreground);
     }
     free(pids);
@@ -132,15 +159,16 @@ void filter() {
     free(buff);
 }
 
-// cat from https://github.com/guilleiguaran/xv6/blob/master/cat.c
+// cat
 void cat(int fd) {
-    int n;
     char buf[512];
-    while((n = read(fd, buf, sizeof(buf))) > 0)
-        write(1, buf, n);
-    if(n < 0){
-        printf("cat: read error\n");
-        return;
+    int n;
+    while((n = read(STDIN, buf, sizeof(buf))) > 0){
+        for(int i = 0; i < n; i++) {
+            putChar(buf[i]);
+            if (buf[i] == 0)
+                return;
+        }
     }
 }
 

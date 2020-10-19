@@ -39,7 +39,9 @@ void acquire(int * lock);
 
 void release(int * lock);
 
-int getListSem(infoSem ** buff);
+int getInfoSem(int id, infoSem * buff);
+
+int getListSem(int * buff);
 
 void initializeSems();
 

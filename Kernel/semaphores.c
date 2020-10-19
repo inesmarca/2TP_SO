@@ -9,24 +9,30 @@ extern int _xchg(int * lock, int value);
 static sem_t sems[MAX_SIZE];
 static int active_sems = 0;
 
-int getListSem(infoSem * buff[]) { // FALTA TESTING
-	int index = 0;
-	int active_sems = 0;
-	for (int i = 0; i < MAX_SIZE; i++)
-	{
-		if (sems[i].semid != -1)
-		{
-			active_sems++;
-			strcpy(buff[index]->name, sems[i].name);
-			buff[index]->value = sems[i].value;
-			for (int j = 0; j < sems[i].cant_blocked_pids; j++)	{
-				buff[index]->blocked_pids[j] = sems[i].blocked_pids[j];
-				buff[index]->cant_blocked++;
-			}
-			index++;
-		}		
+// getListSem
+int getListSem(int * buff) {
+    int cant = 0;
+    for (int i = 0; i < MAX_SIZE; i++) {
+        if (sems[i].semid != -1)
+            buff[cant++] = sems[i].semid;
+    }
+
+    return cant;
+}
+
+// getInfoSem
+int getInfoSem(int id, infoSem * buff) {
+    if (id < 0 || id >= MAX_SIZE)
+        return -1;
+
+	strcpy(buff->name, sems[id].name);
+	buff->value = sems[id].value;
+	for (int j = 0; j < sems[id].cant_blocked_pids; j++)	{
+		buff->blocked_pids[j] = sems[id].blocked_pids[j];
+		buff->cant_blocked++;
 	}
-	return active_sems;
+
+    return 0;
 }
 
 void acquire(int * lock) {

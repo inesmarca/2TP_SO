@@ -29,7 +29,7 @@ uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un pr
 	itoa(sem, buff[0], 10);
 	itoa(value, buff[1], 10);
 	itoa(N, buff[2], 10);
-  int fd[2] = {-1, STDOUT};
+  int fd[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
   
   return createBackground(name, inc, 0, fd, 3, buff);
 }
@@ -72,8 +72,8 @@ void test_sync(){
   printf("CREATING PROCESSES...(WITH SEM)\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    my_create_process("inc", 1, 1, 1000000);        //arg1: flag que indica si usa sem, 
-    my_create_process("inc", 1, -1, 1000000);       //arg2: incremento que usa la func. inc
+    if (my_create_process("inc", 1, 1, 1000000) == -1) printf("Error in create");        //arg1: flag que indica si usa sem, 
+    if (my_create_process("inc", 1, -1, 1000000) == -1) printf("Error in create");       //arg2: incremento que usa la func. inc
     printf("PROCESSES CREATED\n");
   }                                                 //arg3: cantidad de veces que cuenta
 }

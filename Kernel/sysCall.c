@@ -39,7 +39,7 @@ int read(int fd, char * buff, int cant) {
     if (process->fd[fd] < 0)
         return -1;
 
-    if (process->fd[fd] == STDIN && process->foreground==1)
+    if (process->fd[fd] == STDIN && process->foreground == 1)
         return readKey(buff, cant);
     else if (process->fd[fd] != STDOUT)
         return piperead(process->fd[fd], buff, cant);
@@ -295,11 +295,20 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             res = getInfoPCB((int)reg1, (infoPCB *)reg2);
             break;
         case 26:
-            res = getListSem((infoSem **)reg1);
+            res = getListSem((int *)reg1);
             break;
-        case 27: 
-            res = getPipeList((infoPipe **)reg1);
+        case 27:
+            res = getInfoSem((int)reg1, (infoSem *)reg2);
+            break;
+        case 28: 
+            res = getPipeList((int *)reg1);
+            break;
+        case 29:
+            res = getPipeInfo((int)reg1, (infoPipe *)reg2);
+            break;
+        default:
             break;
     }
+    
     return res;
 }

@@ -24,7 +24,9 @@ int pipe_close(int fd);
 
 void initializePipes();
 
-int getPipeList(infoPipe * buff[]);
+int getPipeList(int * buff);
+
+int getPipeInfo(int id, infoPipe * buff);
 
 void insertPidToPipe(int fd, int pid);
 
