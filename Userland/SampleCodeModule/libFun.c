@@ -89,27 +89,15 @@ void pipeInfo() {
 
 // wc https://github.com/guilleiguaran/xv6/blob/master/wc.c
 void wc() {
-  int i, n;
-  int l;
-
-  l = 0;
-  char buf[512];
-  int flag = 1;
-  while((n = read(STDIN, buf, sizeof(buf))) > 0 && flag){
-    for(i = 0; i < n; i++) {
-        putChar(buf[i]);
-        if(buf[i] == '\n')
-            l++;
-        if (buf[i] == 0)
-            flag = 0;
+    int cant = 0;
+    char c;
+    while ((c = getChar()) != 0) {
+        putChar(c);
+        if (c == '\n')
+            cant++;
     }
-  }
 
-  if (n < 0){
-    printf("wc: read error\n");
-    return;
-  }
-  printf("%d\n", l);
+    printf("%d enters\n", cant);
 }
 
 // ps
@@ -160,16 +148,19 @@ void filter() {
 }
 
 // cat
-void cat(int fd) {
-    char buf[512];
-    int n;
-    while((n = read(STDIN, buf, sizeof(buf))) > 0){
-        for(int i = 0; i < n; i++) {
-            putChar(buf[i]);
-            if (buf[i] == 0)
-                return;
-        }
+void cat() {
+	char * buff = malloc(512);
+
+	int cant = read(STDIN, buff, sizeof(buff));
+    int pos = cant - 1;
+	printf("%s", buff);
+
+    while (cant == sizeof(buff) && buff[pos] != 0) {
+        cant = read(STDIN, buff, sizeof(buff));
+	    printf("%s", buff);
+        pos = cant - 1;
     }
+    free(buff);
 }
 
 // mem

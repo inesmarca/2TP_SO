@@ -29,7 +29,7 @@ static pcb * active_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static pcb * waiting_processes[PRIORITY_LEVELS][MAX_PROCESS] = {{0}};
 static int number_of_proceses[PRIORITY_LEVELS] = {0};
 static int number_of_proceses_snapshot[PRIORITY_LEVELS] = {0};
-static pcb * foreground_processes[MAX_PROCESS]={0};
+static pcb * foreground_processes[MAX_PROCESS] = {0};
 
 static int active_process_pid = -1;
 static int curr_priority = PRIORITY_LEVELS - 1;
@@ -241,18 +241,19 @@ int kill(int pid) {
                 }
             } 
         }
+
         for (int i = 0; i < proceses[pid].argc; i++) { // free de los parametros
             free(proceses[pid].argv[i]);
         }
         free(proceses[pid].argv);
 
-        if (proceses[pid].foreground==1)
-        {
+        if (proceses[pid].foreground==1) {
             kill_foreground(pid);
         }
-        
+
         if (pid == active_process_pid) 
             tickInterrupt();
+            
         return 1;
     } else return -1;
 }

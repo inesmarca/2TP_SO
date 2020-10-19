@@ -1,16 +1,18 @@
 #include <stdint.h>
 
 //https://www.techiedelight.com/implement-strcpy-function-c/ era muy sencilla asi que la tomamos de internet.
-char * strcpy(char * destination, const char * source) {
-	char * ptr=destination;
-	while (*source != 0) {
-		*destination=*source;
-		destination++;
-		source++;
-	}
-	*destination=0;
-	return ptr;
+//https://en.wikibooks.org/wiki/C_Programming/string.h/strcpy
+char *strcpy(char *dest, const char *src){
+	unsigned i;
+  	for (i=0; src[i] != '\0'; ++i)
+    dest[i] = src[i];
+
+  	//Ensure trailing null byte is copied
+  	dest[i]= '\0';
+
+  	return dest;
 }
+
 
 void * memset(void * destination, int32_t c, uint64_t length)
 {

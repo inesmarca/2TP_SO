@@ -19,18 +19,15 @@ void _hlt();
 int readKey(char * buf, int cant) {
     char * input = getBuffer();
     int i;
-    while (input[0] == 0) {
-        _hlt();
-        input = getBuffer();
-    }
 
     for (i = 0; input[i] != 0 && i < cant; i++) {
-        if (input[i] == -1)
+        if (input[i] == -1) {
             buf[i] = 0;
-        else 
-            (buf)[i] = input[i];
+        } else 
+            buf[i] = input[i];
     }
     deleteBuff();
+
     return i;
 }
 
