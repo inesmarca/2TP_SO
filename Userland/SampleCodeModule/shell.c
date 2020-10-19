@@ -224,7 +224,7 @@ static void shellControler(char key) {
                         free(argv);
                     }
                     
-                    if (pipes && pipecounter != pipes) {
+                    if (pipes && pipecounter != pipes) { // solo chequeo si estoy en la primer funcion
                         while (input[k] != '|') {
                             k++;
                         }
