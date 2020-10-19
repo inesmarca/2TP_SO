@@ -159,7 +159,7 @@ uint64_t * swap(uint64_t * rsp) {
 }
 
 // create
-int createProcess(const char * name, void * func, int priority, int fd[],int foreground, int argc, char * argv[]){
+int createProcess(const char * name, void * func, int priority, int fd[], int foreground, int argc, char * argv[]){
     if (priority < 0 || priority >= PRIORITY_LEVELS) {
         return -1;
     }
@@ -189,7 +189,6 @@ int createProcess(const char * name, void * func, int priority, int fd[],int for
         }
         newProcess->fd[i] = fd[i];
     }
-    
 
     newProcess->mallocPos = processMemory[newProcess->pid];
     newProcess->rsp = newProcess->mallocPos + STACK_SIZE;
@@ -201,7 +200,7 @@ int createProcess(const char * name, void * func, int priority, int fd[],int for
     // int auxArgc = argc;
     for (int i = 0; i < argc; i++) {
 	    newProcess->argv[i] = malloc(255);
-        memcpy(newProcess->argv[i], argv[i], 255);
+        strcpy(newProcess->argv[i], argv[i]);
     }
 
     newProcess->rsp = initializeStack(newProcess->rsp, wrapper, newProcess->function, newProcess->argc, newProcess->argv, newProcess->pid); // retorna el rsp luego de hacer los push

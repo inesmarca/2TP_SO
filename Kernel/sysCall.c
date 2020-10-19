@@ -213,7 +213,7 @@ void mem(int buff[]) {
 }
 
 // Syscall Handler
-uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, uint64_t reg6,uint64_t reg7, int sys) {
+uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, uint64_t reg6, uint64_t reg7, int sys) {
     uint64_t res;
     switch (sys) {
         case 0:

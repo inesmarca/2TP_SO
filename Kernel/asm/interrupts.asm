@@ -111,12 +111,14 @@ SECTION .text
 %endmacro
 
 %macro sysCallHandler 0
+	push rbp
+	mov rbp, rsp
 	pushReg
 	push rax
-	push r9
+	mov rax, [rbp + 56]
+	push rax
 	call sysHandler
-	pop rbx
-	pop rbx
+	add rsp, 2*8
 	push rax
 
 	; signal pic EOI (End of Interrupt)
@@ -125,6 +127,8 @@ SECTION .text
 
 	pop rax
 	popReg
+	mov rsp, rbp
+	pop rbp
 	iretq
 	
 %endmacro
