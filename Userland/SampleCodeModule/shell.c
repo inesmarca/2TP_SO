@@ -97,6 +97,43 @@ static int isPipe(){
     return 0;
 }
 
+int lookForParameters(char ** argv, int argc, char * input) {
+    // creacion de los mallocs para los parametros
+    if (argc != 0) {
+        if (argv == NULL) {
+            printError("Error Creating argv\n");
+            return -1;
+        }
+        
+        for (int i = 0; i < argc; i++){
+            argv[i] = malloc(255);
+
+            if (argv[i] == NULL)
+                printError("Error Creating Process 5\n");
+        }      
+    }
+
+
+    int args = 0;
+    int index=0;
+    int k = 0;
+    while (!(input[k] == 0 || input[k] == '|')) {
+        if (input[k] == ' ') {
+            argv[args][index] = 0;
+            args++;
+            index = 0;
+        } else {
+            argv[args][index++] = input[k];
+        }
+        k++;
+    }
+
+    if (input[k]== 0)
+        argv[args][index] = 0;
+    
+    return k;
+}
+
 static void shellControler(char key) {
     if (key == '\n') {
         putChar('\n');
@@ -104,167 +141,99 @@ static void shellControler(char key) {
             int j;
             int k=0;
             int background=isBackground();
-            int pipes = isPipe();
-            int fd[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+            int pipes = isPipe();  // retorna la cantidad de pipes que hay
+            int fd_pipe[2];
+            char ** argv = NULL;
+            int argc = parameters[j];
+
 
             if (pipes)
-                pipe(fd);
-
+                pipe(fd_pipe);
 
             for (int pipecounter = 0;  pipecounter < pipes + 1; pipecounter++) {
-                
-                
                 char * aux = malloc(DIM_BUFFER);
                 memset(aux, 0, DIM_BUFFER);
 
                 if (aux == NULL)
                     printError("Error Creating Process 1\n");
                 
-                for (int x = 0; input[k] != 0 && input[k] != ' '; x++) {
+                for (int x = 0; input[k] != 0 && input[k] != ' '; x++) { // agaro la primera funcion
                     aux[x] = input[k];
                     k++;
                 }
                 
-                for (j = 0; j < CANT_FUNC && !strcmp(aux, functions[j]) ; j++);
+                for (j = 0; j < CANT_FUNC && !strcmp(aux, functions[j]) ; j++); // me fijo que la funcion sea valida
 
                 if (j < CANT_FUNC) {
-                    if (parameters[j] == 0) {
-                        int fd_aux[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-
-                        if (builtIn[j])
-                        {
-                           func_ptr[j]();
-                        }
-                        else if(background && pipes==0) // back no pipe
-                        {
-                            fd_aux[0]=-1;
-                            if (createBackground(aux, func_ptr[j], 1,fd_aux, 0, 0) == -1)
-                                printError("Error Creating Process 2\n");
-                        }
-                        else if(pipes!=0)
-                        {
-                            
-                            if (pipecounter) // pipe del lado de y  ->  x | y 
-                            {
-                                fd_aux[0]=fd[0];
-                                if (createBackground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
-                                    printError("Error Creating Process 3\n");
-                            }
-                            else// pipe del lado de x  ->  x | y 
-                            {
-                                fd_aux[1]=fd[1];
-                                if (createForeground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
-                                    printError("Error Creating Process 3\n");
-                            }
-                            
-                            
-                        }
-                        else //el foreground clasico
-                        {
-                            if (createForeground(aux, func_ptr[j], 1, fd_aux, 0, 0) == -1)
-                                    printError("Error Creating Process 3\n");
-                        }
-                        
-                        
-       
-                    } else {
-                        k++;
-                        char ** argv = malloc(parameters[j]);
-
-                        if (parameters[j]!=0) {
-                            if (argv == NULL)
-                                printError("Error Creating argv\n");
-                            for (int args= 0; args < parameters[j]; args++){
-                                argv[args] = malloc(255);
-
-                                if (argv[args] == NULL)
-                                    printError("Error Creating Process 5\n");
-                            }      
-                        }
-
-
+                    int fd_aux[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
                     
-                        int args=0;
-                        int index=0;
-                        while (!(input[k] == 0 || input[k] == '|')) {
-                            
+                    char ** argv = NULL;
+                    int argc = parameters[j];
+                    
+                    if (argc != 0) { // por lo tanto recibe parametros
+                        argv = malloc(argc);
+                        if (argv == NULL) {
+                            printError("Error creating parameters\n");
+                            return;
+                        }
 
-                            if (input[k] == ' ') {
-                                argv[args][index]=0;
-                                args++;
-                                index=0;
-                            } else {
-                                argv[args][index++]=input[k];
-                            }
+                        int aux;
+                        if ((aux = lookForParameters(argv, argc, input)) == -1) { // tomo los parametros de la funcion
+                            printError("Error Creating parameters\n");
+                        }
 
-                            k++;
-                        }
-                        if (input[k]== 0)
-                        {
-                            argv[args][index]=0;
-                        }
-                        
-                        int fd_aux[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-                        if (builtIn[j])
-                        {
-                           func_ptr[j](parameters[j], argv);
-                        }
-                        else if(background && pipes==0) // back no pipe
-                        {
-                            fd_aux[STDIN]=-1;
-                            if (createBackground(aux, func_ptr[j], 1,fd_aux,parameters[j], argv) == -1)
-                                printError("Error Creating Process 2\n");
-                        }
-                        else if(pipes!=0)
-                        {
-                            
-                            if (pipecounter) // pipe del lado de y  ->  x | y 
-                            {
-                                fd_aux[STDIN]=fd[0];
-                                if (createBackground(aux, func_ptr[j], 1, fd_aux, parameters[j], argv) == -1)
-                                    printError("Error Creating Process 3\n");
-                            }
-                            else// pipe del lado de x  ->  x | y 
-                            {
-                                fd_aux[1]=fd[1];
-                                if (createForeground(aux, func_ptr[j], 1, fd_aux, parameters[j], argv) == -1)
-                                    printError("Error Creating Process 3\n");
-                            }
-                            
-                            
-                        }
-                        else //el foreground clasico
-                        {
-                            if (createForeground(aux, func_ptr[j], 1, fd_aux, parameters[j], argv) == -1)
-                                    printError("Error Creating Process 3\n");
-                        }
-                        // if (background) {
-                        //     if (createBackground(aux, func_ptr[j], 1, parameters[j], argv) == -1)
-                        //         printError("Error Creating Process 6\n");
-                        // } else if (!builtIn[j] || pipes != 0) {
-                        //     if (create(aux, func_ptr[j], 1, fd, parameters[j], argv) == -1)
-                        //         printError("Error Creating Process 7\n");
-                        // } else {
-                        //     func_ptr[j](parameters[j], argv);
-                        // }
+                        k += aux;
+                    }
 
-                        for (int auxi = 0; auxi < parameters[j]; auxi++) {
+                    if (builtIn[j] && pipes == 0) { // si la funcion es built in y no esta en un pipe
+                        if (argc == 0) {
+                            func_ptr[j]();
+                        } else {
+                            func_ptr[j](argc, argv);
+                        }
+                    } 
+                    else if (background && pipes == 0) { // si la funcion es background y no esta en un pipe
+                        fd_aux[0]=-1;
+                        if (createBackground(aux, func_ptr[j], 1, fd_aux, argc, argv) == -1)
+                            printError("Error Creating Process 2\n");
+                    }
+                    else if (pipes != 0) { // si hay un pipe
+                        if (pipecounter) { // pipe del lado de y  ->  x | y 
+                            fd_aux[STDIN] = fd_pipe[0];
+                            if (createBackground(aux, func_ptr[j], 1, fd_aux, argc, argv) == -1)
+                                printError("Error Creating Process 3\n");
+                        }
+                        else {// pipe del lado de x  ->  x | y 
+                            fd_aux[1] = fd_pipe[1];
+                            if (createForeground(aux, func_ptr[j], 1, fd_aux, argc, argv) == -1)
+                                printError("Error Creating Process 3\n");
+                        }
+                    }
+                    else {
+                        if (createForeground(aux, func_ptr[j], 1, fd_aux, argc, argv) == -1)
+                            printError("Error Creating Process 3\n");
+                    }
+
+                    if (argc != 0) {
+                        // Liberacion de los parametros
+                        for (int auxi = 0; auxi < argc; auxi++) {
+                            printf("Im stuck here");
                             free(argv[auxi]);
                         }
 
                         free(argv);
                     }
-
-                    if (pipes) {
+                    
+                    if (pipes && pipecounter != pipes) {
                         while (input[k] != '|') {
                             k++;
                         }
                         k += 2;
                     }
+                    
                 } else {
                     printError("Not a valid function\n");
                 }
-
                 input[0] = 0;
                 free(aux);
             }

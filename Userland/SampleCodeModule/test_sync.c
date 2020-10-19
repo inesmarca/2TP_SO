@@ -10,7 +10,9 @@ void inc(int argc, char * argv[]);
 #define SEM_ID_2 "sem 2"
 #define SEM_ID_3 "sem 3"
 
-int64_t global;  //shared memory
+int64_t global1;  //shared memory
+int64_t global2;  //shared memory
+int64_t global3;  //shared memory
 int cant = 0;
 
 void slowInc(int64_t * p, int64_t inc) {
@@ -58,20 +60,26 @@ void inc(int argc, char ** argv){
   char * sem_name = argv[3];
   
   sem_t * semap = sem_open(sem_name, 0, 1);         //creo el sem
-  printf(semap->name);
   if (sem && semap == NULL)
     printf("ERROR OPENING SEM\n");
     
-  
+  int64_t * global;
+  if (semap->semid == 0)
+      global = &global1;                            //incremento la mem
+  if (semap->semid == 1)
+    global = &global2;   
+  if (semap->semid == 2)
+    global = &global3;   
+
   for (i = 0; i < N; i++){
     if (sem) sem_wait(semap);
-    slowInc(&global, value);                            //incremento la mem
+      slowInc(global, value);                            //incremento la mem
     if (sem) sem_post(semap);
   }
 
   if (sem) sem_close(semap);                         //cierro el sem
   
-  printf("Finished: %d %s\n", global, sem_name);
+  printf("Finished: %d %s\n", *global, sem_name);
 
   // free de los mallocs hechos en create
   free(argv[0]);
@@ -83,11 +91,15 @@ void inc(int argc, char ** argv){
 void test_sync(){
   uint64_t i;
 
-  global = 0;
+  global1 = 0;
+  global2 = 0;
+  global3 = 0;
 
   printf("CREATING PROCESSES...(WITH SEM)\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
+    if (my_create_process("inc", 1, 1, 1000000) == -1) printf("Error in create");        //arg1: flag que indica si usa sem, 
+    if (my_create_process("inc", 1, -1, 1000000) == -1) printf("Error in create");       //arg2: incremento que usa la func. inc
     if (my_create_process("inc", 1, 1, 1000000) == -1) printf("Error in create");        //arg1: flag que indica si usa sem, 
     if (my_create_process("inc", 1, -1, 1000000) == -1) printf("Error in create");       //arg2: incremento que usa la func. inc
     printf("PROCESSES CREATED\n");
@@ -98,7 +110,9 @@ void test_sync(){
 void test_no_sync(){
   uint64_t i;
 
-  global = 0;
+  global1 = 0;
+  global2 = 0;
+  global3 = 0;
 
   printf("CREATING PROCESSES...(WITHOUT SEM)\n");
 

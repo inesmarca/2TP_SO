@@ -63,6 +63,7 @@ void put_fork(int i){
     else    test(i - 1);
     sem_post(mutex);
 }
+
 int philospher(int argc, char ** argv){
     printf("FILOSOFO CREADO\n");
     if (argc != 0){
@@ -78,6 +79,7 @@ int philospher(int argc, char ** argv){
     }
     return 0;
 }
+
 int addPhiloinit(int i){
     for (int vueltas = 0; vueltas < i; vueltas++)
     {

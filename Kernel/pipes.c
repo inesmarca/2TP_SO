@@ -37,9 +37,10 @@ void initializePipes() {
 // getPipeList
 int getPipeList(int * buff) {
     int cant = 0;
-    for (int i = 0; i < MAX_PROCESS; i++) {
-        if (pipes[i].alive != 0)
+    for (int i = 0; i < MAX_PIPES; i++) {
+        if (pipes[i].alive != 0) {
             buff[cant++] = i;
+        }
     }
 
     return cant;
@@ -47,6 +48,7 @@ int getPipeList(int * buff) {
 
 // getInfoPCB
 int getPipeInfo(int id, infoPipe * buff) {
+
     if (id < 0 || id >= MAX_PIPES)
         return -1;
 
@@ -223,6 +225,5 @@ int piperead(int fd, char * buff, int n){
             release(&(p->lock));
         }
     }
-
     return dim;
 }

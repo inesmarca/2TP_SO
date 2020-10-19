@@ -241,18 +241,19 @@ int kill(int pid) {
                 }
             } 
         }
+
         for (int i = 0; i < proceses[pid].argc; i++) { // free de los parametros
             free(proceses[pid].argv[i]);
         }
         free(proceses[pid].argv);
 
-        if (proceses[pid].foreground==1)
-        {
+        if (proceses[pid].foreground==1) {
             kill_foreground(pid);
         }
-        
+
         if (pid == active_process_pid) 
             tickInterrupt();
+            
         return 1;
     } else return -1;
 }

@@ -38,7 +38,10 @@ char buffer[1024];
 int pos = 0;
 
 // retorna el buffer 
-char * getBuffer(int screen) {
+char * getBuffer() {
+    while (buffer[0] == 0) {
+        _hlt();
+    }
     return buffer;
 }
 
@@ -72,15 +75,12 @@ void bufferAdd(char key) {
 
 void addEOF() {
     buffer[pos++] = -1;
+    buffer[pos] = 0;
 }
 
 void keyboard_handler(uint64_t * stackFrame) {
     // lee la tecla
     uint8_t key = getKey();
-    while (key == 0) {
-        _hlt();
-        key = getKey();
-    }
     currentkeyState = keyState(key);
     if (currentkeyState == PRESSED) {
         switch (key) {
