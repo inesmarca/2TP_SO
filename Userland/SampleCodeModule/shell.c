@@ -138,13 +138,12 @@ static void shellControler(char key) {
     if (key == '\n') {
         putChar('\n');
         if (pos != 0) {
-            int j;
+            int j=0;
             int k=0;
             int background=isBackground();
             int pipes = isPipe();  // retorna la cantidad de pipes que hay
             int fd_pipe[2];
-            char ** argv = NULL;
-            int argc = parameters[j];
+            
 
 
             if (pipes)
@@ -217,7 +216,6 @@ static void shellControler(char key) {
                     if (argc != 0) {
                         // Liberacion de los parametros
                         for (int auxi = 0; auxi < argc; auxi++) {
-                            printf("Im stuck here");
                             free(argv[auxi]);
                         }
 
