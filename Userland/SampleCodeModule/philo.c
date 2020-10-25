@@ -29,7 +29,7 @@ static void putNames(){
 void printPhilos(int i){
     for (int j = 0; j < cant; j++)
     {
-        if(j ==i) printf(" E ");
+        if(j == i) printf(" E ");
         else printf(" . ");
     }
     printf("\n");    
@@ -40,6 +40,7 @@ void test(int i){
     ((i == 0)? state[cant -1] != EATING : state[i - 1] != EATING) &&
     ((i == cant - 1)? state[0] != EATING : state[i + 1] != EATING)) {    
         state[i] = EATING;
+        yield();
         printPhilos(i);
         sem_post(S[i]);
     }
@@ -51,7 +52,8 @@ void take_fork(int i){
     test(i);
     sem_post(mutex);
     sem_wait(S[i]);
-    for (int i = 0; i < 10000000; i++);//busy wait
+    yield();
+
     
     
 }
@@ -63,6 +65,7 @@ void put_fork(int i){
     else    test(i + 1);
     if (i == 0) test(cant - 1);
     else    test(i - 1);
+    yield();
     sem_post(mutex);
 }
 
@@ -74,118 +77,86 @@ int philospher(int argc, char ** argv){
     }
     int i = numPhil++;
     while (1) {
-        // sem_wait(lock);
+        yield();
         take_fork(i);
         put_fork(i);
-        // sem_post(lock);
     }
     return 0;
 }
 
 int addPhiloinit(int i){
-
-
     if (cant >= N) return -1;
     S[i] = sem_open(names[i], 0, 0);
-    if (S[i] == NULL)
-    {
+    if (S[i] == NULL) {
         printError("Error al crear semaforo");
         return -1;
     }
 
-    int fd[MAX_PROCESS];
-	memset(fd, -1, MAX_PROCESS);
-	fd[0] = STDIN;
-	fd[1] = STDOUT;
-
-    philPID[i] = createBackground(names[i], philospher, 2,fd, 0, 0);
-    cant++;
-   
-    return 0;    
-}
-
-int addPhilo(int i){
-   
-
-
-    if (cant >= N) return -1;
-    S[i] = sem_open(names[i], 0, 0);
-    if (S[i] == NULL)
-    {
-        printError("Error al crear semaforo");
-        return -1;
-    }
-
-    
     // aseguro ambos lados
-    
-    
     int waited[2]={0};
-    
-    sem_wait(mutex);
-    if (S[0]->value==1)
-    {
+
+    if (S[0]->value==1) {
         sem_wait(S[0]);
         waited[0]++;
     }
-    if (S[i-1]->value==1)
-    {
+    if (S[i-1]->value==1) {
         sem_wait(S[i-1]);
         waited[1]++;
     }
     
-    
-    
     int fd[MAX_PROCESS];
 	memset(fd, -1, MAX_PROCESS);
 	fd[0] = STDIN;
 	fd[1] = STDOUT;
+
     philPID[i] = createBackground(names[i], philospher, 2,fd, 0, 0);
+    
     cant++;
-   
-    if (waited[0]==1)
-    {
+    if (waited[0]==1) {
         sem_post(S[0]);
     }
-    if (waited[1]==1)
-    {
+    if (waited[1]==1) {
         sem_post(S[i-1]);
     }
-     sem_post(mutex); //suelto los tenedores si los tengo
-   
     return 0;    
 }
-void exitPhilo(){
+
+int addPhilo(int i){
     sem_wait(mutex);
-    for (int i = 0; i < cant; i++)
-    {
-        kill(philPID[i],0);
-        sem_close(S[i]);
-        free(names[i]);
-    }
-    sem_close(mutex);
-    
+    addPhiloinit(i);
+    sem_post(mutex); //suelto los tenedores si los tengo
+    return 0;    
 }
 
-void killPhil(int i){
 
+void killPhil(int i){
     sem_wait(mutex);
-    if (S[i-1]->value==1)
-    {
-        sem_wait(S[i-1]);
+    if (S[i]->value==1) {
+        sem_wait(S[i]);
     }    
-    kill(philPID[i - 1], 0);
-    if(sem_close(S[i-1])!=0){
+    if (kill(philPID[i], 0) == -1) {
+        printf("Error al matar un filosofo");
+    }
+    if(sem_close(S[i]) != 0) {
         printf("Error cerrando sem");
     }
     cant--;
+    numPhil--;
     sem_post(mutex);
     printf("FILOSOFO APAGADO\n");
 }
 
+void exitPhilo(){
+    for (int i = cant - 1; i >= 0; i--) {
+        killPhil(i);
+        free(names[i]);
+    }
+    
+}
+
+
 int philosphers(){
-    putNames();
-       
+    putNames();       
     printf("Problema de los filosofos comensales: \n");
     printf("Para agregar filososfos, presione 'a' \n");
     printf("Para remover filososfos, presione 'r' \n");
@@ -193,34 +164,33 @@ int philosphers(){
     mutex = sem_open("mutex", 0, 1);
     sem_wait(mutex);
     for (int i = 0; i < 5; i++) {
-        // sem_wait(lock);
         addPhiloinit(i);
-        // sem_post(lock);
     }
     sem_post(mutex);
     printf("Filosofos pensando...\n");
-    int k;
-    int flag=1;
-    while (flag)
-    {
+
+    int k, flag = 1;
+
+    while (flag) {
         k = getChar();
-        switch (k)
-        {
+
+        switch (k) {
         case 'a':
             printf("ADD recibido \n");
-            
             addPhilo(cant);
-           
             break;
         case 'r':
-        printf("REMOVE recibido \n");
-            killPhil(cant);           
+            printf("REMOVE recibido \n");
+            killPhil(cant - 1);  
+            if (cant == 0) flag = 0;
             break;
         case 'c':
+            printf("EXIT recibido \n");
             exitPhilo();
-            flag=0;
+            flag = 0;
             break;
         default:
+            printf("No es una opcion valida");
             break;
         }
     }

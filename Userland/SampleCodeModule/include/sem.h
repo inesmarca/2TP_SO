@@ -5,7 +5,7 @@
 
 typedef struct sem_t
 {
-    char name[50];
+    char * name;
     int value;
     int semid;
     int lock;
