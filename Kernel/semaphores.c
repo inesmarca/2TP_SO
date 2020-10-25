@@ -146,7 +146,6 @@ int sem_post(sem_t * sem){
 int sem_wait(sem_t * sem){
 	if (sem == NULL || sem->semid == -1)
 		return -1;
-
 	while(1) {
 		acquire(&(sem->lock));
 		if (sem->value > 0) {

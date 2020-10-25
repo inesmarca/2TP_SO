@@ -276,9 +276,9 @@ static void help(){
 }
 
 static void test(){
-    printf("ELija el testeo que desee ejecutar: \n");
-    char * tests[3] = {"Testear Memory Manager", "Testear semaforos", "Test No Sync" "Testear procesos"};
-    for (int i = 0; i < 3; i++)
+    printf("Elija el testeo que desee ejecutar: \n");
+    char * tests[4] = {"Testear Memory Manager", "Testear semaforos", "Test No Sync", "Testear procesos"};
+    for (int i = 0; i < 4; i++)
     {
         printf("%d. %s \n", i+1, tests[i]);
     }
@@ -296,7 +296,7 @@ static void test(){
         createBackground("test_sync", test_sync, 0, fd, 0, 0);
         break;
     case '3':
-        createBackground("test_sync", test_no_sync, 0, fd, 0, 0);
+        createBackground("test_no_sync", test_no_sync, 0, fd, 0, 0);
         break;
     case '4':
         createBackground("test_processes", test_processes, 0, fd, 0, 0);
