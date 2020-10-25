@@ -12,7 +12,7 @@ int main() {
 	fd[1] = STDOUT;
 
 	printf("Initialize shell");
-	if (createBackground("shell", shell, 0, fd, 0, 0) == -1)
+	if (createForeground("shell", shell, 0, fd, 0, 0) == -1)
 		printf("Esta fallando la creacion del shell");
 	return -1;
 }

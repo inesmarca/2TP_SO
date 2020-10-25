@@ -277,7 +277,7 @@ static void help(){
 
 static void test(){
     printf("ELija el testeo que desee ejecutar: \n");
-    char * tests[3] = {"Testear Memory Manager", "Testear semaforos", "Testear procesos"};
+    char * tests[3] = {"Testear Memory Manager", "Testear semaforos", "Test No Sync" "Testear procesos"};
     for (int i = 0; i < 3; i++)
     {
         printf("%d. %s \n", i+1, tests[i]);
@@ -285,8 +285,8 @@ static void test(){
     char k = getChar();
     int fd[MAX_PROCESS];
     memset(fd, -1, MAX_PROCESS);
-    fd[0] = 2;
-    fd[1] = 4;
+    fd[0] = STDIN;
+    fd[1] = STDOUT;
     switch (k)
     {
     case '1':
@@ -296,6 +296,9 @@ static void test(){
         createBackground("test_sync", test_sync, 0, fd, 0, 0);
         break;
     case '3':
+        createBackground("test_sync", test_no_sync, 0, fd, 0, 0);
+        break;
+    case '4':
         createBackground("test_processes", test_processes, 0, fd, 0, 0);
         break;
     default:
