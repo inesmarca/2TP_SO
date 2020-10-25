@@ -29,6 +29,8 @@ GLOBAL getListPids
 GLOBAL getInfoPCB
 GLOBAL getListSem
 GLOBAL getInfoSem
+GLOBAL mkfifo
+GLOBAL open
 
 section .text
 
@@ -192,3 +194,12 @@ getPipeInfo:
     int 80h
     ret
 
+mkfifo:
+    mov rax, 30
+    int 80h
+    ret
+
+open:
+    mov rax, 31
+    int 80h
+    ret

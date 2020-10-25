@@ -96,6 +96,16 @@ int close(int fd) {
     return 0;
 }
 
+int changeFd(int fd, int pid) {
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        if (proceses[pid].fd[i] == -1) {
+            proceses[pid].fd[i] = fd;
+            return i;
+        }
+    }
+    return -1;
+}
+
 // swap
 uint64_t * swap(uint64_t * rsp) {
 

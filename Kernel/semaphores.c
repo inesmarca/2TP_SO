@@ -31,6 +31,7 @@ int getInfoSem(int id, infoSem * buff) {
 		buff->blocked_pids[j] = sems[id].blocked_pids[j];
 		buff->cant_blocked++;
 	}
+	buff->cant_blocked = sems[id].cant_blocked_pids;
 
     return 0;
 }
@@ -59,7 +60,7 @@ static void sem_init(int index, int value){
 
 sem_t * semExists(char * semName) {
 	for (int i = 0; i < MAX_SIZE; i++) {
-		if (strcmp(sems[i].name, semName))
+		if (sems[i].semid != -1 && strcmp(sems[i].name, semName))
 			return &sems[i];		     
 	}
 

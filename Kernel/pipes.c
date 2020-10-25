@@ -6,7 +6,11 @@
 #include <sysCall.h>
 #include <consoleManager.h>
 
+#define R_ONLY 0
+#define W_ONLY 1
+
 typedef struct pipe_t {
+    char name[255];
     int alive;
     int lock;
     char data[PIPE_SIZE];
@@ -18,6 +22,7 @@ typedef struct pipe_t {
     int cant_read;
     int pids[MAX_PROCESS];
     int cant_pids;
+    int fd[2];
 } pipe_t;
 
 pipe_t pipes[MAX_PIPES];
@@ -69,6 +74,9 @@ int getPipeInfo(int id, infoPipe * buff) {
 }
 
 int getFirstPipe() {
+    if (cant_pipes == MAX_PIPES)
+        return -1;
+
     for (int i = 0; i < cant_pipes; i++) {
         if (pipes[i].alive == 0)
             return i;
@@ -95,11 +103,16 @@ void removePidFromPipe(int fd, int pid) {
     }   
 }
 
-int pipe(int fd[]) {
-    if (cant_pipes == MAX_PIPES)
-        return -1;
-    
-    int index = getFirstPipe();
+int pipeExists(char * name) {
+    for (int i = 0; i < MAX_PIPES; i++) {
+        if (pipes[i].alive != 0 && strcmp(pipes[i].name, name)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void pipeInit(int index, char * name) {
     pipes[index].alive = 1;
     pipes[index].lock = 0;
     pipes[index].nread = 0;
@@ -110,11 +123,47 @@ int pipe(int fd[]) {
     memset(pipes[index].read_blocked, -1, MAX_PROCESS);
     memset(pipes[index].data, -1, PIPE_SIZE);
     pipes[index].cant_pids = 0;
+    strcpy(pipes[index].name, name);
 
+    pipes[index].fd[0] = index*2 + 2;
+    pipes[index].fd[1] = index*2 + 3;
+    
+    cant_pipes++;
+}
+
+int mkfifo(char * name) {
+    if (pipeExists(name) != -1) {
+        int index = getFirstPipe();
+        if (index == -1)
+            return -1;
+        pipeInit(index, name);
+    }
+
+    return 0;
+}
+
+int open(char * name, int flag) {
+    int id;
+    if ((id = pipeExists(name)) == -1) 
+        return -1;
+
+    insertPidToPipe(pipes[id].fd[0], getpid());
+    if (flag == R_ONLY) {
+        return changeFd(pipes[id].fd[0], getpid());
+    } else if (flag == W_ONLY) {
+        return changeFd(pipes[id].fd[1], getpid());
+    }
+
+    return -1;
+}
+
+int pipe(int fd[]) {
+    int index = getFirstPipe();
+    if (index == -1)
+        return -1;
+    pipeInit(index, "");
     fd[0] = index*2 + 2;
     fd[1] = index*2 + 3;
-
-    cant_pipes++;
 
     return 0;
 }

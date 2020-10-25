@@ -28,14 +28,16 @@ typedef struct P_rq{
   enum State state;
 } p_rq;
 
-int fd[MAX_PROCESS] = {STDIN, STDOUT, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-
 void test_processes(){
   printf("Testeo\n");
   p_rq p_rqs[MAX_PROCESSES];
   uint8_t rq;
   uint8_t alive = 0;
   uint8_t action;
+  int fd[MAX_PROCESS];
+	memset(fd, -1, MAX_PROCESS);
+	fd[0] = STDIN;
+	fd[1] = STDOUT;
 
   while (1){
     // Create MAX_PROCESSES processes

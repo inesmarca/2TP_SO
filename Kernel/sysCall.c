@@ -244,7 +244,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             getTime((int *)reg1);
             break;
         case 10:
-            res = malloc((int)reg1);
+            return (uint64_t)malloc((int)reg1);
             break;
         case 11:
             free((point)reg1);
@@ -265,7 +265,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             yield();
             break;
         case 17:
-            res = sem_open((char *)reg1, (char)reg2, (int)reg3);
+            return (uint64_t)sem_open((char *)reg1, (char)reg2, (int)reg3);
             break;
         case 18:
             res = sem_wait((sem_t *)reg1);
@@ -302,6 +302,12 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             break;
         case 29:
             res = getPipeInfo((int)reg1, (infoPipe *)reg2);
+            break;
+        case 30:
+            res = mkfifo((char *)reg1);
+            break;
+        case 31:
+            res = open((char *)reg1, (int)reg2);
             break;
         default:
             break;

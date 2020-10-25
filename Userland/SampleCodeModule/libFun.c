@@ -17,6 +17,38 @@ int isVocal(char c) {
     return c == 'a' || c == 'A' || c == 'e' || c == 'E' || c == 'i' || c == 'I' || c == 'o' || c == 'O' || c == 'u' || c == 'U';
 }
 
+#define PIPE "pipe"
+
+void testNamedPipes() {
+    int fd[MAX_PROCESS];
+	memset(fd, -1, MAX_PROCESS);
+	fd[0] = STDIN;
+	fd[1] = STDOUT;
+    if (createBackground("shell", test1, 0, fd, 0, 0) == -1)
+		printf("Esta fallando la creacion del shell");
+    if (createBackground("shell", test2, 0, fd, 0, 0) == -1)
+		printf("Esta fallando la creacion del shell");
+}
+
+void test1() {
+	mkfifo(PIPE);
+	int fd = open(PIPE, W_ONLY);
+	char * message = "Hola mundo\n";
+	while(1) {
+		write(fd, message, 11);
+	}
+}
+
+void test2() {
+	mkfifo(PIPE);
+	int fd = open(PIPE, R_ONLY);
+	char buff[50];
+	while(1) {
+		read(fd, buff, 15);
+		printf(buff);
+	}
+}
+
 // sem 
 void sem() {
     int * ids = malloc(MAX_SEMS);
@@ -37,7 +69,8 @@ void sem() {
             return;
         }
 
-        printf("NAME: %s, VALUE %d ", buff->name, buff->value);
+        printf("NAME: %s, VALUE %d, ", buff->name, buff->value);
+        printf("CANT BLOCKED PIDS: %d, ", buff->cant_blocked);
         printf("BLOCKED PIDS: ");
         for (int j = 0; j < buff->cant_blocked; j++)
             printf("%d ", buff->blocked_pids[j]);
@@ -215,13 +248,12 @@ void philo(){
 }
 
 //cat para la shell(pointer type)
-void nice_shell(int argc,char * argv[]){
-    if (argc!=2)
-    {
+void nice_shell(int argc, char * argv[]){
+    if (argc != 2) {
         printError("invalid ammount of arguments");
     }
-    int pid=atoi(argv[0]);
-    int priority=atoi(argv[1]);
+    int pid = atoi(argv[0]);
+    int priority = atoi(argv[1]);
     nice(pid,priority);
 }
 

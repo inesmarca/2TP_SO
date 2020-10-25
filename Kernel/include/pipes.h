@@ -32,4 +32,8 @@ void insertPidToPipe(int fd, int pid);
 
 void removePidFromPipe(int fd, int pid);
 
+int mkfifo(char * name);
+
+int open(char * name, int flag);
+
 #endif

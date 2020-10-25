@@ -92,7 +92,12 @@ int addPhiloinit(int i){
         printError("Error al crear semaforo");
         return -1;
     }
-    int fd[2]={-1,STDOUT};
+
+    int fd[MAX_PROCESS];
+	memset(fd, -1, MAX_PROCESS);
+	fd[0] = STDIN;
+	fd[1] = STDOUT;
+
     philPID[i] = createBackground(names[i], philospher, 2,fd, 0, 0);
     cant++;
    
@@ -110,7 +115,11 @@ int addPhilo(int i){
         printError("Error al crear semaforo");
         return -1;
     }
-    int fd[2]={-1,STDOUT};
+
+    
+    // aseguro ambos lados
+    
+    
     int waited[2]={0};
     
     sem_wait(mutex);
@@ -126,8 +135,11 @@ int addPhilo(int i){
     }
     
     
-    // aseguro ambos lados
     
+    int fd[MAX_PROCESS];
+	memset(fd, -1, MAX_PROCESS);
+	fd[0] = STDIN;
+	fd[1] = STDOUT;
     philPID[i] = createBackground(names[i], philospher, 2,fd, 0, 0);
     cant++;
    
@@ -139,7 +151,7 @@ int addPhilo(int i){
     {
         sem_post(S[i-1]);
     }
-     sem_post(mutex);
+     sem_post(mutex); //suelto los tenedores si los tengo
    
     return 0;    
 }

@@ -5,6 +5,8 @@
 #include <sem.h>
 #define STDIN 0
 #define STDOUT 1
+#define R_ONLY 0
+#define W_ONLY 1
 #define MAX_PROCESS 20
 #define MAX_SEMS 100
 
@@ -92,5 +94,9 @@ extern int getInfoPCB(int pid, infoPCB * buff);
 extern int getListPipes(int * buff);
 
 extern int getPipeInfo(int id, infoPipe * buff);
+
+extern int mkfifo(char * name);
+
+extern int open(char * name, int flag);
 
 #endif
