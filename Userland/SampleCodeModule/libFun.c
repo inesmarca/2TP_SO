@@ -13,6 +13,10 @@ extern void getRegisters(uint64_t * buff) ;
 extern int getTemperature();
 extern void getTime(int * buff);
 
+void test1();
+void test2();
+
+
 int isVocal(char c) {
     return c == 'a' || c == 'A' || c == 'e' || c == 'E' || c == 'i' || c == 'I' || c == 'o' || c == 'O' || c == 'u' || c == 'U';
 }

@@ -4,17 +4,19 @@
 #include <shell.h>
 #include <libFun.h>
 #include <sysLib.h>
+#include <test_util.h>
 
-#define CANT_FUNC 15
+#define CANT_FUNC 17
 
 static void help();
+static void test();
 static void initShell();
 static void shellControler(char key);
 
-static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice",         "cat",  "wc", "filter", "clear", "sem",  "philo",  "pipe",      "kill",     "block",     "unblock", "testNamedPipes"};
-static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,   loop,   nice_shell,     cat,    wc,   filter ,  clear,   sem,    philo,    pipeInfo,    kill_shell, block_shell, unblock_shell, testNamedPipes};
-static char parameters[CANT_FUNC]    = { 0,     0,     0,    0,      2,              0,      0,    0,        0,       0,      0,        0,           1,          1,           1,             0};
-static char builtIn[CANT_FUNC]    =    { 1,     1,     1,    0,      1,              0,      0,    0,        1,       1,      0,        1,           1,          1,           1,             0};
+static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice",         "cat",  "wc", "filter", "clear", "sem",  "philo",  "pipe",      "kill",     "block",     "unblock",     "testNamedPipes",   "test"};
+static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,   loop,   nice_shell,     cat,    wc,   filter ,  clear,   sem,    philo,    pipeInfo,    kill_shell, block_shell, unblock_shell, testNamedPipes,    test};
+static char parameters[CANT_FUNC]    = { 0,     0,     0,    0,      2,              0,      0,    0,        0,       0,      0,        0,           1,          1,           1,             0,                 0};
+static char builtIn[CANT_FUNC]    =    { 1,     1,     1,    0,      1,              0,      0,    0,        1,       1,      0,        1,           1,          1,           1,             0,                 0};
 static char descripcion[CANT_FUNC][101] = {
     "enumeracion de las funciones disponibles del sistema", 
     "imprime el estado de la memoria", 
@@ -30,7 +32,9 @@ static char descripcion[CANT_FUNC][101] = {
     "imprime la lista de todos los pipes con sus propiedades",
     "Recibe el PID de un proceso y lo elimina",
     "Recibe el PID de un proceso y lo bloquea",
-    "Recibe el PID de un proceso y lo desbloquea"
+    "Recibe el PID de un proceso y lo desbloquea",
+    "Testo de named pipes",
+    "Distintos testeos para poner a prueba las implementaciones"
     };  
 
 
@@ -269,6 +273,36 @@ static void help(){
     changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
     putChar('\n');
     printf("Para informacion adicional, consultar documentacion.\n");
+}
+
+static void test(){
+    printf("ELija el testeo que desee ejecutar: \n");
+    char * tests[3] = {"Testear Memory Manager", "Testear semaforos", "Testear procesos"};
+    for (int i = 0; i < 3; i++)
+    {
+        printf("%d. %s \n", i+1, tests[i]);
+    }
+    char k = getChar();
+    int fd[MAX_PROCESS];
+    memset(fd, -1, MAX_PROCESS);
+    fd[0] = 2;
+    fd[1] = 4;
+    switch (k)
+    {
+    case '1':
+        createBackground("test_mm", test_mm, 0, fd, 0, 0);
+        break;
+    case '2':
+        createBackground("test_sync", test_sync, 0, fd, 0, 0);
+        break;
+    case '3':
+        createBackground("test_processes", test_processes, 0, fd, 0, 0);
+        break;
+    default:
+        printError("No es un test valido");
+        break;
+    }
+    
 }
 
 char * getUser() {

@@ -173,11 +173,8 @@ void killPhil(int i){
     if (S[i-1]->value==1)
     {
         sem_wait(S[i-1]);
-    }
-    
-    
-    
-    kill(philPID[i], 0);
+    }    
+    kill(philPID[i - 1], 0);
     if(sem_close(S[i-1])!=0){
         printf("Error cerrando sem");
     }
