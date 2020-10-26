@@ -130,7 +130,7 @@ uint64_t * swap(uint64_t * rsp) {
         active_processes[curr_priority][curr_index] = NULL;//lo pongo en null
     }
 
-    int cant = 0;
+    
     int found = 0;
     
     while (!found) { //agregar contador para salir del while si no hay procesos
@@ -162,7 +162,7 @@ uint64_t * swap(uint64_t * rsp) {
         }
         curr_index = next_index;
         curr_priority = next_priority;
-        cant++;
+       
     }
 
     active_process_pid = active_processes[next_priority][next_index]->pid;

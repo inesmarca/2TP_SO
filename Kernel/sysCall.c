@@ -23,7 +23,7 @@ int readKey(char * buf, int cant) {
     char * input = getBuffer();
     int i;
 
-    for (i = 0; input[i] != 0 && i < cant; i++) {
+    for (i = 0; i < cant && input[i] != 0 ; i++) {
         if (input[i] == -1) {
             buf[i] = 0;
         } else 
