@@ -149,8 +149,13 @@ void killPhil(int i){
 void exitPhilo(){
     for (int i = cant - 1; i >= 0; i--) {
         killPhil(i);
-        free(names[i]);
     }
+    for (int i = 0; i < N; i++)
+    {
+       free(names[i]);
+    }
+    
+    sem_close(mutex);
     
 }
 

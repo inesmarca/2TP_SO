@@ -92,7 +92,7 @@ void test_no_sync(){
   printf("CREATING PROCESSES...(WITHOUT SEM)\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    my_create_process("incMainNo", 0, 1, 100);
+    my_create_process("incMainNo", 0, 1, 1000);
     my_create_process("decMainNo", 0, -1, 1000);
     printf("PROCESSES CREATED\n");
   }
