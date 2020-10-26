@@ -1,0 +1,3 @@
+157   execve("/usr/bin/make", ["make"], ["HOSTNAME=73b4b971b812", "SHLVL=1", "HOME=/root", "OLDPWD=/root/2TP_SO", "_=/usr/bin/pvs-studio-analyzer", "TERM=xterm", "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", "PWD=/root/2TP_SO/Kernel"]) = 0
+157   chdir("/root/2TP_SO/Kernel")      = 0
+157   +++ exited with 0 +++

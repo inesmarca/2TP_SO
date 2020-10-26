@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include <stdint.h>
 #include <lib.h>
 #include <moduleLoader.h>
@@ -55,8 +58,6 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-
-
 int main() {	
 	load_idt();
 	initializePipes();
@@ -66,12 +67,9 @@ int main() {
 	// se envian los valores iniciales del RSP y de la primera 
 	// instruccion para el reinicio luego de una excepcion
 	setAddresses((uint64_t *)sampleCodeModuleAddress, getRSP());
-
 	
 	((EntryPoint)sampleCodeModuleAddress)();
 
-//	int fd[2] = {-1, -1};
-//	createProcess("defaultProcess", defaultProcess, 2, fd, 0, 0);
 	_sti();
 	_hlt();
 	return 0;

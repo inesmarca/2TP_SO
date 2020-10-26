@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include <programs.h>
 #include <programHandler.h>
 #include <libC.h>
@@ -17,14 +20,14 @@ static char functions[CANT_FUNC][20] = {"help","mem", "ps", "loop", "nice",     
 static void (*func_ptr[CANT_FUNC])() = { help , mem,   ps,   loop,   nice_shell,     cat,    wc,   filter ,  clear,   sem,    philo,    pipeInfo,    kill_shell, block_shell, unblock_shell, testNamedPipes,    test};
 static char parameters[CANT_FUNC]    = { 0,     0,     0,    0,      2,              0,      0,    0,        0,       0,      0,        0,           1,          1,           1,             0,                 0};
 static char builtIn[CANT_FUNC]    =    { 1,     1,     1,    0,      1,              0,      0,    0,        1,       1,      0,        1,           1,          1,           1,             0,                 0};
-static char descripcion[CANT_FUNC][101] = {
+static char descripcion[CANT_FUNC][110] = {
     "enumeracion de las funciones disponibles del sistema", 
     "imprime el estado de la memoria", 
     "imprime la lista de todos los procesos activos con sus propiedades",
     "imprime su ID con un saludo cada una determinada cantidad de tiempo",
-    "cambia la prioridad de un proceso dadu su ID y la nueva prioridad",
+    "cambia la prioridad de un proceso dado su ID y la nueva prioridad",
     "imprime el stdin tal como lo recibe",
-    "cuenta la cantidad de lineas del input",
+    "cuenta la cantidad de lineas del input. Se puede utilizar Ctrl D para marcar EOF",
     "filtra las vocales del input e imprime el resultado",
     "limpia la pantalla",
     "lista los semaforos activos con su informacion correspondiente",

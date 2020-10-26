@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include <libC.h>
 #include <stdarg.h>
 #include <math.h>
@@ -316,6 +319,7 @@ int scanf(const char *format, ...) {
 			printf("Expresion %s is unsupported \n",format[i]);
     		changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 			//expression not suported
+			va_end(valist);
 			return -1;
 				break;
 			}
@@ -400,6 +404,7 @@ int sscanf(const char *str,const char *format, ...) {
 			printf("Expresion %s is unsupported \n",format[i]);
     		changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 			//expression not suported
+			va_end(valist);
 			return -1;
 				break;
 			}

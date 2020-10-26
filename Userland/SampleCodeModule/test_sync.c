@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include <test_util.h>
 #include <libC.h>
 #include <sysLib.h>
@@ -60,7 +63,7 @@ void inc(int argc, char ** argv){
 
   if (semValue) sem_close(semap);                         //cierro el sem
   
-  printf("Finished: %d %s\n", global);
+  printf("Finished: %d\n", global);
 
   // free de los mallocs hechos en create
   free(argv[0]);
@@ -77,11 +80,12 @@ void test_sync(){
   printf("CREATING PROCESSES...(WITH SEM)\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    if (my_create_process("inc", 1, 1, 400) == -1) printf("Error in create");        //arg1: flag que indica si usa sem, 
-    if (my_create_process("inc", 1, -1, 400) == -1) printf("Error in create");       //arg2: incremento que usa la func. inc
+    if (my_create_process("inc", 1, 1, 1000000) == -1) printf("Error in create");        //arg1: flag que indica si usa sem, 
+    if (my_create_process("inc", 1, -1, 1000000) == -1) printf("Error in create");       //arg2: incremento que usa la func. inc
     printf("PROCESSES CREATED\n");
     cant++;
   }                                                 //arg3: cantidad de veces que cuenta
+  kill(0, 0);
 }
 
 void test_no_sync(){
@@ -92,8 +96,9 @@ void test_no_sync(){
   printf("CREATING PROCESSES...(WITHOUT SEM)\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    my_create_process("incMainNo", 0, 1, 1000);
-    my_create_process("decMainNo", 0, -1, 1000);
+    my_create_process("incMainNo", 0, 1, 1000000);
+    my_create_process("decMainNo", 0, -1, 1000000);
     printf("PROCESSES CREATED\n");
   }
+  kill(0, 0);
 }
