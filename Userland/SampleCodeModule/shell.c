@@ -297,16 +297,16 @@ static void test(){
     switch (k)
     {
     case '1':
-        createBackground("test_mm", test_mm, 0, fd, 0, 0);
+        createBackground("test_mm", test_mm, 2, fd, 0, 0);
         break;
     case '2':
-        createBackground("test_sync", test_sync, 0, fd, 0, 0);
+        createBackground("test_sync", test_sync, 2, fd, 0, 0);
         break;
     case '3':
-        createBackground("test_no_sync", test_no_sync, 0, fd, 0, 0);
+        createBackground("test_no_sync", test_no_sync, 2, fd, 0, 0);
         break;
     case '4':
-        createBackground("test_processes", test_processes, 0, fd, 0, 0);
+        createBackground("test_processes", test_processes, 2, fd, 0, 0);
         break;
     default:
         printError("No es un test valido");
