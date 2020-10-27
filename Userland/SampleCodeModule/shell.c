@@ -158,9 +158,11 @@ static void shellControler(char key) {
 
             for (int pipecounter = 0;  pipecounter < pipes + 1; pipecounter++) {
                 char * aux = malloc(DIM_BUFFER);
-                if (aux == NULL)
+                if (aux == NULL){
                     printError("Error Creating Process 1\n");
-                
+                    return;
+                }
+
                 
                 memset(aux, 0, DIM_BUFFER);
 

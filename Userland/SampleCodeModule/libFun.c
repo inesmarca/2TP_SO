@@ -28,7 +28,7 @@ int isVocal(char c) {
 
 void testNamedPipes() {
     int fd[MAX_PROCESS];
-	memset(fd, -1, MAX_PROCESS);
+	memset( (void *) fd, -1, MAX_PROCESS);
 	fd[0] = STDIN;
 	fd[1] = STDOUT;
     if (createBackground("shell", test1, 0, fd, 0, 0) == -1)
@@ -52,13 +52,18 @@ void test2() {
 	char buff[50];
 	while(1) {
 		read(fd, buff, 15);
-		printf(buff);
+		printf("%s", buff);
 	}
 }
 
 // sem 
 void sem() {
-    int * ids = malloc(MAX_SEMS);
+    int * ids = malloc(MAX_SEMS);   
+    if (ids == NULL)
+    {
+        printError("No se pudo realizar malloc");
+        return;
+    }
     int cant = 0;
 
     if ((cant = getListSem(ids)) == -1) {
@@ -68,7 +73,12 @@ void sem() {
 
     printf("%d semaphores active\n", cant);
     infoSem * buff = malloc(sizeof(infoSem));
-
+    if (buff == NULL)
+    {
+        printError("No se pudo realizar malloc");
+        return;
+    }
+    
     for (int i = 0; i < cant; i++) {
         if (getInfoSem(ids[i], buff) == -1) {
             free(buff);
@@ -92,6 +102,11 @@ void sem() {
 // pipe
 void pipeInfo() {
     int * ids = malloc(MAX_PROCESS);
+    if (ids == NULL)
+    {
+        printError("No se pudo realizar malloc");
+        return;
+    }
     int cant = 0;
 
     if ((cant = getListPipes(ids)) == -1) {
@@ -101,7 +116,11 @@ void pipeInfo() {
 
     printf("%d pipes opened\n", cant);
     infoPipe * buff = malloc(sizeof(infoPipe));
-
+    if (buff == NULL)
+    {
+        printError("No se pudo realizar malloc");
+        return;
+    }
     for (int i = 0; i < cant; i++) {
         if (getPipeInfo(ids[i], buff) == -1) {
             free(buff);
@@ -143,6 +162,11 @@ void wc() {
 // ps
 void ps() {
     int * pids = malloc(MAX_PROCESS);
+    if (pids == NULL)
+    {
+        printError("No se pudo realizar malloc");
+        return;
+    }
     int cant = 0;
 
     if ((cant = getListPids(pids)) == -1){
@@ -152,7 +176,11 @@ void ps() {
        
 
     infoPCB * info = malloc(sizeof(infoPCB));
-
+    if (info == NULL)
+    {
+        printError("No se pudo realizar malloc");
+        return;
+    }
     for (int i = 0; i < cant; i++) {
         if (getInfoPCB(pids[i], info) == -1){
             free(pids);
@@ -170,8 +198,18 @@ void ps() {
 // filter
 void filter() {
     char * buff = malloc(255);
+    if (buff == NULL)
+    {
+        printError("No se pudo realizar malloc");
+        return;
+    }
     int dim = scanf("%s", buff);
     char * aux = malloc(dim);
+    if (aux == NULL)
+    {
+        printError("No se pudo realizar malloc");
+        return;
+    }
     int i, j = 0;
 
     for(i = 0; buff[i] != 0; i++) {
@@ -190,7 +228,11 @@ void filter() {
 // cat
 void cat() {
 	char * buff = malloc(512);
-
+    if (buff == NULL)
+    {
+        printError("No se pudo realizar malloc");
+        return;
+    }
 	int cant = read(STDIN, buff, sizeof(buff));
     int pos = cant - 1;
 	printf("%s", buff);
@@ -424,7 +466,7 @@ void printCPUInfo() {
 
 void printError(char * str) {
     changeColor(0xFF0000, DEFAULT_BACKGROUND_COLOR);
-    printf(str);
+    printf("%s", str);
     changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 }
 
