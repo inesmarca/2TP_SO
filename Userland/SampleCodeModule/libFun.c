@@ -288,7 +288,7 @@ void unblock_shell(int argc,char *argv[]){
 void loop() {
     while(1) {
         printf("%d ", getpid());
-        for (int i = 1000000000; i > 0; i--);
+        for (int i = 100000000; i > 0; i--);
     }
 }
 
