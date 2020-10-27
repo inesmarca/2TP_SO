@@ -5,7 +5,7 @@
 #include <libC.h>
 
 #define MAX_BLOCKS 200
-#define MAX_MEMORY 1024 * 1024 * 128 * 0.8 //Should be around 80% of memory managed by the MM
+#define MAX_MEMORY (1024 * 1024 * 128 * 0.6) //Should be around 80% of memory managed by the MM
 
 static int killed = 0;
 static int fd[2] = {STDIN, STDOUT};

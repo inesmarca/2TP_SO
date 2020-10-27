@@ -24,19 +24,28 @@ void slowInc(int64_t * p, int64_t inc) {
 
 uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un procesos que altera la shared mem
   char ** buff = malloc(3);
-  if (*buff == NULL) {
+  if (buff == NULL) {
     return -1;
   }
   
-	if ((buff[0] = malloc(20)) == NULL)
-    free(*buff);
+	if ((buff[0] = malloc(20)) == NULL){
+    free(buff);
     return -1;
-	if ((buff[1] = malloc(20)) == NULL)
-    free(*buff);
+  }
+    
+	if ((buff[1] = malloc(20)) == NULL){
+    free(buff[0]);
+    free(buff);
     return -1;
-  if ((buff[2] = malloc(20)) == NULL)
-    free(*buff);
+  }
+    
+  if ((buff[2] = malloc(20)) == NULL){
+    free(buff[0]);
+    free(buff[1]);
+    free(buff);
     return -1;
+  }
+    
 
 	itoa(sem, buff[0], 10);
 	itoa(value, buff[1], 10);
@@ -59,8 +68,11 @@ void inc(int argc, char ** argv){
   int N = atoi(argv[2]);
   
   sem_t * semap = sem_open(SEM_ID, 0, 1);         //creo el sem
-  if (semValue && semap == NULL)
+  if (semap == NULL){
     printf("ERROR OPENING SEM\n"); 
+    return-1;
+  }
+    
 
   for (i = 0; i < N; i++){
     if (semValue) sem_wait(semap);

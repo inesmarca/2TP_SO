@@ -211,6 +211,11 @@ int createProcess(const char * name, void * func, int priority, int fd[], int fo
     newProcess->argc=argc;
 
     newProcess->argv = malloc(argc);
+    if (newProcess->argv ==NULL)
+    {
+        return -1;
+    }
+    
     // int auxArgc = argc;
     for (int i = 0; i < argc; i++) {
 	    newProcess->argv[i] = malloc(255);
