@@ -24,11 +24,18 @@ void slowInc(int64_t * p, int64_t inc) {
 
 uint64_t my_create_process(char * name, int sem, int value, int N){ //crea un procesos que altera la shared mem
   char ** buff = malloc(3);
+  if (*buff == NULL) {
+    return -1;
+  }
+  
 	if ((buff[0] = malloc(20)) == NULL)
+    free(*buff);
     return -1;
 	if ((buff[1] = malloc(20)) == NULL)
+    free(*buff);
     return -1;
   if ((buff[2] = malloc(20)) == NULL)
+    free(*buff);
     return -1;
 
 	itoa(sem, buff[0], 10);

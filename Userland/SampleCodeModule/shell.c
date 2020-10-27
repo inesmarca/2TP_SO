@@ -145,7 +145,7 @@ static void shellControler(char key) {
     if (key == '\n') {
         putChar('\n');
         if (pos != 0) {
-            int j=0;
+            int j;
             int k=0;
             int background=isBackground();
             int pipes = isPipe();  // retorna la cantidad de pipes que hay
@@ -158,11 +158,13 @@ static void shellControler(char key) {
 
             for (int pipecounter = 0;  pipecounter < pipes + 1; pipecounter++) {
                 char * aux = malloc(DIM_BUFFER);
-                memset(aux, 0, DIM_BUFFER);
-
                 if (aux == NULL)
                     printError("Error Creating Process 1\n");
                 
+                
+                memset(aux, 0, DIM_BUFFER);
+
+               
                 for (int x = 0; input[k] != 0 && input[k] != ' '; x++) { // agaro la primera funcion
                     aux[x] = input[k];
                     k++;

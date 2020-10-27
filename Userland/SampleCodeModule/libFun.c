@@ -204,7 +204,7 @@ void cat() {
 }
 
 // mem
-void mem() {
+void mem(void) {
     int buff[2];
     memState(buff);
     printf("Total Space: %d\nSpace Used: %d\n", buff[0], buff[1]);
@@ -309,7 +309,7 @@ void printmem(char * parameters) {
     }
    
     
-    unsigned char * mem=(unsigned char *)direc;
+    unsigned char * mem = (unsigned char *)direc;
 
     printf("Direccion inicial : %ld",direc);
     

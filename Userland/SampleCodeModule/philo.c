@@ -177,10 +177,10 @@ int philosphers(){
     sem_post(mutex);
     printf("Filosofos pensando...\n");
 
-    int k, flag = 1;
+    int flag = 1;
 
     while (flag) {
-        k = getChar();
+        int k = getChar();
 
         switch (k) {
         case 'a':
@@ -189,7 +189,10 @@ int philosphers(){
             break;
         case 'r':
             printf("REMOVE recibido \n");
-            killPhil(cant - 1);  
+            if (cant > 0)
+            {
+                killPhil(cant - 1);  
+            }
             if (cant == 0) flag = 0;
             break;
         case 'c':
