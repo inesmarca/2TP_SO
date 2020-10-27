@@ -6,7 +6,7 @@
 #include <sysCall.h>
 #define MAX_PROCESS 20
 #define PRIORITY_LEVELS 3
-#define STACK_SIZE 1024 * 4 
+#define STACK_SIZE (1024 * 4) 
 
 typedef struct pcb {
 	uint64_t * rsp;

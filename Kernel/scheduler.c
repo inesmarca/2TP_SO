@@ -20,7 +20,6 @@ extern uint64_t * initializeStack(uint64_t * rsp, void * wrapper, void * func, i
 extern void tickInterrupt();
 void _hlt();
 static void reset_processes();
-static int freeProcess();
 static int getNewPid();
 static void wrapper(void * func(int, char **), int argc, char * argv[], int pid);
 static void kill_foreground(int pid);
@@ -86,7 +85,7 @@ int getInfoPCB(int pid, infoPCB * buff) {
 
 
 int close(int fd) {
-    if (fd < 0 || fd > MAX_PROCESS)
+    if (fd < 0 || fd >= MAX_PROCESS)
         return -1;
 
     pcb * myProcess = &proceses[getpid()];
@@ -177,11 +176,13 @@ int createProcess(const char * name, void * func, int priority, int fd[], int fo
         return -1;
     }
 
-    pcb * newProcess = &proceses[freeProcess()];
-
-    if (newProcess == NULL) {
-        _hlt();
+    int pid_aux=getNewPid();
+    if (pid_aux==-1){
+        return -1;
     }
+    pcb * newProcess = &proceses[pid_aux];
+
+
 
     newProcess->pid = getNewPid();
     if (newProcess->pid == -1) {
@@ -213,6 +214,11 @@ int createProcess(const char * name, void * func, int priority, int fd[], int fo
     // int auxArgc = argc;
     for (int i = 0; i < argc; i++) {
 	    newProcess->argv[i] = malloc(255);
+        if (newProcess->argv[i]==NULL)
+        {
+            return -1;
+        }
+        
         strcpy(newProcess->argv[i], argv[i]);
     }
 
@@ -345,13 +351,7 @@ static void reset_processes(){ //reacomoda la lista de active y waiting
     }
 }
 
-static int freeProcess() {
-    for (int i = 0; i < MAX_PROCESS; i++) {
-        if (proceses[i].state == KILLED)
-            return i;
-    }
-    return NULL; //si no encontro ningun proceso disponible
-}
+
 
 static int getNewPid() {
     for (int i = 0; i < MAX_PROCESS; i++) {

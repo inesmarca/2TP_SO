@@ -4,7 +4,7 @@
 /************************************************************/
 #define MAX_CANT_LEVELS 12		// Cantidad de niveles maximo
 #define pwrtwo(x) (1 << (x))
-#define SIZE pwrtwo(MAX_CANT_LEVELS + 1) - 1
+#define SIZE (pwrtwo(MAX_CANT_LEVELS + 1) - 1)
 /*************************************************************/
 
 /************************************************************************/

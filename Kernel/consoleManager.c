@@ -4,7 +4,7 @@
 #include <consoleManager.h>
 #include <videoDriver.h>
 
-#define LINE_START_POS SCREEN1_END_POS + 1
+#define LINE_START_POS (SCREEN1_END_POS + 1)
 #define LINE_HEIGHT 4
 #define B_SPACE 0x0E
 

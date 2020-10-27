@@ -117,34 +117,34 @@ int fix_format(int time) {
     return aux;
 } 
 
-int intToString(int value, char * buffer) {
-	char *p = buffer;
-	char *p1, *p2;
-	int digits = 0;
+// int intToString(int value, char * buffer) {
+// 	char *p = buffer;
+// 	char *p1, *p2;
+// 	int digits = 0;
 
-	//Calculate characters for each digit
-	do {
-		int remainder = value % 10;
-		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
-		digits++;
-	} while (value /= 10);
+// 	//Calculate characters for each digit
+// 	do {
+// 		int remainder = value % 10;
+// 		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+// 		digits++;
+// 	} while (value /= 10);
 
-	// Terminate string in buffer.
-	*p = 0;
+// 	// Terminate string in buffer.
+// 	*p = 0;
 
-	//Reverse string in buffer.
-	p1 = buffer;
-	p2 = p - 1;
-	while (p1 < p2) {
-		char tmp = *p1;
-		*p1 = *p2;
-		*p2 = tmp;
-		p1++;
-		p2--;
-	}
+// 	//Reverse string in buffer.
+// 	p1 = buffer;
+// 	p2 = p - 1;
+// 	while (p1 < p2) {
+// 		char tmp = *p1;
+// 		*p1 = *p2;
+// 		*p2 = tmp;
+// 		p1++;
+// 		p2--;
+// 	}
 
-	return digits;
-}
+// 	return digits;
+// }
 
 void getTime(int * buff) {
     buff[0] = fix_format_hours(getRTC(4));
@@ -214,7 +214,7 @@ void mem(int buff[]) {
 
 // Syscall Handler
 uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, uint64_t reg5, uint64_t reg6, uint64_t reg7, int sys) {
-    uint64_t res;
+    uint64_t res=0;
     switch (sys) {
         case 0:
             res = read((int)reg1, (char *)reg2, (int)reg3);
@@ -313,6 +313,7 @@ uint64_t sysHandler(uint64_t reg1, uint64_t reg2, uint64_t reg3, uint64_t reg4, 
             res = open((char *)reg1, (int)reg2);
             break;
         default:
+            res=0;
             break;
     }
     
