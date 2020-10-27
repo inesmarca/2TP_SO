@@ -210,10 +210,10 @@ int createProcess(const char * name, void * func, int priority, int fd[], int fo
     newProcess->foreground=foreground;
     newProcess->argc=argc;
 
-    newProcess->argv = malloc(argc);
-    if (newProcess->argv ==NULL)
-    {
-        return -1;
+    if (argc > 0) {
+        newProcess->argv = malloc(argc);
+        if (newProcess->argv == NULL)
+            return -1;
     }
     
     // int auxArgc = argc;
