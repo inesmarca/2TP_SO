@@ -517,7 +517,7 @@ int longToString_libc(long value, char * buffer) {
 	do
 	{
 		int remainder = value % 10;
-		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+		*p++ =  remainder + '0';
 		digits++;
 	}
 	while (value /= 10);

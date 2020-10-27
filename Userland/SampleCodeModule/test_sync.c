@@ -70,7 +70,7 @@ void inc(int argc, char ** argv){
   sem_t * semap = sem_open(SEM_ID, 0, 1);         //creo el sem
   if (semap == NULL){
     printf("ERROR OPENING SEM\n"); 
-    return-1;
+    return;
   }
     
 

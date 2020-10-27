@@ -88,15 +88,16 @@ void test_processes(){
       }
 
       // Randomly unblocks processes
-      for(rq = 0; rq < MAX_PROCESSES; rq++)
-        if (p_rqs[rq].state == BLOCKED && GetUniform(2) % 2){
+      for(rq = 0; rq < MAX_PROCESSES; rq++){
+         if (p_rqs[rq].state == BLOCKED && GetUniform(2) % 2){
           if(my_unblock(p_rqs[rq].pid) == -1){            // TODO: Port this as required
             printf("Error unblocking process\n");         // TODO: Port this as required
             return;
           }
           p_rqs[rq].state = RUNNING; 
         }
-        printf("loop complete \n");
+      } 
+      printf("loop complete \n");
     }
   }
 }

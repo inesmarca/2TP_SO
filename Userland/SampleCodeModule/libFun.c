@@ -221,24 +221,25 @@ void filter() {
     aux[j] = 0;
     strcpy(buff, aux);
     free(aux);
-    printf(buff);
+    printf("%s",buff);
     free(buff);
 }
 
 // cat
 void cat() {
-	char * buff = malloc(512);
+    int sizebuff=512;
+	char * buff = malloc(sizebuff);
     if (buff == NULL)
     {
         printError("No se pudo realizar malloc");
         return;
     }
-	int cant = read(STDIN, buff, sizeof(buff));
+	int cant = read(STDIN, buff,sizebuff);
     int pos = cant - 1;
 	printf("%s", buff);
 
-    while (cant == sizeof(buff) && buff[pos] != 0) {
-        cant = read(STDIN, buff, sizeof(buff));
+    while (cant == sizebuff && buff[pos] != 0) {
+        cant = read(STDIN, buff, sizebuff);
 	    printf("%s", buff);
         pos = cant - 1;
     }

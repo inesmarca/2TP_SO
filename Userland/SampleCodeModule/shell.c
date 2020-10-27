@@ -190,12 +190,12 @@ static void shellControler(char key) {
                             return;
                         }
 
-                        int aux;
-                        if ((aux = lookForParameters(argv, argc, input + k + 1)) == -1) { // tomo los parametros de la funcion
+                        int auxiliar;
+                        if ((auxiliar = lookForParameters(argv, argc, input + k + 1)) == -1) { // tomo los parametros de la funcion
                             printError("Error Creating parameters\n");
                         }
 
-                        k += aux;
+                        k += auxiliar;
                     }
 
                     if (builtIn[j] && pipes == 0) { // si la funcion es built in y no esta en un pipe
