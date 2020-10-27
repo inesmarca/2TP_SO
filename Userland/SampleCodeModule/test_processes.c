@@ -32,7 +32,6 @@ typedef struct P_rq{
 } p_rq;
 
 void test_processes(){
-  printf("Testeo\n");
   p_rq p_rqs[MAX_PROCESSES];
   uint8_t rq;
   uint8_t alive = 0;
