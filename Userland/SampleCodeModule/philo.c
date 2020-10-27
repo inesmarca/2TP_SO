@@ -25,6 +25,11 @@ static void putNames(){
      for (int i = 0; i < N; i++)
     {
         names[i] = malloc(3);
+        if (names[i] == NULL)
+        {
+            printError("No se pudo realizar malloc");
+            return;
+        }
         names[i] = itoa(i, names[i], 10);
     }   
 }

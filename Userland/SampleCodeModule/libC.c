@@ -204,7 +204,7 @@ void printf(const char * format,...) {
 	
     		
     		changeColor(0xFF0000, DEFAULT_BACKGROUND_COLOR);
-			printf("Expresion %s is unsupported \n",format[i]);
+			printf("Expresion %s is unsupported \n", format[i]);
     		changeColor(DEFAULT_LETTER_COLOR, DEFAULT_BACKGROUND_COLOR);
 			//expression not suported
 				break;
@@ -413,7 +413,7 @@ int sscanf(const char *str,const char *format, ...) {
 	va_end(valist);
     return number_of_vars;
 }
-
+/*
 int intToString(int value, char * buffer) {
 	char *p = buffer;
 	char *p1, *p2;
@@ -445,7 +445,7 @@ int intToString(int value, char * buffer) {
 
 	return digits;
 }
-
+*/
 int stringtoInt (char * string){
 	//pasale strings bien, no valida. si los pasas mal, hay comportamiento inesperado
 	int answer=0;
